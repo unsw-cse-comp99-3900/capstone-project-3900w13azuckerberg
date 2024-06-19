@@ -4,7 +4,10 @@ import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 import './home.css';
 
+
 const HeatMap: React.FC = () => {
+    const [showFilters, setShowFilters] = useState(false);
+
     useEffect(() => {
         // Initialize the map and set its view
         const map = L.map('map', {
@@ -43,12 +46,24 @@ const HeatMap: React.FC = () => {
         };
     }, []);
 
+    const toggleFilters = () => {
+        setShowFilters(!showFilters);
+    };
+
     return (
         <div id="map" style={{ height: '100vh', width: '100%' }}>
-            <div className="controls">
-                <img src="./logo.png" alt="Logo" className="logo" />
-                <button className="control-button">Button 1</button>
-                <button className="control-button">Button 2</button>
+            <div className="container">
+                <img src="logo.png" alt="logo.png" className="logo" />
+                <div className="filter-container">
+                    <i className="material-icons" onClick={toggleFilters}>menu</i>
+                    <div className={`filter-buttons ${showFilters ? 'show' : 'hide'}`}>
+                        <button className="filter-button">Alpha</button>
+                        <button className="filter-button">Beta</button>
+                        <button className="filter-button">Delta</button>
+                        <button className="filter-button">Omnicron</button>
+                        <button className="filter-button">Gamma</button>
+                    </div>
+                </div>
             </div>
         </div>
     );
