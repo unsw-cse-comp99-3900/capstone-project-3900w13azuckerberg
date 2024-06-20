@@ -1,6 +1,25 @@
 from flask import Flask, request, jsonify
+from flask_migrate import Migrate
+from dotenv import load_dotenv
+from sqlalchemy import inspect
+
+from config import Config
+from db_manager import db, User
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
+
+# Database configuration
+app.config.from_object(Config)
+# # Debug: Print configuration values
+# print("Secret Key:", app.config['SECRET_KEY'])
+# print("SQLALCHEMY_DATABASE_URI:", app.config['SQLALCHEMY_DATABASE_URI'])
+# print("SQLALCHEMY_TRACK_MODIFICATIONS:", app.config['SQLALCHEMY_TRACK_MODIFICATIONS'])
+
+db.init_app(app)
+migrate = Migrate(app, db)
 
 # Route for the home page
 @app.route('/')
@@ -16,19 +35,18 @@ def get_data():
     }
     return jsonify(data)
 
-# Route to handle POST requests
-@app.route('/post_data', methods=['POST'])
-def post_data():
-    if request.is_json:
-        data = request.get_json()
-        response = {
-            "message": "This is a POST request",
-            "received_data": data,
-            "status": "success"
-        }
-        return jsonify(response)
+def check_user_table():
+    inspector = inspect(db.engine)
+    tables = inspector.get_table_names()
+    if 'user' in tables:
+        print("User table exists in the database.")
     else:
-        return jsonify({"message": "Request must be JSON", "status": "error"}), 400
+        print("User table does not exist in the database.")
 
 if __name__ == '__main__':
+    with app.app_context():
+        try:
+            check_user_table()
+        except Exception as e:
+            print(f"Error: {e}")
     app.run(debug=True)
