@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template_string
+import folium
 
 app = Flask(__name__)
 
@@ -30,5 +31,31 @@ def post_data():
     else:
         return jsonify({"message": "Request must be JSON", "status": "error"}), 400
 
+@app.route('/map', methods=['GET'])
+def display_map():
+    # Create a map centered around a specific location
+    start_coords = (-33.8688, 151.2093)  # Coordinates for San Francisco
+    folium_map = folium.Map(location=start_coords, zoom_start=13)
+
+    # Save the map to an HTML string
+    map_html = folium_map._repr_html_()
+
+    # Render the map HTML in a simple HTML template
+    return render_template_string("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Map</title>
+        </head>
+        <body>
+            <h1>My Map</h1>
+            {{ map_html|safe }}
+        </body>
+        </html>
+    """, map_html=map_html)
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
