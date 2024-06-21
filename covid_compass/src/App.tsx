@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import HeatMap from './heatMap';
 import Filters from './filters';
+import Slider from './slider'
 
 function App(){
     return (
@@ -10,6 +11,7 @@ function App(){
           <HeatMap />
           </header>
           <Filters/>
+          <Slider/>
         </div>
     );
 };

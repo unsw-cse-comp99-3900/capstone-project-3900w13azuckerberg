@@ -21,7 +21,6 @@ const Filters = () => {
                     <Button label="Omicron" data={"Omicron"} endpoint="/filter/new" />
                     <Button label="Gamma" data={"Gamma"} endpoint="/filter/new" />
                     <Button label="" data={"All"} endpoint="/filter/new" icon="select_all" />
-                    <Button label="" data={"None"} endpoint="/filter/new" icon="filter_none" />
                 </div>
             </div>
         </div>

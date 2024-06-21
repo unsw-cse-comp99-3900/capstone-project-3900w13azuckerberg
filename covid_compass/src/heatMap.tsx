@@ -7,11 +7,19 @@ import './heatMap.css';
 
 const HeatMap: React.FC = () => {
     useEffect(() => {
+        const australiaBounds = L.latLngBounds(
+            L.latLng(-45.2, 80),
+            L.latLng(-8.0, 200)
+        );
+
         // Initialize the map and set its view
         const map = L.map('map', {
-            center: [-25.7980, 135.8807],
-            zoom: 4, 
-            zoomControl: false
+            center: [-28.0, 135],
+            zoom: 5, 
+            zoomControl: false,
+            maxBounds: australiaBounds,
+            minZoom: 4
+
         });
 
         // Add a tile layer to the map (OpenStreetMap)

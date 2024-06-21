@@ -4,7 +4,7 @@ import './button.css';
 
 interface ButtonProps {
     label: string;
-    data: any; // Define the type of data you want to send, e.g., `Record<string, any>`
+    data: any;
     endpoint: string;
     icon?: string;
 }
@@ -14,15 +14,17 @@ const Button: React.FC<ButtonProps> = ({ label, data, endpoint, icon }) => {
 
     const handleClick = async () => {
         try {
-            const newSelectedState = !isSelected;
+            const newSelectedState: boolean = !isSelected;
             setIsSelected(newSelectedState);
+
+            const newData = {...data, selected: newSelectedState};
 
             const response = await fetch(endpoint, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(newData),
             });
 
             if (!response.ok) {
