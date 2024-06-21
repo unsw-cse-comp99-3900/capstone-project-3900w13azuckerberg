@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
-import HeatMap from './home';
+import HeatMap from './heatMap';
+import Filters from './filters';
 
 function App(){
     return (
@@ -8,6 +9,7 @@ function App(){
           <header className="App-header">   
           <HeatMap />
           </header>
+          <Filters/>
         </div>
     );
 };

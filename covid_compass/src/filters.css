@@ -1,4 +1,4 @@
-.container {
+.filters {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -6,23 +6,26 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    color: white;
 }
     
 .logo {
     height: 12vh;
     margin-bottom: 10px;
 }
-        
+   
 .filter-container {
-    display: flex;
+    display: inline-block;
     flex-direction: column;
     position: relative;
     left: 20px;
+    min-width: 80px;
+    box-sizing: border-box;
 }
 
 .filter-buttons {
-    display: none; /* Initially hide the filter buttons */
-    margin-top: 10px; /* Adjust as needed */
+    display: none; /* Hide the filter buttons */
+    margin-top: 10px;
 }
 
 .filter-buttons.show {
@@ -30,21 +33,23 @@
     flex-direction: column;
 }
 
-.filter-button {
-    background-color: #ffffff;
-    color: black;
-    border: none;
-    padding: 0.3em 0.8em;
+.icon {
+    display: inline-block;
+    padding: 0.3em;
     margin-top: 7px;
     cursor: pointer;
-    border-radius: 5px;
-    font-size: 14px;
     text-align: center;
-    width: 100%;
     box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px;
 }
 
-.filter-button:hover {
+.icon:hover {
     background-color: #494949;
     color: white;
+}
+
+.icon:active {
+    background-color: #494949;
+    color: #494949;
 }
