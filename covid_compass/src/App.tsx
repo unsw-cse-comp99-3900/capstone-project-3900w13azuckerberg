@@ -1,13 +1,12 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-
+import Map from './Components/Map'
+import GraphBar from './Components/GraphBar';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-      <p/>Suck me lachlan<p/>      
-      </header>
+  <div className="App">
+      <GraphBar/>
+      <Map/>
     </div>
   );
 }
