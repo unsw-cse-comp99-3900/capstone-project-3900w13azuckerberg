@@ -3,7 +3,8 @@ from flask_migrate import Migrate
 from dotenv import load_dotenv
 
 from config import Config
-from db_manager import db, get_records, init_db
+from data_cleaner import clean_all_virus_data
+from db_manager import db, get_records, init_db, load_dataframe_to_db
 from model import VirusData
 
 # Load environment variables from .env file
@@ -48,6 +49,11 @@ def get_data():
             "date_submitted": record.date_submitted
         } for record in records]
     return jsonify(results)
+
+@app.route('/load_data', methods=['GET'])
+def load_data():
+    load_dataframe_to_db(clean_all_virus_data(), "virus_data", app)
+    return
 
 if __name__ == '__main__':
     app.run(debug=True)
