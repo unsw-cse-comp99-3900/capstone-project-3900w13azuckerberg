@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
-import 'leaflet.heat';
+// import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 import './map.css';
-
-
 
 const HeatMap: React.FC = () => {
     const [showFilters, setShowFilters] = useState(false);
@@ -36,11 +34,11 @@ const HeatMap: React.FC = () => {
         }).addTo(map);
 
         // Example heat map data points (latitude, longitude, intensity)
-        const heatMapData: [number, number, number][] = [
-            [37.7749, -122.4194, 0.5], // Example data point
-            [37.7740, -122.4174, 0.8], // Example data point
-            [37.7760, -122.4214, 0.6]  // Example data point
-        ];
+        // const heatMapData: [number, number, number][] = [
+        //     [37.7749, -122.4194, 0.5], // Example data point
+        //     [37.7740, -122.4174, 0.8], // Example data point
+        //     [37.7760, -122.4214, 0.6]  // Example data point
+        // ];
 
         // // Add heat map layer to the map
         // L.heatLayer(heatMapData, {
@@ -61,19 +59,6 @@ const HeatMap: React.FC = () => {
 
     return (
         <div id="map" style={{ height: '100vh', width: '100%' }}>
-            <div className="container">
-                <img src="logo.png" alt="logo.png" className="logo" />
-                <div className="filter-container">
-                    <i className="material-icons" onClick={toggleFilters}>menu</i>
-                    <div className={`filter-buttons ${showFilters ? 'show' : 'hide'}`}>
-                        <button className="filter-button">Alpha</button>
-                        <button className="filter-button">Beta</button>
-                        <button className="filter-button">Delta</button>
-                        <button className="filter-button">Omnicron</button>
-                        <button className="filter-button">Gamma</button>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };
