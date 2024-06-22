@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import HeatMap from './map';
 import Filters from './filters';
-// import Slider from './slider'
+import Slider from './slider';
 
 function App(){
     return (
@@ -10,8 +10,8 @@ function App(){
           <header className="App-header">   
           <HeatMap />
           </header>
+          <Slider/>
           <Filters/>
-          {/* <Slider/> */}
         </div>
     );
 };

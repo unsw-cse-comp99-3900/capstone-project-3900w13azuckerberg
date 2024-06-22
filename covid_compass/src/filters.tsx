@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Button from './button';
 import Icon from './icon';
 import './filters.css';
-import './icon.css'
 
 const Filters = () => {
     const [showFilters, setShowFilters] = useState(false);

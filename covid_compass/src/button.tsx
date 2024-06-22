@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './button.css';
 
 interface ButtonProps {
@@ -9,11 +9,9 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ label, endpoint, selected, onSelect }) => {
-    // const [selected, setSelected] = useState(false);
 
     const handleClick = async () => {
         try {
-            // setSelected(!selected);
             onSelect(!selected);
 
             const newData = {label: label, selected: selected};
