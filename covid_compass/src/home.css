@@ -1,4 +1,5 @@
 .container {
+.container {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -13,7 +14,9 @@
     margin-bottom: 10px;
 }
         
+        
 .filter-container {
+    display: flex;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -21,6 +24,8 @@
 }
 
 .filter-buttons {
+    display: none; /* Initially hide the filter buttons */
+    margin-top: 10px; /* Adjust as needed */
     display: none; /* Initially hide the filter buttons */
     margin-top: 10px; /* Adjust as needed */
 }
@@ -35,15 +40,24 @@
     color: black;
     border: none;
     padding: 0.3em 0.8em;
+.filter-button {
+    background-color: #ffffff;
+    color: black;
+    border: none;
+    padding: 0.3em 0.8em;
     margin-top: 7px;
     cursor: pointer;
     border-radius: 5px;
     font-size: 14px;
+    border-radius: 5px;
+    font-size: 14px;
     text-align: center;
+    width: 100%;
     width: 100%;
     box-sizing: border-box;
 }
 
+.filter-button:hover {
 .filter-button:hover {
     background-color: #494949;
     color: white;
