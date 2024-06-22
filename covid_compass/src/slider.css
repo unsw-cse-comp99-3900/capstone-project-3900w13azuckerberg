@@ -10,7 +10,7 @@
     border-radius: 5px;
     z-index: 1000; /* Ensure it overlays on top of other content */
     color: rgb(255, 255, 255);
-    background-color: #454545;  
+    background-color: #494949;  
     align-items: center; /* Center items vertically */
     justify-content: center; /* Center items horizontally */
 }
@@ -18,19 +18,16 @@
     flex: 1;
     margin-right: 10px;
 }
-
-.slider label {
-    display: flex;
-    margin-bottom: 5px;
-}
-  
+ 
 .slider input[type="range"] {
     width: 100%;
+} 
+
+.calendar-container {
+    position: absolute;
+    display: flex;
+    z-index: 1000;
+    bottom: 10%;
+    right: 9%;
+    padding: 10px; /* Optional: Add padding */
 }
-  
-.slider p {
-    margin-top: 5px;
-    font-size: 14px;
-    min-width: 120px;
-}
-  
