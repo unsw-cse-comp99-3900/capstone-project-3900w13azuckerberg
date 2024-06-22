@@ -1,10 +1,11 @@
+# data_cleaner.py
 import pandas as pd
 import os
 
-DATA_PATH = 'raw_data'
+DATA_PATH = 'raw_data'  # The path of dir containing all raw data
 
 # Given a dataframe of COVID tests data, perform the data cleaning.
-def covid_tests_data_cleaning(data):
+def virus_data_cleaning(data):
     # Filter
     data = data[(data['region'] == 'Oceania') & (data['country'] == 'Australia')]
     data = data[data['host'] == 'Human']
@@ -28,14 +29,26 @@ def covid_tests_data_cleaning(data):
     data = data.loc[:, columns_to_keep]
 
     # Change data type
-    data['date'] = pd.to_datetime(data['date'])
-    data['date_submitted'] = pd.to_datetime(data['date_submitted'])
+
+    # Convert to datetime using the specified formats
+    def parse_dates(date_series):
+        date_formats = ["%d/%m/%Y", "%Y-%m-%d"]
+        for fmt in date_formats:
+            parsed_dates = pd.to_datetime(date_series, format=fmt, errors='coerce')
+            if parsed_dates.notna().all():
+                return parsed_dates
+        return pd.to_datetime(date_series, errors='coerce')
+
+    data['date'] = parse_dates(data['date'])
+    data = data.dropna(subset=['date'])
+    data['date_submitted'] = parse_dates(data['date_submitted'])
+
     data['age'] = pd.to_numeric(data['age'], errors='coerce')
 
     return data
 
 # Load all tsv files into a single dataframe.
-def load_and_clean_all_covid_data():
+def clean_all_virus_data():
     dataframes = []
 
     # Loop through all files in the directory
@@ -47,7 +60,7 @@ def load_and_clean_all_covid_data():
             df = pd.read_csv(file_path, sep='\t')
             # Append the DataFrame to the list
             try:
-                dataframes.append(covid_tests_data_cleaning(df))
+                dataframes.append(virus_data_cleaning(df))
             except Exception as e:
                 print(f"Error in loading {file_name}\n{e}")
 

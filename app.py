@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from sqlalchemy import inspect
 
 from config import Config
-from db_manager import db
+from db_manager import db, init_db
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,12 +13,10 @@ app = Flask(__name__)
 
 # Database configuration
 app.config.from_object(Config)
-# # Debug: Print configuration values
-# print("Secret Key:", app.config['SECRET_KEY'])
-# print("SQLALCHEMY_DATABASE_URI:", app.config['SQLALCHEMY_DATABASE_URI'])
-# print("SQLALCHEMY_TRACK_MODIFICATIONS:", app.config['SQLALCHEMY_TRACK_MODIFICATIONS'])
 
-db.init_app(app)
+init_db(app)
+
+
 migrate = Migrate(app, db)
 
 # Route for the home page
