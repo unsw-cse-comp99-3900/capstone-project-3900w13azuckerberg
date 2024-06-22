@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import HeatMap from './heatMap';
+import HeatMap from './map';
 import Filters from './filters';
 // import Slider from './slider'
 
