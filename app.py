@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, redirect, request, jsonify, url_for
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
@@ -53,7 +53,7 @@ def get_data():
 @app.route('/load_data', methods=['GET'])
 def load_data():
     load_dataframe_to_db(clean_all_virus_data(), "virus_data", app)
-    return
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)
