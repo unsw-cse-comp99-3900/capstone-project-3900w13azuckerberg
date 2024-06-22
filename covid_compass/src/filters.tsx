@@ -20,7 +20,10 @@ const Filters = () => {
                     <Button label="Delta" data={"Delta"} endpoint="/filter/new" />
                     <Button label="Omicron" data={"Omicron"} endpoint="/filter/new" />
                     <Button label="Gamma" data={"Gamma"} endpoint="/filter/new" />
-                    <Button label="" data={"All"} endpoint="/filter/new" icon="select_all" />
+                    <div className="icon-container">
+                        <Button label="" data={"All"} endpoint="/filter/new" icon="select_all" />
+                        <Button label="" data={"Bone"} endpoint="/filter/new" icon="filter_none" />
+                    </div>
                 </div>
             </div>
         </div>
