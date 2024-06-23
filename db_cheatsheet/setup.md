@@ -52,7 +52,7 @@ SECRET_KEY=1LAKeDYR83stxYv
 ```
 
 - Replace `username`, `password`, `localhost`, and `dbname` with your actual PostgreSQL credentials and database name.
-- refer to `createuser.md` for create a user.
+- refer to [createuser.md](https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900w13azuckerberg/blob/db_migrate/db_cheatsheet/createuser.md) for create a user.
 - `SECRET_KEY` is just a random number.
 
 **Initialize the Database**
