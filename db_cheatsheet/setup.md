@@ -52,7 +52,8 @@ SECRET_KEY=1LAKeDYR83stxYv
 ```
 
 - Replace `username`, `password`, `localhost`, and `dbname` with your actual PostgreSQL credentials and database name.
-- SECRET_KEY is just a random number
+- refer to `createuser.md` for create a user.
+- `SECRET_KEY` is just a random number.
 
 **Initialize the Database**
 
