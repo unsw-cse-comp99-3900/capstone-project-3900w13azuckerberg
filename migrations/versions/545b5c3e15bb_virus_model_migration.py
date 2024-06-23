@@ -1,8 +1,8 @@
-"""change virus model
+"""virus model migration
 
-Revision ID: d5809b47fbf7
-Revises: 293a24cad872
-Create Date: 2024-06-22 19:03:21.015967
+Revision ID: 545b5c3e15bb
+Revises: 
+Create Date: 2024-06-23 21:55:45.047243
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'd5809b47fbf7'
-down_revision = '293a24cad872'
+revision = '545b5c3e15bb'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -47,7 +47,7 @@ def upgrade():
         batch_op.alter_column('division',
                existing_type=sa.TEXT(),
                type_=sa.String(),
-               nullable=False)
+               existing_nullable=True)
         batch_op.alter_column('location',
                existing_type=sa.TEXT(),
                type_=sa.String(),
@@ -63,7 +63,7 @@ def upgrade():
         batch_op.alter_column('division_exposure',
                existing_type=sa.TEXT(),
                type_=sa.String(),
-               nullable=False)
+               existing_nullable=True)
         batch_op.alter_column('age',
                existing_type=sa.DOUBLE_PRECISION(precision=53),
                type_=sa.Integer(),
@@ -75,7 +75,7 @@ def upgrade():
         batch_op.alter_column('originating_lab',
                existing_type=sa.TEXT(),
                type_=sa.String(),
-               nullable=False)
+               existing_nullable=True)
         batch_op.alter_column('submitting_lab',
                existing_type=sa.TEXT(),
                type_=sa.String(),
@@ -102,7 +102,7 @@ def downgrade():
         batch_op.alter_column('originating_lab',
                existing_type=sa.String(),
                type_=sa.TEXT(),
-               nullable=True)
+               existing_nullable=True)
         batch_op.alter_column('sex',
                existing_type=sa.String(),
                type_=sa.TEXT(),
@@ -114,7 +114,7 @@ def downgrade():
         batch_op.alter_column('division_exposure',
                existing_type=sa.String(),
                type_=sa.TEXT(),
-               nullable=True)
+               existing_nullable=True)
         batch_op.alter_column('country_exposure',
                existing_type=sa.String(),
                type_=sa.TEXT(),
@@ -130,7 +130,7 @@ def downgrade():
         batch_op.alter_column('division',
                existing_type=sa.String(),
                type_=sa.TEXT(),
-               nullable=True)
+               existing_nullable=True)
         batch_op.alter_column('date',
                existing_type=sa.Date(),
                type_=postgresql.TIMESTAMP(),
