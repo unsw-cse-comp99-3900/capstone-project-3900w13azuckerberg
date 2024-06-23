@@ -54,7 +54,7 @@ DATABASE_URL=postgresql://username:password@localhost/dbname
 
 **Initialize the Database**
 
-- Ensure PostgreSQL is running and create the database:
+- Ensure PostgreSQL is running and create the database (do this in psql terminal):
 
 ```sql
 CREATE DATABASE dbname;
