@@ -32,6 +32,7 @@ After your first install, and each time you restart your machine you will have t
 2. To conntect to postgres, type `sudo -u postgres psql`
 
 ### How to Use Flask-Migrate
+Do this in your terminal (not psql terminal).
 
 **Install Dependencies**
 
