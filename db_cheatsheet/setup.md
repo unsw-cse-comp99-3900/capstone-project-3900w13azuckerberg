@@ -48,9 +48,11 @@ pip install -r requirements.txt
 FLASK_APP=app.py
 FLASK_ENV=development
 DATABASE_URL=postgresql://username:password@localhost/dbname
+SECRET_KEY=1LAKeDYR83stxYv
 ```
 
 - Replace `username`, `password`, `localhost`, and `dbname` with your actual PostgreSQL credentials and database name.
+- SECRET_KEY is just a random number
 
 **Initialize the Database**
 
