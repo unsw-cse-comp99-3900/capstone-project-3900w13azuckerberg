@@ -56,28 +56,61 @@ def load_data():
     load_dataframe_to_db(clean_all_virus_data(), "virus_data", app)
     return redirect(url_for('home'))
 
+# frontend uses the midpoint of the state that's returned for below routes
+
+# returns list of coordinate cases for a particular date
 @app.route('/map', methods=['GET'])
 def display_map():
-    # Create a map centered around a specific location
-    start_coords = (-33.8688, 151.2093)  # Coordinates for San Francisco
-    folium_map = folium.Map(location=start_coords, zoom_start=13)
+    date = request.args.get('date')
+    coordinate_cases = get_coordinate_cases(VirusData, date)
+    # this function get_coordinate_cases should return a list of coordinate & intensity
+    results = [
+        {
+            "state": coordinate_case.state,
+            "intensity": coordinate_case.intensity
+        } for coordinate_case in coordinate_cases]
+    return jsonify(results)
 
-    # Save the map to an HTML string
-    map_html = folium_map._repr_html_()
+# variant filter for heatmap
+@app.route('/filter', methods=['GET'])
+def filter_variant():
+    variant = request.args.get('variant_name')
+    date = request.args.get('date')
+    variant_records = get_variant(VirusData, variant, date)
+    # this function get_variant should return a list of variant records up until a particular date for displaying on the heat map
+    results = [
+        {
+            "state": variant_record.state,
+            "intensity": variant_record.intensity
+        } for variant_record in variant_records]
+    return jsonify(results)
 
-    # Render the map HTML in a simple HTML template
-    return render_template_string("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Map</title>
-        </head>
-        <body>
-            <h1>My Map</h1>
-            {{ map_html|safe }}
-        </body>
-        </html>
-    """, map_html=map_html)
+# graph showing distribution of infections for variant strains 
+@app.route('/pie_chart', methods=['GET'])
+def variant_pie_chart():
+    date = request.args.get('date')
+    variant_split_records = get_variant_split(VirusData, date)
+    # get variant split should return 4 Records showing variant, %, number of infecteced up until a certain date
+    results = [
+        {
+            "variant": variant_split_record.variant,
+            "percentage": variant_split_record.percentage,
+            "infected": variant_split_record.infected
+        } for variant_split_record in variant_split_records]
+    return jsonify(results)
+
+# # TBD once we find a source of vaccination data - graph showing vaccinations
+# @app.route('/vaccination', methods=['GET'])
+# def vaccinations():
+#     date = request.args.get('date')
+#     strain = request.args.get('strain')
+#     vaccination_records = get_vaccinations(VaccinationData) 
+#     results = [
+#         {
+#             ""
+#         }
+
+#     ]
 
 if __name__ == '__main__':
     app.run(debug=True)
