@@ -6,6 +6,8 @@
     "@mantine/core": "^7.10.2",
     "@mantine/hooks": "^7.10.2",
     "@nivo/core": "^0.87.0",
+    "@nivo/line": "^0.87.0",
+    "@nivo/pie": "^0.87.0",
     "@tabler/icons": "^3.6.0",
     "@tabler/icons-react": "^3.6.0",
     "@testing-library/jest-dom": "^5.17.0",

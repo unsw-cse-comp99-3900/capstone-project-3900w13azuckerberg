@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './GraphBar.css';
 import GraphButton from './GraphButton';
-
+import PieChart from './PieChart'
 
 function GraphBar() {
 
@@ -18,7 +18,7 @@ function GraphBar() {
             </div>
             <div className='wrapper'>
                 <div className='graphBox'>
-                    
+                    <PieChart/>
                 </div>
                 <div className='graphBox'>
                     
