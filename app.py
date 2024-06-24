@@ -97,8 +97,8 @@ def heat_map():
                 "intensity": intensity
             })
 
-            data["data"].append({
-            "date": current_date,
+        data["data"].append({
+            "date": current_date.strftime('%Y-%m-%d'),
             "cases": cases_list
         })
 
