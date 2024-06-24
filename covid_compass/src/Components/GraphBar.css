@@ -44,8 +44,10 @@
     background-color: rgb(14,14,14); 
     border-radius: 10px;
     padding: 0;
+    opacity: 90%;
 }
 
 body { 
     overflow: hidden;
 }
+

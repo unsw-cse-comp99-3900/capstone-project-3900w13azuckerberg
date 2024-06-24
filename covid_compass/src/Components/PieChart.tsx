@@ -149,7 +149,7 @@ const PieChart = () => (
                     {
                         on: 'hover',
                         style: {
-                            itemTextColor: '#000'
+                            itemTextColor: 'white'
                         }
                     }
                 ]
