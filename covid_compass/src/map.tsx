@@ -34,11 +34,11 @@ const HeatMap: React.FC = () => {
         }).addTo(map);
 
         // Example heat map data points (latitude, longitude, intensity)
-        // const heatMapData: [number, number, number][] = [
-        //     [37.7749, -122.4194, 0.5], // Example data point
-        //     [37.7740, -122.4174, 0.8], // Example data point
-        //     [37.7760, -122.4214, 0.6]  // Example data point
-        // ];
+        const heatMapData: [number, number, number][] = [
+            [37.7749, -122.4194, 0.5], // Example data point
+            [37.7740, -122.4174, 0.8], // Example data point
+            [37.7760, -122.4214, 0.6]  // Example data point
+        ];
 
         // // Add heat map layer to the map
         // L.heatLayer(heatMapData, {
