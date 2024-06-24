@@ -1,12 +1,11 @@
-import folium
 from flask import Flask, redirect, request, jsonify, url_for, render_template_string
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-
 from config import Config
 from data_cleaner import clean_all_virus_data
 from db_manager import db, get_records, init_db, load_dataframe_to_db
 from model import VirusData
+from gmaps import get_coordinates
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,7 +36,8 @@ def get_data():
             "strain": record.strain,
             "date": record.date,
             "division": record.division,
-            "location": record.location,
+            "lattitude": get_coordinates(record.originating_lab)['latitude'],
+            "longitude": get_coordinates(record.originating_lab)['longitude'],
             "region_exposure": record.region_exposure,
             "country_exposure": record.country_exposure,
             "division_exposure": record.division_exposure,
