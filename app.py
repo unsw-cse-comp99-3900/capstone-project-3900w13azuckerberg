@@ -32,11 +32,9 @@ def get_data():
     records = get_records(VirusData, 10)
     results = [
         {
+            "id": record.id,
+            "lineage": record.lineage,
             "strain": record.strain,
-            "virus": record.virus,
-            "segment": record.segment,
-            "length": record.length,
-            "gisaid_epi_isl": record.gisaid_epi_isl,
             "date": record.date,
             "division": record.division,
             "location": record.location,

@@ -6,15 +6,36 @@ DATA_PATH = 'raw_data'  # The path of dir containing all raw data
 
 # Given a dataframe of COVID tests data, perform the data cleaning.
 def virus_data_cleaning(data):
+     # Renaming columns
+    data.rename(columns={'pangolin_lineage': 'lineage'}, inplace=True)
+    data.rename(columns={'gisaid_epi_isl': 'id'}, inplace=True)
+
     # Filter
     data = data[(data['region'] == 'Oceania') & (data['country'] == 'Australia')]
     data = data[data['host'] == 'Human']
     data[['age', 'sex']] = data[['age', 'sex']].replace('unknown', pd.NA)
+    data = data[data['lineage'] != 'Unassigned']
+
+    # Function to extract substring before the second '.'
+    def extract_lineage_prefix(s):
+        parts = s.split('.')
+        if len(parts) > 2:
+            return '.'.join(parts[:2])
+        return s
+
+    # Apply the function to the pangolin_lineage column
+    data['strain'] = data['lineage'].apply(extract_lineage_prefix)
+
+    def extract_id(s):
+        return s.split('_')[-1]
+
+    # Apply the function to the gisaid_epi_isl column
+    data['id'] = data['id'].apply(extract_id)
 
     # List of columns to keep
     columns_to_keep = [
         # virus
-        'strain', 'virus', 'segment', 'length', 'gisaid_epi_isl', 'date',
+        'id', 'lineage', 'strain', 'date',
         # location
         'division', 'location',
         # exposure
@@ -44,6 +65,7 @@ def virus_data_cleaning(data):
     data['date_submitted'] = parse_dates(data['date_submitted'])
 
     data['age'] = pd.to_numeric(data['age'], errors='coerce')
+
 
     return data
 
