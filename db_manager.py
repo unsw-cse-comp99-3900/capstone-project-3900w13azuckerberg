@@ -1,5 +1,7 @@
 # db_manager.py
+from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from data_cleaner import clean_all_virus_data
 
@@ -97,3 +99,20 @@ def delete_record(record):
     except SQLAlchemyError as e:
         db.session.rollback()
         print(f"Error deleting record: {e}")
+
+
+def get_case_by_loc(model, date):
+    start_date = date - timedelta(days=14)
+
+    # Query to get the count of entries grouped by originating_lab
+    results = db.session.query(
+        model.originating_lab,
+        func.count(model.id).label('case_count')
+    ).filter(
+        model.date.between(start_date, date)
+    ).group_by(
+        model.originating_lab
+    ).all()
+
+    result_dict = {originating_lab: case_count for originating_lab, case_count in results}
+    return result_dict

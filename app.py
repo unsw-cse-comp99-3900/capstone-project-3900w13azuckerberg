@@ -1,11 +1,12 @@
 import folium
+from datetime import datetime
 from flask import Flask, redirect, request, jsonify, url_for, render_template_string
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
 from config import Config
 from data_cleaner import clean_all_virus_data
-from db_manager import db, get_records, init_db, load_dataframe_to_db
+from db_manager import db, get_case_by_loc, get_records, init_db, load_dataframe_to_db
 from model import VirusData
 
 # Load environment variables from .env file
@@ -25,6 +26,12 @@ migrate = Migrate(app, db)
 @app.route('/')
 def home():
     return "Welcome to COVID Compass!"
+
+@app.route('/test', methods=['GET'])
+def mytest():
+    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    case_counts = get_case_by_loc(VirusData, date)
+    return jsonify(case_counts)
 
 # Route to handle GET requests
 @app.route('/get_data', methods=['GET'])
