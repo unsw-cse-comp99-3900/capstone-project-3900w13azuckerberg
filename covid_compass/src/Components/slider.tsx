@@ -54,7 +54,7 @@ const Slider: React.FC<TimelineSliderProps> = () => {
                 name="timeline-slider"
                 min={0}
                 max={totalDays}
-                step={1}
+                step={7}
                 value={Math.ceil((selectedDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24))}
                 onChange={handleChange}
                 />

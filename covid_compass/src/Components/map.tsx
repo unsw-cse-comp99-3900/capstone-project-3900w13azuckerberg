@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
-// import 'leaflet.heat';
+import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 import './map.css';
 
 const HeatMap: React.FC = () => {
-    const [showFilters, setShowFilters] = useState(false);
-
     useEffect(() => {
         const australiaBounds = L.latLngBounds(
             L.latLng(-45.2, 80),
@@ -35,27 +33,24 @@ const HeatMap: React.FC = () => {
 
         // Example heat map data points (latitude, longitude, intensity)
         const heatMapData: [number, number, number][] = [
-            [37.7749, -122.4194, 0.5], // Example data point
-            [37.7740, -122.4174, 0.8], // Example data point
-            [37.7760, -122.4214, 0.6]  // Example data point
+            [-40, 140, 0.5], // Example data point
+            [-37, 150, 0.8], // Example data point
+            [-20, 122, 0.6]  // Example data point
         ];
 
-        // // Add heat map layer to the map
-        // L.heatLayer(heatMapData, {
-        //     radius: 2500,  // Radius of each "point" of the heatmap
-        //     blur: 15,    // Amount of blur
-        //     maxZoom: 17, // Maximum zoom level
-        // }).addTo(map);
+        // Add heat map layer to the map
+        L.heatLayer(heatMapData, {
+            radius: 25,  // Radius of each "point" of the heatmap
+            blur: 17,    // Amount of blur
+            maxZoom: 1, // Maximum zoom level
+            gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'},
+        }).addTo(map);
 
         // Clean up the map instance onx component unmount
         return () => {
             map.remove();
         };
     }, []);
-
-    const toggleFilters = () => {
-        setShowFilters(!showFilters);
-    };
 
     return (
         <div id="map" style={{ height: '100vh', width: '100%' }}>
