@@ -85,8 +85,8 @@ def heat_map():
         cases_list = {}
         
         for case in daily_cases:
-            location = case['location']
-            intensity = case['intensity']
+            location = case['originating_lab']
+            intensity = case['case_count']
             
             coordinates = get_coordinates(location)
             
