@@ -1,4 +1,3 @@
-import folium
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, url_for, render_template_string
 from flask_migrate import Migrate
@@ -68,9 +67,10 @@ def load_data():
 # returns list of coordinate cases for a particular date
 @app.route('/map', methods=['GET'])
 def heat_map():
-    date_str = request.args.get('date')
-    end_date = datetime.strptime(date_str, '%Y-%m-%d')
-    start_date = datetime.strptime('2021-01-01', '%Y-%m-%d')
+    # date_str = request.args.get('date')
+    date_str = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    end_date = date_str
+    start_date = datetime.strptime('2023-12-28', '%Y-%m-%d').date()
 
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     data = {"data": []}
@@ -79,14 +79,14 @@ def heat_map():
     # Loop over each day from 1-Jan-21 to the provided date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_loc(VirusData, current_date.strftime('%Y-%m-%d'))
+        daily_cases = get_case_by_loc(VirusData, current_date)
         
         # Initialize a dictionary to store the total cases per location
-        cases_list = {}
+        cases_list = []
         
-        for case in daily_cases:
-            location = case['originating_lab']
-            intensity = case['case_count']
+        for location, intensity in daily_cases.items():
+            # location = originating_lab
+            # intensity = case.case_count
             
             coordinates = get_coordinates(location)
             
@@ -98,7 +98,7 @@ def heat_map():
             })
 
             data["data"].append({
-            "date": current_date.strftime('%Y-%m-%d'),
+            "date": current_date,
             "cases": cases_list
         })
 
