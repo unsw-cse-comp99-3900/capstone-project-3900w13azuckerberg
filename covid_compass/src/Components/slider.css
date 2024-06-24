@@ -1,0 +1,33 @@
+.timeline {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    bottom: 40px; /* Position 50px above the bottom of the viewport */
+    width: 80%; /* Take up full width */
+    left: 50%; /* Position 50% from the left edge of the viewport */
+    transform: translateX(-50%); /* Center horizontally */
+    padding: 0px 10px;
+    border-radius: 5px;
+    z-index: 1000; /* Ensure it overlays on top of other content */
+    color: rgb(255, 255, 255);
+    background-color: #494949;  
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+}
+.slider {
+    flex: 1;
+    margin-right: 10px;
+}
+ 
+.slider input[type="range"] {
+    width: 100%;
+} 
+
+.calendar-container {
+    position: absolute;
+    display: flex;
+    z-index: 1000;
+    bottom: 10%;
+    right: 9%;
+    padding: 10px; /* Optional: Add padding */
+}

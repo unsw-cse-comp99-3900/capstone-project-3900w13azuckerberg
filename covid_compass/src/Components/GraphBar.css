@@ -1,0 +1,53 @@
+.wrapper {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    /* background-color: black; */
+    width: 80%;
+    height: 100%;
+    margin: 0;
+    z-index: 1500;
+    align-items: center;
+}
+
+.outer {
+    transition: 1s cubic-bezier(.36, -0.01, 0, .77);
+    display: flex;
+    justify-content: space-evenly;
+    /* background-color: black; */
+    width: 30vw;
+    margin: 0;
+    height: 100%;
+    z-index: 1600;
+    right: 0;
+    position: absolute;
+    transition: 1s cubic-bezier(.36, -0.01, 0, .77);
+    margin-right: -25vw;
+}
+
+.outer.open {
+    /* transform: translate(0); */
+    margin-right: 0;
+}
+
+#toggle {
+    height: 50px;
+    width: 50px;
+    margin: 20px;
+}
+
+
+.graphBox {
+    margin: 0;
+    width: 100%;
+    height: 24vh;
+    background-color: rgb(14,14,14); 
+    border-radius: 10px;
+    padding: 0;
+    opacity: 90%;
+}
+
+body { 
+    overflow: hidden;
+}
+
