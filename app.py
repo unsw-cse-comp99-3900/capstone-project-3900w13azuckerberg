@@ -6,6 +6,7 @@ from data_cleaner import clean_all_virus_data
 from db_manager import db, get_records, init_db, load_dataframe_to_db
 from model import VirusData
 from gmaps import get_coordinates
+from datetime import datetime, timedelta
 
 # Load environment variables from .env file
 load_dotenv()
@@ -58,16 +59,46 @@ def load_data():
 
 # returns list of coordinate cases for a particular date
 @app.route('/map', methods=['GET'])
-def display_map():
-    date = request.args.get('date')
-    coordinate_cases = get_coordinate_cases(VirusData, date)
-    # this function get_coordinate_cases should return a list of coordinate & intensity
-    results = [
-        {
-            "state": coordinate_case.state,
-            "intensity": coordinate_case.intensity
-        } for coordinate_case in coordinate_cases]
-    return jsonify(results)
+def heat_map():
+    date_str = request.args.get('date')
+    end_date = datetime.strptime(date_str, '%Y-%m-%d')
+    start_date = datetime.strptime('2021-01-01', '%Y-%m-%d')
+
+    # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
+    data = {"data": []}
+
+    
+    # Loop over each day from 1-Jan-21 to the provided date
+    current_date = start_date
+    while current_date <= end_date:
+        daily_cases = get_case_by_loc(VirusData, current_date.strftime('%Y-%m-%d'))
+        
+        # Initialize a dictionary to store the total cases per location
+        cases_list = {}
+        
+        for case in daily_cases:
+            location = case['location']
+            intensity = case['intensity']
+            
+            coordinates = get_coordinates(location)
+            
+            # Number of cases of a specific day at a specific location
+            cases_list.append({
+                "latitude": coordinates['latitude'],
+                "longitude": coordinates['longitude'],
+                "intensity": intensity
+            })
+
+            data["data"].append({
+            "date": current_date.strftime('%Y-%m-%d'),
+            "cases": cases_list
+        })
+
+        current_date += timedelta(days=1)
+    
+    return jsonify(data)
+
+
 
 # variant filter for heatmap
 @app.route('/filter', methods=['GET'])
