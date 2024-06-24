@@ -3,11 +3,9 @@ from db_manager import db
 class VirusData(db.Model):
     __tablename__ = 'virus_data'
     
+    id = db.Column(db.String, nullable=False, primary_key=True)
+    lineage = db.Column(db.String, nullable=False)
     strain = db.Column(db.String, nullable=False)
-    virus = db.Column(db.String, nullable=False)
-    segment = db.Column(db.String, nullable=False)
-    length = db.Column(db.Integer, nullable=False)
-    gisaid_epi_isl = db.Column(db.String, nullable=False, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     division = db.Column(db.String, nullable=True)
     location = db.Column(db.String, nullable=True)
