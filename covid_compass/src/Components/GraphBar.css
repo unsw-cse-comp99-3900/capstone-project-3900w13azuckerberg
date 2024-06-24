@@ -22,7 +22,7 @@
     right: 0;
     position: absolute;
     transition: 1s cubic-bezier(.36, -0.01, 0, .77);
-    margin-right: -26vw;
+    margin-right: -25vw;
 }
 
 .outer.open {

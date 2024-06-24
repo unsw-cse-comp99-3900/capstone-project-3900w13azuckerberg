@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({ label, endpoint, selected, onSelect }) 
             const newData = {label: label, selected: selected};
 
             const response = await fetch(endpoint, {
-                method: 'PUT',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },

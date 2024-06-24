@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
@@ -59,3 +59,6 @@ const HeatMap: React.FC = () => {
 };
 
 export default HeatMap;
+
+    
+    
