@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import Button from './button';
 import Icon from './icon';
 import './filters.css';
-import axios from 'axios';
 
-const Filters = () => {
+interface FiltersProps {
+    onFilterChange: (selectedFilters: string[]) => void;
+}
+
+const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     const [showFilters, setShowFilters] = useState(false);
     
     const buttons = [
@@ -30,6 +33,7 @@ const Filters = () => {
             button.label === label ? { ...button, selected: newState } : {...button}
         );
         setAllFilters(updated);
+        onFilterChange(updated.filter(button => button.selected).map(button => button.label));
     };
 
     return (

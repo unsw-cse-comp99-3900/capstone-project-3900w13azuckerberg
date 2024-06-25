@@ -5,32 +5,11 @@ import 'leaflet/dist/leaflet.css';
 import './map.css';
 import axios from 'axios';
 
-const HeatMap: React.FC = () => {
-    const [heatMapData, setHeatMapData] = useState<[number, number, number][]>([]);
-    
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:5000/map');
-                const data = response.data.data;
-
-                // Transform data into heat map format
-                const heatMapPoints: [number, number, number][] = data.flatMap((day: any) => 
-                    day.cases.map((caseItem: any) => [
-                        caseItem.latitude, 
-                        caseItem.longitude, 
-                        caseItem.intensity
-                    ])
-                );
-
-                setHeatMapData(heatMapPoints);
-            } catch (error) {
-                console.error('Error fetching heat map data:', error);
-            }
-        };
-
-        fetchData();
-    }, []);
+interface HeatMapProps {
+    heatMapData: [number, number, number][];
+  }
+  
+const HeatMap: React.FC<HeatMapProps> = ({ heatMapData }) => {
     
     useEffect(() => {
         const australiaBounds = L.latLngBounds(
@@ -65,7 +44,7 @@ const HeatMap: React.FC = () => {
             maxZoom: 1, // Maximum zoom level
             gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'},
         }).addTo(map);
-        
+
         // Clean up the map instance onx component unmount
         return () => {
             map.remove();
