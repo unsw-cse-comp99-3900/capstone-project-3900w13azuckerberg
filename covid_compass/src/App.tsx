@@ -7,12 +7,13 @@ import Map from './Components/map'
 import GraphBar from './Components/GraphBar';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
-import DataFetcher from './DataFetcher';
+import HomeMessage from './HomeMessage';
 
 function App() {
   return (
     <MantineProvider>
       <div className="App">
+          <HomeMessage />
           <GraphBar/>
           {/* <Map/> */}
           <HeatMap />
