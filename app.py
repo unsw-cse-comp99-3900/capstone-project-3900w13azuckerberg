@@ -21,7 +21,6 @@ app.config.from_object(Config)
 
 init_db(app)
 
-
 migrate = Migrate(app, db)
 
 # Route for the home page

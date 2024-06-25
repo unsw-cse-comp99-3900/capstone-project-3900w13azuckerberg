@@ -1,5 +1,6 @@
 import React from 'react';
 import './button.css';
+import axios from 'axios';
 
 interface ButtonProps {
     label: string;
@@ -16,20 +17,11 @@ const Button: React.FC<ButtonProps> = ({ label, endpoint, selected, onSelect }) 
 
             const newData = {label: label, selected: selected};
 
-            const response = await fetch(endpoint, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newData),
+            const response = await axios.get(endpoint, {
+                params: newData,
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const result = await response.json();
-            console.log('Success:', result);
+            console.log('Success:', response.data);
         } catch (error) {
             console.error('Error:', error);
         }

@@ -13,7 +13,7 @@ function App() {
   return (
     <MantineProvider>
       <div className="App">
-          <HomeMessage />
+          {/* <HomeMessage /> */}
           <GraphBar/>
           {/* <Map/> */}
           <HeatMap />

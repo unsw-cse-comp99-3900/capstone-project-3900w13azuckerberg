@@ -1,10 +1,37 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 import './map.css';
+import axios from 'axios';
 
 const HeatMap: React.FC = () => {
+    const [heatMapData, setHeatMapData] = useState<[number, number, number][]>([]);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:5000/map');
+                const data = response.data.data;
+
+                // Transform data into heat map format
+                const heatMapPoints: [number, number, number][] = data.flatMap((day: any) => 
+                    day.cases.map((caseItem: any) => [
+                        caseItem.latitude, 
+                        caseItem.longitude, 
+                        caseItem.intensity
+                    ])
+                );
+
+                setHeatMapData(heatMapPoints);
+            } catch (error) {
+                console.error('Error fetching heat map data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+    
     useEffect(() => {
         const australiaBounds = L.latLngBounds(
             L.latLng(-45.2, 80),
@@ -31,13 +58,6 @@ const HeatMap: React.FC = () => {
             position: 'bottomleft' // Position the zoom control at the bottom right
         }).addTo(map);
 
-        // Example heat map data points (latitude, longitude, intensity)
-        const heatMapData: [number, number, number][] = [
-            [-40, 140, 0.5], // Example data point
-            [-37, 150, 0.8], // Example data point
-            [-20, 122, 0.6]  // Example data point
-        ];
-
         // Add heat map layer to the map
         L.heatLayer(heatMapData, {
             radius: 25,  // Radius of each "point" of the heatmap
@@ -45,12 +65,12 @@ const HeatMap: React.FC = () => {
             maxZoom: 1, // Maximum zoom level
             gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'},
         }).addTo(map);
-
+        
         // Clean up the map instance onx component unmount
         return () => {
             map.remove();
         };
-    }, []);
+    }, [heatMapData]);
 
     return (
         <div id="map" style={{ height: '100vh', width: '100%' }}>

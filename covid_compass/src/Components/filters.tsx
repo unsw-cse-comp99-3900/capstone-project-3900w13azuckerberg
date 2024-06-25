@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from './button';
 import Icon from './icon';
 import './filters.css';
+import axios from 'axios';
 
 const Filters = () => {
     const [showFilters, setShowFilters] = useState(false);
@@ -40,7 +41,7 @@ const Filters = () => {
                     {allFilters.map((button, index) => (
                         <Button 
                             label={button.label} 
-                            endpoint="/filter/new" 
+                            endpoint="http://127.0.0.1:5000/filter" 
                             selected={button.selected}
                             onSelect={(selected: boolean) => handleSetSelected(button.label, selected)}
                     />))}
