@@ -4,7 +4,7 @@ import Icon from './icon';
 import './filters.css';
 
 interface FiltersProps {
-    onFilterChange: (selectedFilters: string[]) => void;
+    onFilterChange: (selectedFilters: number) => void;
 }
 
 const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
@@ -33,7 +33,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
             button.label === label ? { ...button, selected: newState } : {...button}
         );
         setAllFilters(updated);
-        onFilterChange(updated.filter(button => button.selected).map(button => button.label));
+        onFilterChange(1);
     };
 
     return (

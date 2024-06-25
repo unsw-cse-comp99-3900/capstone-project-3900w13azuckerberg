@@ -17,6 +17,7 @@
     "@types/node": "^16.18.99",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "axios": "^0.21.1",
     "date-fns": "^3.6.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",

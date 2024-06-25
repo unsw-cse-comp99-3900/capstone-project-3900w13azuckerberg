@@ -104,9 +104,9 @@ def heat_map():
             "date": current_date.strftime('%Y-%m-%d'),
             "cases": cases_list
         })
-
         current_date += timedelta(days=1)
     
+    print(data)
     return jsonify(data)
 
 
@@ -114,6 +114,7 @@ def heat_map():
 # variant filter for heatmap
 @app.route('/filter', methods=['GET'])
 def filter_variant():
+    return "nil"
     variant = request.args.get('variant_name')
     date = request.args.get('date')
     variant_records = get_variant(VirusData, variant, date)

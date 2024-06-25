@@ -11,7 +11,7 @@ import HomeMessage from './HomeMessage';
 import axios from 'axios';
 
 function App() {
-  const [filters, setFilters] = useState<string[]>([]);
+  const [filters, setFilters] = useState(0);
   const [heatMapData, setHeatMapData] = useState<[number, number, number][]>([]);
 
   useEffect(() => {
@@ -19,10 +19,10 @@ function App() {
     const fetchData = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:5000/map', {
-                params: { filters: filters.join(',') }
+                // params: { filters: filters.join(',') }
             });
-            const data = response.data.data;
-
+            const data = response.data;
+            console.log(data)
             // Transform the data into heat map format
             const heatMapPoints: [number, number, number][] = data.flatMap((day: any) => 
                 day.cases.map((caseItem: any) => [
@@ -42,9 +42,9 @@ function App() {
   }, [filters]); // Add filters as a dependency
 
 
-  const handleFilterChange = (selectedFilters: string[]) => {
-    setFilters(selectedFilters);
-  };
+  // const handleFilterChange = (selectedFilters: string[]) => {
+  //   setFilters(selectedFilters);
+  // };
     return (
       <MantineProvider>
         <div className="App">
@@ -53,7 +53,7 @@ function App() {
             {/* <Map/> */}
             <HeatMap heatMapData={heatMapData} />
             <Slider/>
-            <Filters onFilterChange={handleFilterChange} />
+            <Filters onFilterChange={setFilters} />
         </div>
       </MantineProvider>  
     );

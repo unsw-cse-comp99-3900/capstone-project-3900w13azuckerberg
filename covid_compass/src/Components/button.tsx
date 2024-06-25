@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({ label, endpoint, selected, onSelect }) 
         try {
             onSelect(!selected);
 
-            const newData = {label: label, selected: selected};
+            const newData = {label: label, selected: !selected};
 
             const response = await axios.get(endpoint, {
                 params: newData,
