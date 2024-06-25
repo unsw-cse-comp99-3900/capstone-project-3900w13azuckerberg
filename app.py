@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, url_for, render_template_string
 from flask_migrate import Migrate
+from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_cleaner import clean_all_virus_data
@@ -13,6 +14,7 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Database configuration
 app.config.from_object(Config)
