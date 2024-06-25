@@ -2,7 +2,7 @@
 import pandas as pd
 import os
 
-DATA_PATH = 'raw_data'  # The path of dir containing all raw data
+DATA_PATH = 'raw_data/covid_data'  # The path of dir containing all raw data
 
 # Given a dataframe of COVID tests data, perform the data cleaning.
 def virus_data_cleaning(data):

@@ -91,12 +91,14 @@ def heat_map():
             
             coordinates = get_coordinates(location)
             
-            # Number of cases of a specific day at a specific location
-            cases_list.append({
-                "latitude": coordinates['latitude'],
-                "longitude": coordinates['longitude'],
-                "intensity": intensity
-            })
+            if coordinates['latitude'] != 'Invalid location':
+
+                # Number of cases of a specific day at a specific location
+                cases_list.append({
+                    "latitude": coordinates['latitude'],
+                    "longitude": coordinates['longitude'],
+                    "intensity": intensity
+                })
 
         data["data"].append({
             "date": current_date.strftime('%Y-%m-%d'),
