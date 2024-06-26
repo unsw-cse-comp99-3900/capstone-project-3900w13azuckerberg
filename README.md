@@ -17,6 +17,7 @@ This project aims to develop a comprehensive system to understand and predict th
 - **Server**: Handles requests and serves the frontend.
 - **Backend Logic**: Manages data processing and model integration.
 - **SEIRS-V Model**: Simulates the local dynamics of COVID-19 spread.
+- **Random Network**: Supports the SEIRS-V model in simulating network interactions.
 - **Database Management**: PostgreSQL for data storage and querying.
 - **Backend Technologies**: Built with Flask.
 
@@ -26,21 +27,14 @@ This project aims to develop a comprehensive system to understand and predict th
 - **Data Cleaning**: Preprocess and integrate data.
 - **DB Manager**: Manages and manipulates the database.
 
-### Additional Components
-
-- **Random Network**: Supports the SEIRS-V model in simulating network interactions.
-- **Webpage**: Interface for external users to interact with the system.
-
 ### Folder Structure:
 
 ```
 /project-root
     /backend
         /migrations
-        /app (your Flask app files)
-        config.py
-        manage.py (or app.py)
-        requirements.txt
+        app.py
+        (other backend files)
     /frontend
         /src (your React app files)
         package.json
