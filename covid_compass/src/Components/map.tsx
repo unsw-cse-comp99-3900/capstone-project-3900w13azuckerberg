@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 import './map.css';
+import axios from 'axios';
 
-const HeatMap: React.FC = () => {
+interface HeatMapProps {
+    heatMapData: [number, number, number][];
+  }
+  
+const HeatMap: React.FC<HeatMapProps> = ({ heatMapData }) => {
+    
     useEffect(() => {
         const australiaBounds = L.latLngBounds(
             L.latLng(-45.2, 80),
@@ -31,13 +37,6 @@ const HeatMap: React.FC = () => {
             position: 'bottomleft' // Position the zoom control at the bottom right
         }).addTo(map);
 
-        // Example heat map data points (latitude, longitude, intensity)
-        const heatMapData: [number, number, number][] = [
-            [-40, 140, 0.5], // Example data point
-            [-37, 150, 0.8], // Example data point
-            [-20, 122, 0.6]  // Example data point
-        ];
-
         // Add heat map layer to the map
         L.heatLayer(heatMapData, {
             radius: 25,  // Radius of each "point" of the heatmap
@@ -50,7 +49,7 @@ const HeatMap: React.FC = () => {
         return () => {
             map.remove();
         };
-    }, []);
+    }, [heatMapData]);
 
     return (
         <div id="map" style={{ height: '100vh', width: '100%' }}>

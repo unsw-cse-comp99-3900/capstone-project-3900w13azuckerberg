@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, url_for, render_template_string
 from flask_migrate import Migrate
+from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_cleaner import clean_all_virus_data
@@ -13,12 +14,12 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Database configuration
 app.config.from_object(Config)
 
 init_db(app)
-
 
 migrate = Migrate(app, db)
 
@@ -90,20 +91,22 @@ def heat_map():
             
             coordinates = get_coordinates(location)
             
-            # Number of cases of a specific day at a specific location
-            cases_list.append({
-                "latitude": coordinates['latitude'],
-                "longitude": coordinates['longitude'],
-                "intensity": intensity
-            })
+            if coordinates['latitude'] != 'Invalid location':
+
+                # Number of cases of a specific day at a specific location
+                cases_list.append({
+                    "latitude": coordinates['latitude'],
+                    "longitude": coordinates['longitude'],
+                    "intensity": intensity
+                })
 
         data["data"].append({
             "date": current_date.strftime('%Y-%m-%d'),
             "cases": cases_list
         })
-
         current_date += timedelta(days=1)
     
+    print(data)
     return jsonify(data)
 
 
@@ -111,6 +114,7 @@ def heat_map():
 # variant filter for heatmap
 @app.route('/filter', methods=['GET'])
 def filter_variant():
+    return "nil"
     variant = request.args.get('variant_name')
     date = request.args.get('date')
     variant_records = get_variant(VirusData, variant, date)

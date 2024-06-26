@@ -3,7 +3,11 @@ import Button from './button';
 import Icon from './icon';
 import './filters.css';
 
-const Filters = () => {
+interface FiltersProps {
+    onFilterChange: (selectedFilters: number) => void;
+}
+
+const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     const [showFilters, setShowFilters] = useState(false);
     
     const buttons = [
@@ -29,6 +33,7 @@ const Filters = () => {
             button.label === label ? { ...button, selected: newState } : {...button}
         );
         setAllFilters(updated);
+        onFilterChange(1);
     };
 
     return (
@@ -40,7 +45,7 @@ const Filters = () => {
                     {allFilters.map((button, index) => (
                         <Button 
                             label={button.label} 
-                            endpoint="/filter/new" 
+                            endpoint="http://127.0.0.1:5000/filter" 
                             selected={button.selected}
                             onSelect={(selected: boolean) => handleSetSelected(button.label, selected)}
                     />))}
