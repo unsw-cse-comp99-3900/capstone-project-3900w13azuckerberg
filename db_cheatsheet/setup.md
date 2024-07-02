@@ -78,3 +78,10 @@ flask db upgrade
 ```sh
 flask run
 ```
+
+**Load the Database**
+
+```sh
+http://localhost:3000/load_data
+or 5000 works
+```

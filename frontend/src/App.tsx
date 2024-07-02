@@ -21,7 +21,7 @@ function App() {
             const response = await axios.get('http://127.0.0.1:5000/map', {
                 // params: { filters: filters.join(',') }
             });
-            const data = response.data;
+            const data = response.data.data;
             console.log(data)
             // Transform the data into heat map format
             const heatMapPoints: [number, number, number][] = data.flatMap((day: any) => 

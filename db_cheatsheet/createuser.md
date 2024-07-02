@@ -10,19 +10,19 @@
    Inside the PostgreSQL shell, create a new role with a password:
 
    ```sql
-   CREATE ROLE yourusername WITH LOGIN PASSWORD 'yourpassword';
+   CREATE ROLE user WITH LOGIN PASSWORD 'password';
    ```
 3. **Create a Database:**
    Create a database owned by this new role:
 
    ```sql
-   CREATE DATABASE yourdbname OWNER yourusername;
+   CREATE DATABASE covid OWNER user1;
    ```
 4. **Grant Permissions:**
    Grant all privileges on the database to the new user:
 
    ```sql
-   GRANT ALL PRIVILEGES ON DATABASE yourdbname TO yourusername;
+   GRANT ALL PRIVILEGES ON DATABASE covid TO user;
    ```
 5. **Exit the PostgreSQL Shell:**
 

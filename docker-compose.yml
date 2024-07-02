@@ -1,0 +1,37 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes: # every time you make a change, this will reload the changes in the container
+      - ./frontend/src:/usr/src/app/src # write these as ./<path to folder>:/<path to folder in container>
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000 # this defines the URL the frontend makes requests to
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - FLASK_APP=app.py
+      - DATABASE_URL=postgresql://user1:password@localhost/covid
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: covid
+      POSTGRES_USER: user1
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
