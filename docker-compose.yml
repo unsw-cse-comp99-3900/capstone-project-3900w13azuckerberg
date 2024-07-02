@@ -1,37 +1,29 @@
-version: '3'
+version: '3.8'
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    volumes: # every time you make a change, this will reload the changes in the container
-      - ./frontend/src:/usr/src/app/src # write these as ./<path to folder>:/<path to folder in container>
+  db:
+    image: postgres
+    restart: always
     environment:
-      - REACT_APP_BACKEND_URL=http://localhost:5000 # this defines the URL the frontend makes requests to
-
+      POSTGRES_USER: user1
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: covid
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
     ports:
       - "5000:5000"
     depends_on:
       - db
-    environment:
-      - FLASK_APP=app.py
-      - DATABASE_URL=postgresql://user1:password@localhost/covid
-
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: covid
-      POSTGRES_USER: user1
-      POSTGRES_PASSWORD: password
+    command: >
+      sh -c "flask db upgrade &&
+             flask run --host=0.0.0.0 &&
+             sleep 10 &&
+             flask load-data"
+    restart: on-failure
+  frontend:
+    build: ./frontend
     ports:
-      - "5432:5432"
-    volumes:
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - "3000:3000"

@@ -9,6 +9,8 @@ from db_manager import db, get_case_by_loc, get_records, init_db, load_dataframe
 from model import VirusData
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
+import click
+from flask.cli import with_appcontext
 
 # Load environment variables from .env file
 load_dotenv()
@@ -57,6 +59,11 @@ def get_data():
             "date_submitted": record.date_submitted
         } for record in records]
     return jsonify(results)
+
+@click.command('load-data')
+@with_appcontext
+def load_data_initial():
+    load_data()
 
 @app.route('/load_data', methods=['GET'])
 def load_data():
