@@ -101,7 +101,7 @@ def delete_record(record):
         print(f"Error deleting record: {e}")
 
 
-def get_case_by_loc(model, date):
+def get_case_by_loc(model, date, selected_strains):
     start_date = date - timedelta(days=14)
 
     # Query to get the count of entries grouped by originating_lab
