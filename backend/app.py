@@ -25,6 +25,9 @@ init_db(app)
 
 migrate = Migrate(app, db)
 
+# Global variable for strains selected
+selected_strains = ["Alpha", "Beta", "Delta", "Omicron"]
+
 # Route for the home page
 @app.route('/')
 def home():
@@ -87,14 +90,12 @@ def heat_map():
     # Loop over each day from 1-Jan-21 to the provided date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_loc(VirusData, current_date)
+        daily_cases = get_case_by_loc(VirusData, current_date, selected_strains)
         
         # Initialize a dictionary to store the total cases per location
         cases_list = []
         
         for location, intensity in daily_cases.items():
-            # location = originating_lab
-            # intensity = case.case_count
             
             coordinates = get_coordinates(location)
             
@@ -121,17 +122,22 @@ def heat_map():
 # variant filter for heatmap
 @app.route('/filter', methods=['GET'])
 def filter_variant():
-    return "nil"
-    variant = request.args.get('variant_name')
-    date = request.args.get('date')
-    variant_records = get_variant(VirusData, variant, date)
-    # this function get_variant should return a list of variant records up until a particular date for displaying on the heat map
-    results = [
-        {
-            "state": variant_record.state,
-            "intensity": variant_record.intensity
-        } for variant_record in variant_records]
-    return jsonify(results)
+    
+    global selected_strains
+    filter_info = request.json
+
+    selected_strains = []
+
+    if filter_info["label"] == "all":
+        selected_strains = ["Alpha", "Beta", "Delta", "Omicron"]
+    elif filter_info["label"] == "none":
+        selected_strains = []
+    elif selected_strains["selected"] == "true":
+            selected_strains.append(filter_info["label"])
+    elif selected_strains["selected"] == "false":
+            selected_strains.remove(filter_info["label"])
+
+    return jsonify({"status": "success", "selected_strains": selected_strains})
 
 # graph showing distribution of infections for variant strains 
 @app.route('/pie_chart', methods=['GET'])

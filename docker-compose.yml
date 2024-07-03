@@ -4,7 +4,7 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: user1
+      POSTGRES_USER: aj
       POSTGRES_PASSWORD: password
       POSTGRES_DB: covid
     volumes:
@@ -14,7 +14,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "5000:5000"
+      - "5001:5000"
     depends_on:
       - db
     command: >
