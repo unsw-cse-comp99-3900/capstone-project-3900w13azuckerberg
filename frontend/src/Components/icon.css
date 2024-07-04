@@ -1,21 +1,23 @@
 .icon {
-    display: inline-block;
-    border: 2px solid #494949;
-    padding: 0.3em;
-    margin: 3px;
-    cursor: pointer;
-    text-align: center;
-    box-sizing: border-box;
-    transition: background-color 0.3s, color 0.3s;
-    border-radius: 5px;
+  display: inline-block;
+  border: 2px solid #494949;
+  padding: 0.3em;
+  margin: 3px;
+  cursor: pointer;
+  text-align: center;
+  box-sizing: border-box;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  border-radius: 5px;
 }
 
 .icon:hover {
-    background-color: #494949;
-    color: white;
+  background-color: #494949;
+  color: white;
 }
 
 .icon:active {
-    background-color: #494949;
-    color: #494949;
+  background-color: #494949;
+  color: #494949;
 }

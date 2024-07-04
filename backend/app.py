@@ -9,8 +9,7 @@ from db_manager import db, get_case_by_loc, get_records, init_db, load_dataframe
 from model import VirusData
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
-import click
-from flask.cli import with_appcontext
+import threading
 
 # Load environment variables from .env file
 load_dotenv()
@@ -60,10 +59,14 @@ def get_data():
         } for record in records]
     return jsonify(results)
 
-@click.command('load-data')
-@with_appcontext
-def load_data_initial():
-    load_data()
+data_loaded = False
+
+@app.before_request
+def before_request():
+    global data_loaded
+    if not data_loaded:
+        load_data()
+        data_loaded = True
 
 @app.route('/load_data', methods=['GET'])
 def load_data():
@@ -76,13 +79,12 @@ def load_data():
 @app.route('/map', methods=['GET'])
 def heat_map():
     # date_str = request.args.get('date')
-    date_str = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    date_str = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
     end_date = date_str
-    start_date = datetime.strptime('2023-12-28', '%Y-%m-%d').date()
+    start_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
 
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     data = {"data": []}
-
     
     # Loop over each day from 1-Jan-21 to the provided date
     current_date = start_date
@@ -160,5 +162,13 @@ def variant_pie_chart():
 
 #     ]
 
-if __name__ == '__main__':
+def run_server():
     app.run(debug=True)
+
+if __name__ == '__main__':
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
+
+    # Now call load_data() without blocking the main thread
+    load_data()

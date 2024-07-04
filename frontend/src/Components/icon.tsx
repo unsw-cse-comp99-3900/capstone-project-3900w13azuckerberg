@@ -1,47 +1,45 @@
-import './icon.css';
+import "./icon.css";
 
 interface ButtonProps {
-    icon: string;
-    data: boolean;
-    endpoint: string;
-    onClick: () => void;
+  icon: string;
+  data: string;
+  endpoint: string;
+  onClick: () => void;
 }
 
 const Icon: React.FC<ButtonProps> = ({ icon, data, endpoint, onClick }) => {
+  const handleClick = async () => {
+    try {
+      onClick();
 
-    const handleClick = async () => {
-        try {
-            onClick();
+      const response = await fetch(endpoint, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-            const newData = {label: data, selected: data};
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
-            const response = await fetch(endpoint, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newData),
-            });
+      const result = await response.json();
+      console.log("Success:", result);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+  return (
+    <i className="material-icons icon" onClick={handleClick}>
+      {icon}
+    </i>
 
-            const result = await response.json();
-            console.log('Success:', result);
-
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    return (
-        <i className="material-icons icon" onClick={handleClick}>{icon}</i>
-
-        // <button className={`button ${isSelected ? 'selected' : ''}`} onClick={handleClick}>
-        //     {icon && <i className="material-icons">{icon}</i>}
-        // </button>
-    );
+    // <button className={`button ${isSelected ? 'selected' : ''}`} onClick={handleClick}>
+    //     {icon && <i className="material-icons">{icon}</i>}
+    // </button>
+  );
 };
 
 export default Icon;

@@ -1,0 +1,35 @@
+.react-calendar {
+  font-family: Arial, sans-serif;
+  background-color: #494949 !important;
+  color: #fff !important;
+  border-radius: 5px;
+}
+
+.react-calendar * {
+  color: inherit;
+}
+
+.react-calendar__tile:hover {
+  background-color: #fffefe !important;
+  color: #333 !important;
+  font-weight: bold !important;
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    font-weight 0.3s;
+}
+
+.react-calendar__tile {
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.react-calendar__tile--active {
+  background-color: inherit;
+  color: inherit;
+}
+
+.react-calendar__tile--now {
+  background-color: inherit;
+  color: inherit;
+}

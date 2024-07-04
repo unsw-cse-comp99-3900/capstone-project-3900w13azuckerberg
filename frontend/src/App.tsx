@@ -1,62 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import HeatMap from './Components/map';
-import Filters from './Components/filters';
-import Slider from './Components/slider';
-import Map from './Components/map'
-import GraphBar from './Components/GraphBar';
-import { MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css';
-import HomeMessage from './HomeMessage';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import HeatMap from "./Components/map";
+import Filters from "./Components/filters";
+import Slider from "./Components/slider";
+import GraphBar from "./Components/GraphBar";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
+import axios from "axios";
 
 function App() {
   const [filters, setFilters] = useState(0);
-  const [heatMapData, setHeatMapData] = useState<[number, number, number][]>([]);
+  const [heatMapData, setHeatMapData] = useState<[number, number, number][]>(
+    [],
+  );
+  const [date, setdate] = useState(new Date("2020-01-01"));
+  const [state, setState] = useState("all");
 
   useEffect(() => {
     // Function to fetch heat map data from the backend
     const fetchData = async () => {
-        try {
-            const response = await axios.get('http://127.0.0.1:5000/map', {
-                // params: { filters: filters.join(',') }
-            });
-            const data = response.data.data;
-            console.log(data)
-            // Transform the data into heat map format
-            const heatMapPoints: [number, number, number][] = data.flatMap((day: any) => 
-                day.cases.map((caseItem: any) => [
-                    caseItem.latitude, 
-                    caseItem.longitude, 
-                    caseItem.intensity
-                ])
-            );
+      try {
+        const response = await axios.get("http://127.0.0.1:5000/map", {});
+        const data = response.data.data;
+        const match = data.find((day: any) => day.date.toString() === date);
+        // Transform the data into heat map format
+        const heatMapPoints: [number, number, number][] = match.cases.map(
+          (point: any) => [point.latitude, point.longitude, point.intensity],
+        );
 
-            setHeatMapData(heatMapPoints); // Update state with fetched data
-        } catch (error) {
-            console.error('Error fetching heat map data:', error);
-        }
+        setHeatMapData(heatMapPoints); // Update state with fetched data
+      } catch (error) {
+        console.error("Error fetching heat map data:", error);
+      }
     };
 
     fetchData(); // Fetch data on component mount and whenever filters change
   }, [filters]); // Add filters as a dependency
 
+  const handleDateChange = (date: Date) => {
+    setdate(date);
+  };
 
-  // const handleFilterChange = (selectedFilters: string[]) => {
-  //   setFilters(selectedFilters);
-  // };
-    return (
-      <MantineProvider>
-        <div className="App">
-            {/* <HomeMessage /> */}
-            <GraphBar/>
-            {/* <Map/> */}
-            <HeatMap heatMapData={heatMapData} />
-            <Slider/>
-            <Filters onFilterChange={setFilters} />
-        </div>
-      </MantineProvider>  
-    );
-  }
+  return (
+    <MantineProvider>
+      <div className="App">
+        <GraphBar />
+        <HeatMap heatMapData={heatMapData} />
+        <Slider date={date} onDateChange={handleDateChange} />
+        <Filters onFilterChange={setFilters} />
+      </div>
+    </MantineProvider>
+  );
+}
 
 export default App;
