@@ -1,0 +1,40 @@
+.filters {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: white;
+}
+
+.logo {
+  height: 12vh;
+  margin-bottom: 10px;
+}
+
+.filter-container {
+  display: inline-block;
+  flex-direction: column;
+  position: relative;
+  left: 20px;
+  min-width: 6em;
+  box-sizing: border-box;
+}
+
+.filter-buttons {
+  display: none; /* Hide the filter buttons */
+  margin-top: 10px;
+}
+
+.filter-buttons.show {
+  display: flex; /* Show the filter buttons when .show is applied */
+  flex-direction: column;
+}
+
+.icon-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

@@ -1,0 +1,12 @@
+.App {
+  text-align: center;
+  position: relative;
+}
+
+.Map {
+  z-index: 10;
+}
+.GraphBar {
+  position: absolute;
+  z-index: 1500;
+}
