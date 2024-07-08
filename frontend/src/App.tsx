@@ -9,12 +9,12 @@ import "@mantine/core/styles.css";
 import axios from "axios";
 
 function App() {
-  const [filters, setFilters] = useState(0);
+  const [refetch, triggerRefetch] = useState(false);
   const [heatMapData, setHeatMapData] = useState<[number, number, number][]>(
     [],
   );
   const [date, setdate] = useState(new Date("2020-01-01"));
-  const [state, setState] = useState("all");
+  const [location, setLocation] = useState("all");
 
   useEffect(() => {
     // Function to fetch heat map data from the backend
@@ -34,8 +34,8 @@ function App() {
       }
     };
 
-    fetchData(); // Fetch data on component mount and whenever filters change
-  }, [filters]); // Add filters as a dependency
+    fetchData();
+  }, [refetch, date]);
 
   const handleDateChange = (date: Date) => {
     setdate(date);
@@ -47,7 +47,7 @@ function App() {
         <GraphBar />
         <HeatMap heatMapData={heatMapData} />
         <Slider date={date} onDateChange={handleDateChange} />
-        <Filters onFilterChange={setFilters} />
+        <Filters token={refetch} onFilterChange={triggerRefetch} />
       </div>
     </MantineProvider>
   );

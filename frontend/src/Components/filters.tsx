@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import Button from "./button";
-import Icon from "./icon";
+import Button from "./filterButton";
+import Icon from "./iconButton";
 import "./filters.css";
 
 interface FiltersProps {
-  onFilterChange: (filters: number) => void; // Prop to communicate with the parent component
+  token: boolean;
+  onFilterChange: (token: boolean) => void;
 }
 
-const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
+const Filters: React.FC<FiltersProps> = ({ token, onFilterChange }) => {
   const [showFilters, setShowFilters] = useState(false);
 
   const [allFilters, setAllFilters] = useState([
@@ -22,6 +23,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     setAllFilters(
       allFilters.map((filter) => ({ ...filter, selected: newState })),
     );
+    onFilterChange(!token);
   };
 
   const toggleFilters = () => {
@@ -34,7 +36,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     );
     setAllFilters(updatedFilters);
     console.log(updatedFilters);
-    onFilterChange(1);
+    onFilterChange(!token);
   };
 
   return (
@@ -58,13 +60,13 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
           <div className="icon-container">
             <Icon
               icon="filter_none"
-              data={"none"}
+              data={{ label: "none" }} 
               endpoint="http://127.0.0.1:5000/filter"
               onClick={() => setAll(false)}
             />
             <Icon
               icon="select_all"
-              data={"all"}
+              data={{ label: "all" }} 
               endpoint="http://127.0.0.1:5000/filter"
               onClick={() => setAll(true)}
             />

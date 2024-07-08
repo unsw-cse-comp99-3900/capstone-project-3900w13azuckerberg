@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import L from "leaflet";
 import "leaflet.heat";
 import "leaflet/dist/leaflet.css";
 import "./map.css";
-import axios from "axios";
 
 interface HeatMapProps {
   heatMapData: [number, number, number][];

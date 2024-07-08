@@ -83,6 +83,7 @@ def heat_map():
     end_date = date_str
     start_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
 
+    print("entered route")
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     data = {"data": []}
     

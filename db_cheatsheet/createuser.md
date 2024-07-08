@@ -22,10 +22,17 @@
    Grant all privileges on the database to the new user:
 
    ```sql
-   GRANT ALL PRIVILEGES ON DATABASE covid TO user;
+   GRANT ALL PRIVILEGES ON DATABASE covid TO user1;
    ```
 5. **Exit the PostgreSQL Shell:**
 
    ```sql
    \q
+   ```
+
+   ```sql
+   CREATE ROLE user WITH LOGIN PASSWORD 'password' SUPERUSER CREATEDB CREATEROLE;
+   CREATE DATABASE covid OWNER user1;
+   GRANT ALL PRIVILEGES ON DATABASE covid TO user1;
+
    ```
