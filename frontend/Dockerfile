@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # copy all files from the current directory to the working directory
-COPY . .
+# COPY . .
 
 # expose port 3000 to the outside world (required to access the app at port 3000 however, we map this internal 3000 to an external port in the docker-compose file)
 EXPOSE 3000

@@ -79,46 +79,37 @@ def load_data():
 @app.route('/map', methods=['GET'])
 def heat_map():
     # date_str = request.args.get('date')
-    date_str = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
-    end_date = date_str
-    start_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    start_date = datetime.strptime('2023-12-20', '%Y-%m-%d').date()
+    end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
 
-    print("entered route")
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
-    data = {"data": []}
+    data = {}
     
-    # Loop over each day from 1-Jan-21 to the provided date
+    # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
         daily_cases = get_case_by_loc(VirusData, current_date)
-        
-        # Initialize a dictionary to store the total cases per location
-        cases_list = []
-        
-        for location, intensity in daily_cases.items():
-            # location = originating_lab
-            # intensity = case.case_count
-            
-            coordinates = get_coordinates(location)
-            
-            if coordinates['latitude'] != 'Invalid location':
 
-                # Number of cases of a specific day at a specific location
+        # Initialize a list to store the cases for the current day
+        cases_list = []
+
+        for location, intensity in daily_cases.items():
+            coordinates = get_coordinates(location)
+            # print(coordinates)
+
+            if coordinates['latitude'] != 'Invalid location':
                 cases_list.append({
                     "latitude": coordinates['latitude'],
                     "longitude": coordinates['longitude'],
                     "intensity": intensity
                 })
 
-        data["data"].append({
-            "date": current_date.strftime('%Y-%m-%d'),
-            "cases": cases_list
-        })
+        # Use the date as a key in the data dictionary
+        data[current_date.strftime('%Y-%m-%d')] = cases_list
+        print("date:", current_date, "added")
         current_date += timedelta(days=1)
-    
-    print(data)
+    print("number of days:", len(data))
     return jsonify(data)
-
 
 
 # variant filter for heatmap

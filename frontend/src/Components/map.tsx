@@ -5,10 +5,10 @@ import "leaflet/dist/leaflet.css";
 import "./map.css";
 
 interface HeatMapProps {
-  heatMapData: [number, number, number][];
+  mapData: [number, number, number][];
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ heatMapData }) => {
+const HeatMap: React.FC<HeatMapProps> = ({ mapData }) => {
   useEffect(() => {
     const australiaBounds = L.latLngBounds(
       L.latLng(-45.2, 80),
@@ -41,7 +41,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ heatMapData }) => {
       .addTo(map);
 
     // Add heat map layer to the map
-    L.heatLayer(heatMapData, {
+    L.heatLayer(mapData, {
       radius: 25, // Radius of each "point" of the heatmap
       blur: 17, // Amount of blur
       maxZoom: 1, // Maximum zoom level
@@ -52,7 +52,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ heatMapData }) => {
     return () => {
       map.remove();
     };
-  }, [heatMapData]);
+  }, [mapData]);
 
   return <div id="map" style={{ height: "100vh", width: "100%" }}></div>;
 };

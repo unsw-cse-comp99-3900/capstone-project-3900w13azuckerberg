@@ -1,6 +1,9 @@
 # Use an official Python runtime as the base
 FROM python:3.12
 
+# Install PostgreSQL client
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Set the working directory
 WORKDIR /app
 
@@ -9,7 +12,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
-COPY . /app
+# COPY . /app
 
 # Expose the port the app runs on
 EXPOSE 5000

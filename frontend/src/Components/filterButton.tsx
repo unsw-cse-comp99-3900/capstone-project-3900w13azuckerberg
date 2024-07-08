@@ -18,7 +18,6 @@ const Button: React.FC<ButtonProps> = ({
   const handleClick = async () => {
     try {
       onSelect(!selected);
-      console.log("hello");
 
       const newData = { label: label, selected: !selected };
 

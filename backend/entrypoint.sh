@@ -8,11 +8,11 @@ while ! pg_isready -h db -p 5432 -q -U user1; do
 done
 echo "PostgreSQL started."
 
-# Load initial data
-python3 data_loader.py
-
 # Run database migrations
 flask db upgrade
+
+# Load initial data
+python3 data_loader.py
 
 # Start Flask app
 flask run --host=0.0.0.0
