@@ -1,27 +1,51 @@
+import networkx as nx
 import numpy as np
-import matplotlib.pyplot as plt
 from seirsplus.models import SEIRSNetworkModel
-from seirsplus.networks import generate_demographic_contact_network
+import matplotlib.pyplot as plt
+import pandas as pd
 
+# Step 1: Define the Network Structure
+# Create a network with 200 nodes, each representing a suburb
+num_nodes = 200
+base_graph = nx.barabasi_albert_graph(n=num_nodes, m=3)
 
-# Define the locations as nodes in a network
-num_locations = 100
-locations = range(num_locations)
+# Define initial conditions for each node
+initial_infections = np.random.randint(1, 10, num_nodes)  # Random initial infections for demonstration
 
-# Create a demographic contact network
-G, demographics = generate_demographic_contact_network(N=num_locations, network_type='random', demographic_data={'numNodes': num_locations, 'aveDegree': 10})
+# Step 2: Initialize Model Parameters
+model_params = {
+    'beta': 0.147,          # Infectious rate
+    'sigma': 1/5.2,         # Incubation rate
+    'gamma': 1/12.39,       # Recovery rate
+    'mu_I': 0.0004,         # Mortality rate
+    'initI': initial_infections,
+    'initE': np.zeros(num_nodes),   # Initially, no one is exposed
+    'initR': np.zeros(num_nodes),   # Initially, no one is recovered
+    'initN': np.random.randint(1000, 3000, num_nodes),  # Random population for each suburb
+    'store_Xseries': True
+}
 
+# Step 3: Initialize and run the SEIRS Model
+model = SEIRSNetworkModel(G=base_graph, **model_params)
+model.run(T=300)  # Simulate for 300 time units
 
-# Define initial conditions
-initial_infected = np.zeros(num_locations)
-initial_infected[:10] = 1  # Start with 10 infected locations
+# Step 4: Extract Infection Data Per Node
+infections_per_node = (model.Xseries == model.I).astype(int)
 
-model = SEIRSNetworkModel(G=G, 
-                          beta=0.155, sigma=1/5.2, gamma=1/12.39, 
-                          initE=initial_infected)
+# Step 5: Plotting example for the first node
+node_id = 0  # Change node_id to see different suburbs
+plt.figure(figsize=(10, 5))
+plt.plot(model.tseries, infections_per_node[:, node_id], label=f'Infections in Suburb {node_id}')
+plt.title(f'Infection Spread Over Time in Suburb {node_id}')
+plt.xlabel('Time')
+plt.ylabel('Number of Infectious Individuals')
+plt.legend()
+plt.show()
 
-# Run the simulation
-model.run(T=200)
+# # Step 6: Save the data to CSV for further analysis
+# # Convert infection data to DataFrame
+# df_infections = pd.DataFrame(infections_per_node, columns=[f'Suburb_{i}' for i in range(num_nodes)])
+# df_infections['Time'] = model.tseries
+# df_infections.to_csv('infections_over_time.csv', index=False)
 
-# Extract infection data
-infection_data = model.numI
+# print("Simulation complete. Data saved to 'infections_over_time.csv'.")

@@ -39,7 +39,7 @@ checkpoints = {'t':       [30, 90],
 
 model.run(T=300, checkpoints=checkpoints)
 
-# model.figure_infections(vlines=checkpoints['t'], ylim=0.25)
+model.figure_infections(vlines=checkpoints['t'], ylim=0.25)
 
 
 ref_model = SEIRSModel(beta=BETA, sigma=SIGMA, gamma=GAMMA, mu_I=MU_I, initI=10000, initN=1000000) 
