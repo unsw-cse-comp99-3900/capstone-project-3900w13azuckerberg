@@ -19,6 +19,7 @@
   flex-direction: column;
   position: relative;
   left: 20px;
+  margin-top: 10px;
   min-width: 6em;
   box-sizing: border-box;
 }

@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet.heat";
 import "leaflet/dist/leaflet.css";
 import "./map.css";
-import { FeatureCollection, Feature } from 'geojson';
+import { FeatureCollection } from 'geojson';
 import stateMapping from "./states.json";
 
 interface HeatMapProps {
@@ -13,7 +13,12 @@ interface HeatMapProps {
 }
 
 const HeatMap: React.FC<HeatMapProps> = ({ mapData, updateState, currentState }) => {
+  const mapRef = useRef<L.Map | null>(null);
+  const heatLayerRef = useRef<L.Layer | null>(null);
+
   useEffect(() => {
+    if (mapRef.current) return;
+
     const australiaBounds = L.latLngBounds(
       L.latLng(-50, 80),
       L.latLng(-8.0, 200),
@@ -38,26 +43,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, updateState, currentState })
       },
     ).addTo(map);
 
-    L.control
-      .zoom({
-        position: "bottomleft", // Position the zoom control at the bottom right
-      })
-      .addTo(map);
-
-    let max: number = 0;
-    for (const point of mapData) {
-      if (point[2] > max) max = point[2];
-    }
-
-    // Add heat map layer to the map
-    L.heatLayer(mapData, {
-      minOpacity: 0.6,
-      maxZoom: 1,
-      max: max,
-      radius: 20, // Radius of each "point" of the heatmap
-      blur: 15, // Amount of blur
-      gradient: {0: "midnightblue", 0.33: "rebeccapurple", 0.67: "orangered", 1: "yellow" },
-    }).addTo(map);
+    L.control.zoom({ position: "bottomleft" }).addTo(map);
 
     const states: FeatureCollection = stateMapping as FeatureCollection;
     const geoJsonLayer = L.geoJson(states, {
@@ -106,20 +92,33 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, updateState, currentState })
         fillOpacity: 0
       }
     }).addTo(map);
-    
-    if (currentState != "All") {
-      map.on('zoomend', () => {
-        updateState("All");  // Call updateState on zoom end
-      });
-      map.on('dragend', () => {
-        updateState("All");  // Call updateState on zoom end
-      });
-    }
 
-    // Clean up the map instance onx component unmount
-    return () => {
-      map.remove();
-    };
+    if (currentState !== "All") {
+      map.on('zoomend', () => updateState("All"));
+      map.on('dragend', () => updateState("All"));
+    }
+    
+    mapRef.current = map;
+  });
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) {
+      if (heatLayerRef.current) {
+        heatLayerRef.current.remove();
+      }
+      let max = mapData.reduce((acc, point) => Math.max(acc, point[2]), 0);
+      const heatLayer = L.heatLayer(mapData, {
+        minOpacity: 0.6,
+        maxZoom: 1,
+        max,
+        radius: 20,
+        blur: 15,
+        gradient: {0: "midnightblue", 0.33: "rebeccapurple", 0.67: "orangered", 1: "yellow" },
+      }).addTo(map);
+
+      heatLayerRef.current = heatLayer;
+    }
   }, [mapData]);
 
   return <div id="map" style={{ height: "100vh", width: "100%", zIndex: 0 }}></div>;
