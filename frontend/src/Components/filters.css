@@ -2,7 +2,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -24,12 +24,12 @@
 }
 
 .filter-buttons {
-  display: none; /* Hide the filter buttons */
+  display: none;
   margin-top: 10px;
 }
 
 .filter-buttons.show {
-  display: flex; /* Show the filter buttons when .show is applied */
+  display: flex;
   flex-direction: column;
 }
 

@@ -26,7 +26,7 @@ function App() {
   const [refetch, triggerRefetch] = useState(false);
   const [allMapData, setAllMapData] = useState<MapData>({});
   const [date, setdate] = useState(new Date("2023-12-28"));
-  const [location, setLocation] = useState("all");
+  const [currentState, setCurrentState] = useState("all");
   const [mapData, setMapData] = useState<[number, number, number][]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -82,7 +82,7 @@ function App() {
         </div>
       )}
         <GraphBar />
-        <HeatMap mapData={mapData} />
+        <HeatMap mapData={mapData} updateState={setCurrentState} currentState={currentState} />
         <Slider date={date} onDateChange={handleDateChange} />
         <Filters token={refetch} onFilterChange={triggerRefetch} />
       </div>

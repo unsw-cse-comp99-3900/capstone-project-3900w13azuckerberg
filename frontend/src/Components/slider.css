@@ -2,17 +2,17 @@
   position: absolute;
   display: flex;
   flex-direction: row;
-  bottom: 40px; /* Position 50px above the bottom of the viewport */
-  width: 80%; /* Take up full width */
-  left: 50%; /* Position 50% from the left edge of the viewport */
-  transform: translateX(-50%); /* Center horizontally */
+  bottom: 40px;
+  width: 80%; 
+  left: 50%;
+  transform: translateX(-50%);
   padding: 0px 10px;
   border-radius: 5px;
-  z-index: 1000; /* Ensure it overlays on top of other content */
+  z-index: 100;
   color: rgb(255, 255, 255);
   background-color: #494949;
-  align-items: center; /* Center items vertically */
-  justify-content: center; /* Center items horizontally */
+  align-items: center;
+  justify-content: center;
 }
 .slider {
   flex: 1;
@@ -29,5 +29,5 @@
   z-index: 1000;
   bottom: 10%;
   left: 9%;
-  padding: 10px; /* Optional: Add padding */
+  padding: 10px;
 }

@@ -3,15 +3,19 @@ import L from "leaflet";
 import "leaflet.heat";
 import "leaflet/dist/leaflet.css";
 import "./map.css";
+import { FeatureCollection, Feature } from 'geojson';
+import stateMapping from "./states.json";
 
 interface HeatMapProps {
   mapData: [number, number, number][];
+  updateState: (state: string) => void;
+  currentState: string
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData }) => {
+const HeatMap: React.FC<HeatMapProps> = ({ mapData, updateState, currentState }) => {
   useEffect(() => {
     const australiaBounds = L.latLngBounds(
-      L.latLng(-45.2, 80),
+      L.latLng(-50, 80),
       L.latLng(-8.0, 200),
     );
 
@@ -40,13 +44,77 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData }) => {
       })
       .addTo(map);
 
+    let max: number = 0;
+    for (const point of mapData) {
+      if (point[2] > max) max = point[2];
+    }
+
     // Add heat map layer to the map
     L.heatLayer(mapData, {
-      radius: 25, // Radius of each "point" of the heatmap
-      blur: 17, // Amount of blur
-      maxZoom: 1, // Maximum zoom level
-      gradient: { 0.4: "blue", 0.65: "lime", 1: "red" },
+      minOpacity: 0.6,
+      maxZoom: 1,
+      max: max,
+      radius: 20, // Radius of each "point" of the heatmap
+      blur: 15, // Amount of blur
+      gradient: {0: "midnightblue", 0.33: "rebeccapurple", 0.67: "orangered", 1: "yellow" },
     }).addTo(map);
+
+    const states: FeatureCollection = stateMapping as FeatureCollection;
+    const geoJsonLayer = L.geoJson(states, {
+      onEachFeature: (feature, layer) => {
+        let tooltip: L.Tooltip;
+
+        layer.on({
+          mouseover: (e) => {
+            const layer = e.target;
+            layer.setStyle({
+              weight: 1,
+              color: 'white',
+              dashArray: '',
+              fillOpacity: 0.1
+            });
+            layer.bringToFront();
+
+            const content = feature.properties.STATE_NAME;
+            tooltip = L.tooltip({
+              direction: 'right',
+              permanent: false, 
+              sticky: true,
+              opacity: 0.9
+            })
+            .setContent(content)
+            .setLatLng(e.latlng)
+            .openOn(map);
+          },
+          mousemove: (e) => {
+            tooltip.setLatLng(e.latlng); // Move the tooltip with the cursor
+          },
+          mouseout: (e) => {
+            geoJsonLayer.resetStyle(e.target);
+            map.closeTooltip(tooltip);
+          },
+          click: (e) => {
+            map.fitBounds(e.target.getBounds(), { padding: [20, 10], animate: true});
+            updateState(feature.properties.STATE_NAME);
+          }
+        });
+      },
+      style: {
+        color: "white",
+        weight: 1,
+        opacity: 0.1,
+        fillOpacity: 0
+      }
+    }).addTo(map);
+    
+    if (currentState != "All") {
+      map.on('zoomend', () => {
+        updateState("All");  // Call updateState on zoom end
+      });
+      map.on('dragend', () => {
+        updateState("All");  // Call updateState on zoom end
+      });
+    }
 
     // Clean up the map instance onx component unmount
     return () => {
@@ -54,7 +122,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData }) => {
     };
   }, [mapData]);
 
-  return <div id="map" style={{ height: "100vh", width: "100%" }}></div>;
+  return <div id="map" style={{ height: "100vh", width: "100%", zIndex: 0 }}></div>;
 };
 
 export default HeatMap;
