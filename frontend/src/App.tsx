@@ -60,7 +60,7 @@ function App() {
     if (Object.keys(allMapData).length === 0 || refetch) {
       fetchData();
     }
-  }, [refetch]);
+  }, [refetch, allMapData]);
 
   useEffect(() => {
     const dateString = date.toISOString().split('T')[0];
