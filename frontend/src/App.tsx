@@ -4,6 +4,7 @@ import HeatMap from "./Components/map";
 import Filters from "./Components/filters";
 import Slider from "./Components/slider";
 import GraphBar from "./Components/GraphBar";
+import Compare from "./Components/compare"
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import axios from "axios";
@@ -29,6 +30,11 @@ function App() {
   const [location, setLocation] = useState("all");
   const [mapData, setMapData] = useState<[number, number, number][]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
+
+  const handleCompareToggle = () => {
+    setShowCompare((prev) => !prev);
+  };
 
   useEffect(() => {
     // Function to fetch heat map data from the backend
@@ -76,16 +82,22 @@ function App() {
   return (
     <MantineProvider>
       <div className="App">
-      {isLoading && (
-        <div className="loading-overlay">
-          <div className="spinner"></div> {/* Spinner added here */}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div className="spinner"></div> {/* Spinner added here */}
+          </div>
+        )}
+        <div className="Main">
+          <GraphBar />
+          <HeatMap mapData={mapData} />
+          <Slider date={date} onDateChange={handleDateChange} />
+          <Filters token={refetch} onFilterChange={triggerRefetch}
+          onCompareToggle={handleCompareToggle}
+          showCompare={showCompare}
+          />
+          {/* {showCompare && <Compare/>} */}
         </div>
-      )}
-        <GraphBar />
-        <HeatMap mapData={mapData} />
-        <Slider date={date} onDateChange={handleDateChange} />
-        <Filters token={refetch} onFilterChange={triggerRefetch} />
-      </div>
+      </div> 
     </MantineProvider>
   );
 }
