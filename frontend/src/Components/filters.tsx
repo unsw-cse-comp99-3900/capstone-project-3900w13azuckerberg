@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "./filterButton";
 import Icon from "./iconButton";
+import Legend from "./legend";
 import "./filters.css";
 
 interface FiltersProps {
@@ -42,6 +43,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange }) => {
   return (
     <div className="filters">
       <img src="logo.png" alt="logo" className="logo" />
+      <Legend/>
       <div className="filter-container">
         <i className="material-icons icon" onClick={toggleFilters}>
           filter_list

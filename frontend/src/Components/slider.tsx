@@ -72,7 +72,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
       timer = setTimeout(updateDay, 1000 / speed);
     }
   
-    return () => clearTimeout(timer); // Clean up the timeout
+    return () => clearTimeout(timer);
   }, [playback, speed, date, onDateChange]);
 
   function handlePlayback(): void {
