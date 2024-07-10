@@ -116,3 +116,27 @@ def get_case_by_loc(model, date):
 
     result_dict = {originating_lab: case_count for originating_lab, case_count in results}
     return result_dict
+
+def get_case_by_strain(model, date, strains):
+    start_date = date - timedelta(days=14)
+
+    # Query to get the count of entries grouped by location and strain
+    results = db.session.query(
+        model.location,
+        model.strain,
+        func.count(model.id).label('case_count')
+    ).filter(
+        model.date.between(start_date, date),
+        model.strain.in_(strains)
+    ).group_by(
+        model.location,
+        model.strain
+    ).all()
+
+    result_dict = {}
+    for location, strain, case_count in results:
+        if location not in result_dict:
+            result_dict[location] = {}
+        result_dict[location][strain] = case_count
+
+    return result_dict
