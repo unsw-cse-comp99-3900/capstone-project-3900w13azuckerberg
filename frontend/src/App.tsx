@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import HeatMap from "./Components/map";
-import Filters from "./Components/filters";
+
+import Main from "./Components/main";
 import Slider from "./Components/slider";
-import GraphBar from "./Components/GraphBar";
-import Compare from "./Components/compare"
+
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
-import axios from "axios";
 import "./Components/cover.css"
 
 interface Point {
@@ -19,61 +17,14 @@ interface Point {
 
 type PointArray = [number, number, number];
 
-interface MapData {
-  [date: string]: PointArray[];
-}
-
 function App() {
-  const [refetch, triggerRefetch] = useState(false);
-  const [allMapData, setAllMapData] = useState<MapData>({});
   const [date, setdate] = useState(new Date("2023-12-28"));
-  const [location, setLocation] = useState("all");
-  const [mapData, setMapData] = useState<[number, number, number][]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
 
   const handleCompareToggle = () => {
     setShowCompare((prev) => !prev);
   };
-
-  useEffect(() => {
-    // Function to fetch heat map data from the backend
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get("http://127.0.0.1:5000/map", {});
-        const rawData: { [date: string]: Point[] } = response.data;
-        const formattedData: MapData = {};
-
-        for (const [key, value] of Object.entries(rawData)) {
-          formattedData[key] = value.map(point => [
-            point.latitude,
-            point.longitude,
-            point.intensity
-          ]);
-        }
-
-        setAllMapData(formattedData);
-
-        console.log("Heatmap data updated.");
-
-      } catch (error) {
-        console.error("Error fetching heat map data:", error);
-      }
-      setIsLoading(false);
-    };
-
-    if (Object.keys(allMapData).length === 0 || refetch) {
-      fetchData();
-    }
-  }, [refetch]);
-
-  useEffect(() => {
-    const dateString = date.toISOString().split('T')[0];
-    setMapData(allMapData[dateString] || []);
-    console.log("Data for selected date:", allMapData[dateString] || []);
-
-  }, [date, allMapData]);
 
   const handleDateChange = (date: Date) => {
     setdate(date);
@@ -87,16 +38,22 @@ function App() {
             <div className="spinner"></div> {/* Spinner added here */}
           </div>
         )}
-        <div className="Main">
-          <GraphBar />
-          <HeatMap mapData={mapData} />
-          <Slider date={date} onDateChange={handleDateChange} />
-          <Filters token={refetch} onFilterChange={triggerRefetch}
-          onCompareToggle={handleCompareToggle}
-          showCompare={showCompare}
-          />
-          {/* {showCompare && <Compare/>} */}
-        </div>
+        <Slider date={date} onDateChange={handleDateChange} />
+
+        {showCompare ? (
+          <div className="container">
+            <div className="left">
+              <Main setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+            </div>
+            <div className="right">
+              <Main setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+            </div>
+          </div>
+          ) : (
+          <div>
+            <Main setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+          </div>
+        )}
       </div> 
     </MantineProvider>
   );
