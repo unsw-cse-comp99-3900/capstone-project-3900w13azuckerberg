@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Icon from "./timelineButton";
+import CustomTooltip from './customTooltip';
 import Calendar from "react-calendar"; // Import Calendar component
 import "react-calendar/dist/Calendar.css"; // Import Calendar CSS
 import "./calendar.css";
 import "./button.css";
 import "./slider.css";
+
 
 interface TimelineSliderProps {
   onDateChange: (date: Date) => void;
@@ -103,27 +105,42 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
   return (
     <div>
       <div className="timeline">
-        <Icon
-          icon="fast_rewind"
-          onClick={() => handleDecreaseSpeed()}
-        />
+        <CustomTooltip label="Decrease Speed">
+          <div>
+            <Icon
+              icon="fast_rewind"
+              onClick={() => handleDecreaseSpeed()}
+            />
+          </div>
+        </CustomTooltip>
         <div style={{ padding: '5px' }}> {speed.toFixed(2)}x </div>
-        <Icon
-          icon="fast_forward"
-          onClick={() => handleIncreaseSpeed()}
-        />
-        <Icon
-          icon={playbackIcon}
-
-          onClick={() => handlePlayback()}
-        />
-        <button
-          className="button"
-          onClick={() => setShowCalendar(true)}
-          style={{ minWidth: '150px' }}
-        >
-          {date.toDateString()}
-        </button>
+        <CustomTooltip label="Increase Speed">
+          <div>
+            <Icon
+              icon="fast_forward"
+              onClick={() => handleIncreaseSpeed()}
+            />
+          </div>
+        </CustomTooltip>
+        <CustomTooltip label={playback ? "Pause" : "Play"}>
+          <div>
+            <Icon
+              icon={playbackIcon}
+              onClick={() => handlePlayback()}
+            />
+          </div>
+        </CustomTooltip>
+        <CustomTooltip label="Select Date">
+          <div>
+            <button
+              className="button"
+              onClick={() => setShowCalendar(true)}
+              style={{ minWidth: '150px' }}
+            >
+              {date.toDateString()}
+            </button>
+          </div>
+        </CustomTooltip>
         <div className="slider">
           <input
             type="range"

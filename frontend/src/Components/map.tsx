@@ -61,7 +61,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, updateState, currentState })
             });
             layer.bringToFront();
 
-            const content = feature.properties.STATE_NAME;
+            const content = `${feature.properties.STATE_NAME} - Cases: 0`;
             tooltip = L.tooltip({
               direction: 'right',
               permanent: false, 
@@ -73,7 +73,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, updateState, currentState })
             .openOn(map);
           },
           mousemove: (e) => {
-            tooltip.setLatLng(e.latlng); // Move the tooltip with the cursor
+            tooltip.setLatLng(e.latlng);
           },
           mouseout: (e) => {
             geoJsonLayer.resetStyle(e.target);

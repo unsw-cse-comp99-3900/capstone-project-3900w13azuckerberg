@@ -3,6 +3,7 @@ import Button from "./filterButton";
 import Icon from "./iconButton";
 import Legend from "./legend";
 import "./filters.css";
+import CustomTooltip from './customTooltip';
 
 interface FiltersProps {
   token: boolean;
@@ -45,9 +46,11 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange }) => {
       <img src="logo.png" alt="logo" className="logo" />
       <Legend/>
       <div className="filter-container">
-        <i className="material-icons icon" onClick={toggleFilters}>
-          filter_list
-        </i>
+        <CustomTooltip label="Filter by Strain">
+          <i className="material-icons icon" onClick={toggleFilters}>
+            filter_list
+          </i>
+        </CustomTooltip>
         <div className={`filter-buttons ${showFilters ? "show" : "hide"}`}>
           {allFilters.map((filter) => (
             <Button
@@ -60,18 +63,26 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange }) => {
             />
           ))}
           <div className="icon-container">
-            <Icon
-              icon="filter_none"
-              data={{ label: "none" }} 
-              endpoint="http://127.0.0.1:5000/filter"
-              onClick={() => setAll(false)}
-            />
-            <Icon
-              icon="select_all"
-              data={{ label: "all" }} 
-              endpoint="http://127.0.0.1:5000/filter"
-              onClick={() => setAll(true)}
-            />
+            <CustomTooltip label="Select None">
+              <div>
+                <Icon
+                  icon="filter_none"
+                  data={{ label: "none" }} 
+                  endpoint="http://127.0.0.1:5000/filter"
+                  onClick={() => setAll(false)}
+                />
+              </div>
+            </CustomTooltip>
+            <CustomTooltip label="Select All">
+              <div>
+                <Icon
+                  icon="select_all"
+                  data={{ label: "all" }} 
+                  endpoint="http://127.0.0.1:5000/filter"
+                  onClick={() => setAll(true)}
+                />
+              </div>
+            </CustomTooltip>
           </div>
         </div>
       </div>
