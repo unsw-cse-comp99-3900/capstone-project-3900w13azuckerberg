@@ -3,7 +3,7 @@ import "./GraphBar.css";
 import GraphButton from "./GraphButton";
 import PieChart from "./PieChart";
 import LineChart from "./LineChart";
-
+import BarChart from "./barChart";
 function GraphBar() {
   const [showGraph, setShowGraph] = useState(false);
 
@@ -23,8 +23,9 @@ function GraphBar() {
         <div className="graphBox">
           <LineChart />
         </div>
-        <div className="graphBox"></div>
-        <div className="graphBox"></div>
+        <div className="graphBox">
+          <BarChart />
+        </div>
       </div>
     </div>
   );

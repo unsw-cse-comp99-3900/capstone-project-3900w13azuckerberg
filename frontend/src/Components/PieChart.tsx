@@ -1,13 +1,8 @@
 import { ResponsivePie } from "@nivo/pie";
 
-// make sure parent container have a defined height when using
-// responsive component, otherwise height will be 0 and
-// no chart will be rendered.
-// website examples showcase many properties,
-// you'll often use just a few of them.
 const PieChart = () => (
   <ResponsivePie
-    theme={{ legends: { text: { fontSize: 20 } } }}
+    theme={{ legends: { text: { fontSize: 18 } }, labels: { text: { fontSize: 16} } }}
     data={[
       {
         id: "Alpha",
@@ -132,7 +127,7 @@ const PieChart = () => (
         anchor: "left",
         direction: "column",
         justify: false,
-        translateX: -50,
+        translateX: -75,
         translateY: 0,
         itemsSpacing: 1,
         itemWidth: 131,
