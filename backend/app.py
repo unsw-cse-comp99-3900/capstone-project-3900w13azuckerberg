@@ -158,12 +158,9 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
-    # # Now call load_data() without blocking the main thread
-    # load_data()
-    with app.app_context():
-        # print(get_case_by_loc(datetime.strptime("2023-10-11", "%Y-%m-%d")))
-        print(get_case_by_coordinate(datetime.strptime("2023-10-11", "%Y-%m-%d")))
+    # Now call load_data() without blocking the main thread
+    load_data()
