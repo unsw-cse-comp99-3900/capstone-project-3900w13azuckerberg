@@ -1,0 +1,33 @@
+.timeline {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  bottom: 40px;
+  width: 80%; 
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0px 10px;
+  border-radius: 5px;
+  z-index: 100;
+  color: rgb(255, 255, 255);
+  background-color: #494949;
+  align-items: center;
+  justify-content: center;
+}
+.slider {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.slider input[type="range"] {
+  width: 100%;
+}
+
+.calendar-container {
+  position: absolute;
+  display: flex;
+  z-index: 1000;
+  bottom: 10%;
+  left: 9%;
+  padding: 10px;
+}

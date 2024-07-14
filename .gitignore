@@ -23,6 +23,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+/postgres-data/
+/frontend/node_modules/
+
 # Flask-specific
 instance/
 .webassets-cache
