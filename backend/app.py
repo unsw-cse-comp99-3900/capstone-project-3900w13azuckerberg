@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-# from data_loader import load_data_into_db
+from data_loader import load_into_db
 from db_manager import get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
 from model import db
 from gmaps import get_coordinates
@@ -70,7 +70,7 @@ def before_request():
 
 @app.route('/load_data', methods=['GET'])
 def load_data():
-    load_data_into_db()
+    load_into_db(app)
     return redirect(url_for('home'))
 
 # frontend uses the midpoint of the state that's returned for below routes
