@@ -11,8 +11,5 @@ echo "PostgreSQL started."
 # Run database migrations
 flask db upgrade
 
-# Load initial data
-python3 data_loader.py
-
 # Start Flask app
 flask run --host=0.0.0.0
