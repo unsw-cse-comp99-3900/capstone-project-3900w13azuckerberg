@@ -17,3 +17,11 @@ class VirusData(db.Model):
     originating_lab = db.Column(db.String, nullable=True)
     submitting_lab = db.Column(db.String, nullable=False)
     date_submitted = db.Column(db.Date, nullable=False)
+
+class LabLocation(db.Model):
+    __tablename__ = 'lab_location'
+
+    id = db.Column(db.String, nullable=False, primary_key=True)
+    lab_name = db.Column(db.String, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
