@@ -57,10 +57,8 @@ function App() {
       setIsLoading(false);
     };
 
-    if (Object.keys(allMapData).length === 0 || refetch) {
-      fetchData();
-    }
-  }, [refetch, allMapData]);
+    fetchData();
+  }, [refetch]);
 
   useEffect(() => {
     const dateString = date.toISOString().split('T')[0];
