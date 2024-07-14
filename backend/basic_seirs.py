@@ -2,7 +2,7 @@ from seirsplus.models import *
 import networkx
 from datetime import datetime, timedelta
 from init_model_param import get_init_model_param
-
+from app import app
 
 def get_predictive_data():
 
@@ -59,6 +59,6 @@ def get_predictive_data():
 
     return predictive_data
 
-predictive_data = get_predictive_data()
-print(predictive_data)
+# predictive_data = get_predictive_data()
+# print(predictive_data)
     # model.figure_infections(vlines=checkpoints['t'], ylim=200000, plot_percentages=False)

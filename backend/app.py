@@ -10,7 +10,7 @@ from model import db
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
 import threading
-from basic_seirs import predictive_data 
+# from basic_seirs import get_predictive_data 
 
 # Load environment variables from .env file
 load_dotenv()
@@ -114,7 +114,7 @@ def heat_map():
 
 @app.route('/predictive_map', methods=['GET'])
 def predictive_map():
-    predictive_map = predictive_data()
+    predictive_map = get_predictive_data()
     return jsonify(predictive_map)
 
 

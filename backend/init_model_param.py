@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 # from db_manager import db, get_case_by_loc
 from model import VirusData
-from db_manager import get_case_by_loc
+from db_manager import get_case_by_coordinate
 
 
 
@@ -21,7 +21,7 @@ def get_init_model_param():
     default_rdeath = 0.002
     
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
-    loc_data = get_case_by_loc(VirusData, current_date)
+    loc_data = get_case_by_coordinate(current_date)
 
     # mock_loc_data = {
     #     "Location1": {
