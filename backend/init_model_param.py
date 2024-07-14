@@ -51,6 +51,6 @@ def get_init_model_param():
 
 
 result = get_init_model_param()
-print(result)
+# print(result)
     # initN - population of location
     # initI - get from db 

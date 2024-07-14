@@ -10,6 +10,7 @@ from model import VirusData
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
 import threading
+from basic_seirs import predictive_data 
 
 # Load environment variables from .env file
 load_dotenv()
@@ -110,6 +111,11 @@ def heat_map():
         current_date += timedelta(days=1)
     print("number of days:", len(data))
     return jsonify(data)
+
+@app.route('/predictive_map', methods=['GET'])
+def predictive_map():
+    predictive_map = predictive_data()
+    return jsonify(predictive_map)
 
 
 # variant filter for heatmap
