@@ -1,6 +1,7 @@
 # data_cleaner.py
 import pandas as pd
 import os
+from gmaps import get_coordinates
 
 DATA_PATH = 'raw_data/covid_data'  # The path of dir containing all raw data
 
@@ -17,6 +18,12 @@ def virus_data_cleaning(data):
     data[['age', 'sex']] = data[['age', 'sex']].replace('unknown', pd.NA)
     data = data[data['lineage'] != 'Unassigned']
     data = data[data['originating_lab'] != 'unknown']
+
+    # Replace incorrect lab names
+    prefix = 'Microbiological Diagnostic Unit'
+    data['originating_lab'] = data['originating_lab'].apply(
+        lambda x: "The Peter Doherty Institute for Infection and Immunity" if x.startswith(prefix) else x
+    )
 
     # Function to extract substring before the second '.'
     def extract_lineage_prefix(s):
@@ -91,3 +98,47 @@ def clean_all_virus_data():
     data = pd.concat(dataframes, ignore_index=True)
 
     return data
+
+def get_lab_df(df):
+    unique_labs = df['originating_lab'].unique()
+    lab_df = pd.DataFrame({
+        'id': range(1, len(unique_labs) + 1),
+        'lab_name': unique_labs
+    })
+
+    # Initialize empty lists for latitudes and longitudes
+    latitudes = []
+    longitudes = []
+
+    # Get coordinates for each unique originating_lab and append to lists
+    for lab in lab_df['lab_name']:
+        coords = get_coordinates(lab)
+        latitudes.append(coords['latitude'])
+        longitudes.append(coords['longitude'])
+
+    # Assign the lists to the new_labs_df DataFrame
+    lab_df['latitude'] = latitudes
+    lab_df['longitude'] = longitudes
+
+    lab_df = lab_df[(lab_df['latitude'] != 'Invalid location') & (lab_df['longitude'] != 'Invalid location')]
+
+    return lab_df
+
+
+def clean_virus_data_after_lab(df, lab_df):
+    lab_id_map = lab_df.set_index('lab_name')['id'].to_dict()
+
+    df['originating_lab'] = df['originating_lab'].map(lab_id_map)
+
+    df = df.dropna(subset=['originating_lab'])
+
+    return df
+
+if __name__ == '__main__':
+    df = clean_all_virus_data()
+    lab_df = get_lab_df(df)
+    df = clean_virus_data_after_lab(df, lab_df)
+    # print(df.head)
+    # print(lab_df)
+    df.to_parquet('covid_data.parquet', index=False)
+    lab_df.to_parquet('lab_location.parquet', index=False)
