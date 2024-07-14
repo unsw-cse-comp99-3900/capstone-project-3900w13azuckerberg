@@ -15,6 +15,7 @@ def virus_data_cleaning(data):
     data = data[data['host'] == 'Human']
     data[['age', 'sex']] = data[['age', 'sex']].replace('unknown', pd.NA)
     data = data[data['lineage'] != 'Unassigned']
+    data = data[data['originating_lab'] != 'unknown']
 
     # Function to extract substring before the second '.'
     def extract_lineage_prefix(s):
