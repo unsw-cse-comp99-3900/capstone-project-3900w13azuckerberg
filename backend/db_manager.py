@@ -1,11 +1,8 @@
 # db_manager.py
 from datetime import timedelta
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
-from data_cleaner import clean_all_virus_data
-
-db = SQLAlchemy()
+from model import db, VirusData, LabLocation
 
 def init_db(app):
     """
@@ -17,6 +14,7 @@ def init_db(app):
     """
     db.init_app(app)
     with app.app_context():
+        db.drop_all()
         db.create_all()
         print("Database initialized successfully.")
 
@@ -35,21 +33,6 @@ def load_dataframe_to_db(dataframe, table_name, app):
             print(f"Data loaded successfully into {table_name} table.")
         except SQLAlchemyError as e:
             print(f"Error loading data: {e}")
-
-def add_record(record):
-    """
-    Add a single record to the database.
-
-    Args:
-        record (db.Model): The record to add.
-    """
-    try:
-        db.session.add(record)
-        db.session.commit()
-        print("Record added successfully.")
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        print(f"Error adding record: {e}")
 
 def get_records(model, lim=0):
     """
@@ -71,66 +54,66 @@ def get_records(model, lim=0):
         print(f"Error querying records: {e}")
         return []
 
-def update_record(record):
-    """
-    Update an existing record in the database.
-
-    Args:
-        record (db.Model): The record to update.
-    """
-    try:
-        db.session.commit()
-        print("Record updated successfully.")
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        print(f"Error updating record: {e}")
-
-def delete_record(record):
-    """
-    Delete a single record from the database.
-
-    Args:
-        record (db.Model): The record to delete.
-    """
-    try:
-        db.session.delete(record)
-        db.session.commit()
-        print("Record deleted successfully.")
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        print(f"Error deleting record: {e}")
-
-
-def get_case_by_loc(model, date):
+def get_case_by_loc(date):
     start_date = date - timedelta(days=14)
 
     # Query to get the count of entries grouped by originating_lab
     results = db.session.query(
-        model.originating_lab,
-        func.count(model.id).label('case_count')
+        VirusData.originating_lab,
+        func.count(VirusData.id).label('case_count')
     ).filter(
-        model.date.between(start_date, date)
+        VirusData.date.between(start_date, date)
     ).group_by(
-        model.originating_lab
+        VirusData.originating_lab
     ).all()
 
     result_dict = {originating_lab: case_count for originating_lab, case_count in results}
     return result_dict
 
-def get_case_by_strain(model, date, strains):
+def get_case_by_coordinate(date):
+    start_date = date - timedelta(days=14)
+
+    results = db.session.query(
+        VirusData.originating_lab,
+        LabLocation.longitude,
+        LabLocation.latitude,
+        func.count(VirusData.id).label('case_count'),
+        VirusData.division_exposure
+    ).join(
+        LabLocation, VirusData.originating_lab == LabLocation.id
+    ).filter(
+        VirusData.date.between(start_date, date)
+    ).group_by(
+        VirusData.originating_lab,
+        LabLocation.longitude,
+        LabLocation.latitude,
+        VirusData.division_exposure
+    ).all()
+
+    result_dict = {
+        originating_lab: {
+            'longitude': longitude,
+            'latitude': latitude,
+            'case_count': case_count,
+            'state': division_exposure
+        } for originating_lab, longitude, latitude, case_count, division_exposure in results
+    }
+    return result_dict
+
+def get_case_by_strain(date, strains):
     start_date = date - timedelta(days=14)
 
     # Query to get the count of entries grouped by location and strain
     results = db.session.query(
-        model.location,
-        model.strain,
-        func.count(model.id).label('case_count')
+        VirusData.location,
+        VirusData.strain,
+        func.count(VirusData.id).label('case_count')
     ).filter(
-        model.date.between(start_date, date),
-        model.strain.in_(strains)
+        VirusData.date.between(start_date, date),
+        VirusData.strain.in_(strains)
     ).group_by(
-        model.location,
-        model.strain
+        VirusData.location,
+        VirusData.strain
     ).all()
 
     result_dict = {}
@@ -140,3 +123,6 @@ def get_case_by_strain(model, date, strains):
         result_dict[location][strain] = case_count
 
     return result_dict
+
+if __name__ == '__main__':
+    ...
