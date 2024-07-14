@@ -74,9 +74,10 @@ def get_case_by_coordinate(date):
 
     results = db.session.query(
         VirusData.originating_lab,
-        func.count(VirusData.id).label('case_count'),
         LabLocation.longitude,
-        LabLocation.latitude
+        LabLocation.latitude,
+        func.count(VirusData.id).label('case_count'),
+        VirusData.division_exposure
     ).join(
         LabLocation, VirusData.originating_lab == LabLocation.id
     ).filter(
@@ -84,15 +85,17 @@ def get_case_by_coordinate(date):
     ).group_by(
         VirusData.originating_lab,
         LabLocation.longitude,
-        LabLocation.latitude
+        LabLocation.latitude,
+        VirusData.division_exposure
     ).all()
 
     result_dict = {
         originating_lab: {
-            'case_count': case_count,
             'longitude': longitude,
-            'latitude': latitude
-        } for originating_lab, case_count, longitude, latitude in results
+            'latitude': latitude,
+            'case_count': case_count,
+            'state': division_exposure
+        } for originating_lab, longitude, latitude, case_count, division_exposure in results
     }
     return result_dict
 
