@@ -17,9 +17,9 @@ def get_init_model_param():
     default_gamma = 1/10
     default_beta = 0.25
     default_population = 10000
-
+    default_rdeath = 0.002
+    
     # current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
-
     # loc_cases = get_case_by_loc(VirusData, current_date)
 
     mock_loc_data = {
@@ -37,19 +37,15 @@ def get_init_model_param():
         }
     }
 
-
     for key, data in mock_loc_data.items():
         init_data[key] = {
             "latitude": data["latitude"],
             "longitude": data["longitude"],
-            "beta": default_beta,
-            "sigma": default_sigma,
-            "gamma": default_gamma,
+            "state": data["state"],
             "initN": default_population,
             "initI": data["intensity"]
         }
 
-    # print(init_data)
 
     return init_data
 
