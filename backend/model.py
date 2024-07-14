@@ -1,4 +1,6 @@
-from db_manager import db
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 class VirusData(db.Model):
     __tablename__ = 'virus_data'

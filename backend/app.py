@@ -4,9 +4,9 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-from data_loader import load_data_into_db
-from db_manager import db, get_case_by_loc, get_records, init_db, load_dataframe_to_db
-from model import VirusData
+# from data_loader import load_data_into_db
+from db_manager import get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
+from model import db
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
 import threading
@@ -32,13 +32,13 @@ def home():
 @app.route('/test', methods=['GET'])
 def mytest():
     date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_loc(VirusData, date)
+    case_counts = get_case_by_loc(date)
     return jsonify(case_counts)
 
 # Route to handle GET requests
 @app.route('/get_data', methods=['GET'])
 def get_data():
-    records = get_records(VirusData, 10)
+    records = get_records(10)
     results = [
         {
             "id": record.id,
@@ -88,7 +88,7 @@ def heat_map():
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_loc(VirusData, current_date)
+        daily_cases = get_case_by_loc(current_date)
 
         # Initialize a list to store the cases for the current day
         cases_list = []
@@ -118,7 +118,7 @@ def filter_variant():
     return "nil"
     variant = request.args.get('variant_name')
     date = request.args.get('date')
-    variant_records = get_variant(VirusData, variant, date)
+    variant_records = get_variant(variant, date)
     # this function get_variant should return a list of variant records up until a particular date for displaying on the heat map
     results = [
         {
@@ -131,7 +131,7 @@ def filter_variant():
 @app.route('/pie_chart', methods=['GET'])
 def variant_pie_chart():
     date = request.args.get('date')
-    variant_split_records = get_variant_split(VirusData, date)
+    variant_split_records = get_variant_split(date)
     # get variant split should return 4 Records showing variant, %, number of infecteced up until a certain date
     results = [
         {
@@ -158,9 +158,12 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
+    # # Start the Flask server in a separate thread
+    # server_thread = threading.Thread(target=run_server)
+    # server_thread.start()
 
-    # Now call load_data() without blocking the main thread
-    load_data()
+    # # Now call load_data() without blocking the main thread
+    # load_data()
+    with app.app_context():
+        # print(get_case_by_loc(datetime.strptime("2023-10-11", "%Y-%m-%d")))
+        print(get_case_by_coordinate(datetime.strptime("2023-10-11", "%Y-%m-%d")))
