@@ -11,6 +11,7 @@ def virus_data_cleaning(data):
     data.rename(columns={'gisaid_epi_isl': 'id'}, inplace=True)
 
     # Filter
+    data = data.dropna(subset=['originating_lab'])
     data = data[(data['region'] == 'Oceania') & (data['country'] == 'Australia')]
     data = data[data['host'] == 'Human']
     data[['age', 'sex']] = data[['age', 'sex']].replace('unknown', pd.NA)
