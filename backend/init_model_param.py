@@ -2,7 +2,9 @@
 from datetime import datetime, timedelta
 # from db_manager import db, get_case_by_loc
 from model import VirusData
+from flask import Flask
 from db_manager import get_case_by_coordinate
+from app import app
 
 
 
