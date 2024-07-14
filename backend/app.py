@@ -24,41 +24,6 @@ init_db(app)
 
 migrate = Migrate(app, db)
 
-# Route for the home page
-@app.route('/')
-def home():
-    return "Welcome to COVID Compass!"
-
-@app.route('/test', methods=['GET'])
-def mytest():
-    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_loc(date)
-    return jsonify(case_counts)
-
-# Route to handle GET requests
-@app.route('/get_data', methods=['GET'])
-def get_data():
-    records = get_records(10)
-    results = [
-        {
-            "id": record.id,
-            "lineage": record.lineage,
-            "strain": record.strain,
-            "date": record.date,
-            "division": record.division,
-            "lattitude": get_coordinates(record.originating_lab)['latitude'],
-            "longitude": get_coordinates(record.originating_lab)['longitude'],
-            "region_exposure": record.region_exposure,
-            "country_exposure": record.country_exposure,
-            "division_exposure": record.division_exposure,
-            "age": record.age,
-            "sex": record.sex,
-            "originating_lab": record.originating_lab,
-            "submitting_lab": record.submitting_lab,
-            "date_submitted": record.date_submitted
-        } for record in records]
-    return jsonify(results)
-
 data_loaded = False
 
 @app.before_request
@@ -67,6 +32,17 @@ def before_request():
     if not data_loaded:
         load_data()
         data_loaded = True
+
+# Route for the home page
+@app.route('/')
+def home():
+    return "Welcome to COVID Compass!"
+
+@app.route('/test', methods=['GET'])
+def mytest():
+    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    case_counts = get_case_by_coordinate(date)
+    return jsonify(case_counts)
 
 @app.route('/load_data', methods=['GET'])
 def load_data():
