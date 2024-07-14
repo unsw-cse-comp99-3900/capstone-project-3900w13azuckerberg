@@ -14,7 +14,7 @@ class VirusData(db.Model):
     division_exposure = db.Column(db.String, nullable=True)
     age = db.Column(db.Integer, nullable=True)
     sex = db.Column(db.String, nullable=True)
-    originating_lab = db.Column(db.String, nullable=True)
+    originating_lab = db.Column(db.String, db.ForeignKey('lab_location.id'), nullable=False)
     submitting_lab = db.Column(db.String, nullable=False)
     date_submitted = db.Column(db.Date, nullable=False)
 
