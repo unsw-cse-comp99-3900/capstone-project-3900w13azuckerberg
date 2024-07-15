@@ -4,9 +4,9 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-from data_cleaner import clean_all_virus_data
-from db_manager import db, get_case_by_loc, get_records, init_db, load_dataframe_to_db
-from model import VirusData
+from data_loader import load_into_db
+from db_manager import get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
+from model import db
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
 import threading
@@ -24,41 +24,6 @@ init_db(app)
 
 migrate = Migrate(app, db)
 
-# Route for the home page
-@app.route('/')
-def home():
-    return "Welcome to COVID Compass!"
-
-@app.route('/test', methods=['GET'])
-def mytest():
-    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_loc(VirusData, date)
-    return jsonify(case_counts)
-
-# Route to handle GET requests
-@app.route('/get_data', methods=['GET'])
-def get_data():
-    records = get_records(VirusData, 10)
-    results = [
-        {
-            "id": record.id,
-            "lineage": record.lineage,
-            "strain": record.strain,
-            "date": record.date,
-            "division": record.division,
-            "lattitude": get_coordinates(record.originating_lab)['latitude'],
-            "longitude": get_coordinates(record.originating_lab)['longitude'],
-            "region_exposure": record.region_exposure,
-            "country_exposure": record.country_exposure,
-            "division_exposure": record.division_exposure,
-            "age": record.age,
-            "sex": record.sex,
-            "originating_lab": record.originating_lab,
-            "submitting_lab": record.submitting_lab,
-            "date_submitted": record.date_submitted
-        } for record in records]
-    return jsonify(results)
-
 data_loaded = False
 
 @app.before_request
@@ -68,9 +33,20 @@ def before_request():
         load_data()
         data_loaded = True
 
+# Route for the home page
+@app.route('/')
+def home():
+    return "Welcome to COVID Compass!"
+
+@app.route('/test', methods=['GET'])
+def mytest():
+    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    case_counts = get_case_by_coordinate(date)
+    return jsonify(case_counts)
+
 @app.route('/load_data', methods=['GET'])
 def load_data():
-    load_dataframe_to_db(clean_all_virus_data(), "virus_data", app)
+    load_into_db(app)
     return redirect(url_for('home'))
 
 # frontend uses the midpoint of the state that's returned for below routes
@@ -88,7 +64,7 @@ def heat_map():
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_loc(VirusData, current_date)
+        daily_cases = get_case_by_loc(current_date)
 
         # Initialize a list to store the cases for the current day
         cases_list = []
@@ -118,7 +94,7 @@ def filter_variant():
     return "nil"
     variant = request.args.get('variant_name')
     date = request.args.get('date')
-    variant_records = get_variant(VirusData, variant, date)
+    variant_records = get_variant(variant, date)
     # this function get_variant should return a list of variant records up until a particular date for displaying on the heat map
     results = [
         {
@@ -131,7 +107,7 @@ def filter_variant():
 @app.route('/pie_chart', methods=['GET'])
 def variant_pie_chart():
     date = request.args.get('date')
-    variant_split_records = get_variant_split(VirusData, date)
+    variant_split_records = get_variant_split(date)
     # get variant split should return 4 Records showing variant, %, number of infecteced up until a certain date
     results = [
         {
