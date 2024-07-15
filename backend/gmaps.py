@@ -1,10 +1,11 @@
 import googlemaps
 from flask import jsonify
 from datetime import datetime
-from db_manager import get_records
-from model import VirusData
+import requests
 
-gmaps = googlemaps.Client(key='AIzaSyD6YJJf3RPjpfYd9_wx8qA8k3xKjaJpT1U')
+API_KEY = "AIzaSyA3HeXwTCkGBW--FkTKyajWWg1nefFZq18"
+
+gmaps = googlemaps.Client(key=API_KEY)
 
 # Extract latitude and longitude
 def get_coordinates(location):
@@ -24,10 +25,7 @@ def get_coordinates(location):
                 "longitude": location['lng']
             }
         else:
-            coord = {
-                "latitude": 'Invalid location',
-                "longitude": 'Invalid location'
-            }
+            coord = fuzzy_search(location)
     except Exception as e:
         coord = {
             "latitude": 'Error',
@@ -35,18 +33,38 @@ def get_coordinates(location):
         }
     return coord
 
-# Look up an address with reverse geocoding
-# reverse_geocode_result = gmaps.reverse_geocode((40.714224, -73.961452))
+def fuzzy_search(location):
+    try:
+        url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+        params = {
+            'query': location,
+            'key': API_KEY,
+            'region': 'au',
+            'location': '-25.2744,133.7751',  # Central point of Australia
+            'radius': 2500000  # Approximate radius to cover most of Australia
+        }
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            results = response.json().get('results')
+            if results:
+                first_result = results[0]
+                location = first_result.get('geometry').get('location')
+                return {
+                    "latitude": location.get('lat'),
+                    "longitude": location.get('lng')
+                }
+        return {
+            "latitude": 'Invalid location',
+            "longitude": 'Invalid location'
+        }
+    except Exception as e:
+        return {
+            "latitude": 'Error',
+            "longitude": str(e)
+        }
 
-# Request directions via public transit
-# now = datetime.now()
-# directions_result = gmaps.directions("Sydney Town Hall",
-#                                      "Parramatta, NSW",
-#                                      mode="transit",
-#                                      departure_time=now)
-
-# Validate an address with address validation
-# addressvalidation_result =  gmaps.addressvalidation(['1600 Amphitheatre Pk'], 
-#                                                     regionCode='US',
-#                                                     locality='Mountain View', 
-#                                                     enableUspsCass=True)
+# Testing
+if __name__ == "__main__":
+    location = "blue mountains dist hosp"  # Example search query
+    coordinates = fuzzy_search(location)
+    print(f"Latitude: {coordinates['latitude']}, Longitude: {coordinates['longitude']}")

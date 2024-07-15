@@ -6,3 +6,5 @@ CREATE DATABASE covid OWNER user1;
 
 -- Grant all privileges on the database to user1
 GRANT ALL PRIVILEGES ON DATABASE covid TO user1;
+
+TRUNCATE TABLE IF EXISTS alembic_version;
