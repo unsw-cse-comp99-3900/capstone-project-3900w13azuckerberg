@@ -72,8 +72,6 @@ def heat_map():
         cases_list = []
 
         for location, data in daily_cases.items():
-            # coordinates = get_coordinates(location)
-            # print(coordinates)
 
             cases_list.append({
                 "latitude": data['latitude'],
@@ -106,7 +104,7 @@ def predictive_map():
     default_gamma = 1/10
     default_beta = 0.25
     
-    predictive_period = 3 # one year of prediction
+    predictive_period = 365 # one year of prediction
 
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date)
