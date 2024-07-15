@@ -71,6 +71,20 @@ def get_case_by_loc(date):
     return result_dict
 
 def get_case_by_coordinate(date):
+    """Get case number for each lab location given a date
+
+    Args:
+        date (datetime)
+
+    Returns:
+        A dict of following format
+        originating_lab: {
+            'longitude',
+            'latitude',
+            'case_count',
+            'state'
+        }
+    """
     start_date = date - timedelta(days=14)
 
     results = db.session.query(
