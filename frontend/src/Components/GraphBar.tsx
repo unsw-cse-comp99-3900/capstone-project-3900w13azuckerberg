@@ -16,7 +16,7 @@ function GraphBar() {
       <div id="buttonBar">
         <GraphButton onClick={handleButtonClick} />
       </div>
-      <div className="wrapper">
+      <div className={`wrapper ${showGraph ? "open" : ""}`}>
         <div className="graphBox">
           <PieChart />
         </div>
