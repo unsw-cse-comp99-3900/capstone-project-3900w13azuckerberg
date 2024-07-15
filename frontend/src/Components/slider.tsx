@@ -21,7 +21,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
   const [speed, setSpeed] = useState<number>(1);
   const [playback, setPlayback] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
-  const [playbackIcon, setPlaybackIcon] = useState<String>("play_arrow");
+  const [playbackIcon, setPlaybackIcon] = useState<string>("play_arrow");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const days = parseInt(event.target.value);

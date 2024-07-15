@@ -34,7 +34,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint . --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -55,9 +56,14 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.7.0",
     "@types/leaflet": "^1.9.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "typescript": "^4.0.0"
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.4",
+    "globals": "^15.8.0",
+    "typescript": "^4.0.0",
+    "typescript-eslint": "^7.16.0"
   }
 }

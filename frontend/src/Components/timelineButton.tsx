@@ -1,7 +1,7 @@
 import "./icon.css";
 
 interface ButtonProps {
-  icon: String;
+  icon: string;
   onClick: () => void;
 }
 

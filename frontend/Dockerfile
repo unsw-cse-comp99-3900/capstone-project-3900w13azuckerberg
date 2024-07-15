@@ -10,8 +10,8 @@ COPY package*.json ./
 # command that is run to install dependencies
 RUN npm install
 
-# expose port 3001 to the outside world (required to access the app at port 3001 however, we map this internal 3001 to an external port in the docker-compose file)
-EXPOSE 3001
+# expose port 3000 to the outside world (required to access the app at port 3000 however, we map this internal 3000 to an external port in the docker-compose file)
+EXPOSE 3000
 
 # command that is run to start the app (can be overriden in the docker-compose file)
 CMD ["npm", "start"]

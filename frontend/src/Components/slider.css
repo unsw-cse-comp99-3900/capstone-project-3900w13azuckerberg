@@ -8,7 +8,7 @@
   transform: translateX(-50%);
   padding: 0px 10px;
   border-radius: 5px;
-  z-index: 15001; /* Ensure it overlays on top of other content */
+  z-index: 15000; /* Ensure it overlays on top of other content */
   color: rgb(255, 255, 255);
   background-color: #494949;
   align-items: center;
