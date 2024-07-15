@@ -8,11 +8,12 @@ import CustomTooltip from './customTooltip';
 interface FiltersProps {
   token: boolean;
   onFilterChange: (token: boolean) => void;
+  onCompareToggle: () => void;
+  showCompare: boolean;
 }
 
-const Filters: React.FC<FiltersProps> = ({ token, onFilterChange }) => {
-  const [showFilters, setShowFilters] = useState(false);
-
+const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, onCompareToggle, showCompare}) => {
+  const [showFilters, setShowFilters] = useState(false); 
   const [allFilters, setAllFilters] = useState([
     { label: "Alpha", selected: true },
     { label: "Beta", selected: true },
@@ -84,6 +85,9 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange }) => {
               </div>
             </CustomTooltip>
           </div>
+          <button className={`compare-button ${!showCompare ? "" : "selected"}`} onClick={onCompareToggle}>
+            Compare
+          </button>
         </div>
       </div>
     </div>
