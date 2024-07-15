@@ -42,16 +42,18 @@ function App() {
 
         {showCompare ? (
           <div className="container">
+            <div id="divider">
+              </div>
             <div className="left">
-              <Main setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+              <Main containerId="left" setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
             </div>
             <div className="right">
-              <Main setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+              <Main containerId="right" setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
             </div>
           </div>
           ) : (
           <div>
-            <Main setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+            <Main containerId="M" setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
           </div>
         )}
       </div> 

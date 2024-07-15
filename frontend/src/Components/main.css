@@ -3,4 +3,6 @@
     margin: 0;
     height: 100%;
     display: flex;
+    background-color: #2222;
+    position: relative;
 }

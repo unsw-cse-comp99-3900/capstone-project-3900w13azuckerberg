@@ -12,6 +12,7 @@ interface MainProps {
 	date: Date;
 	showCompare: boolean;
 	setShowCompare: (token: boolean) => void;
+	containerId: string;
 }
 
 interface MapData {
@@ -27,7 +28,7 @@ state?: string;
 
 type PointArray = [number, number, number];
 
-const Main: React.FC<MainProps> = ({setIsLoading, date, showCompare, setShowCompare }) => {
+const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId }) => {
   
   	type PointArray = [number, number, number];
 
@@ -82,7 +83,7 @@ const Main: React.FC<MainProps> = ({setIsLoading, date, showCompare, setShowComp
     <div id="body">
 		<GraphBar />
 		{/* <HeatMap mapData={mapData} /> */}
-		<HeatMap mapData={mapData} />
+		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} />
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
 			onCompareToggle={handleCompareToggle}
