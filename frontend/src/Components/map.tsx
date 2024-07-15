@@ -56,6 +56,35 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare }) 
           maxZoom: 1, // Maximum zoom level
           gradient: { 0.4: "blue", 0.65: "lime", 1: "red" },
         }).addTo(mapContainerRef.current);
+            const content = `${feature.properties.STATE_NAME} - Cases: 0`;
+            tooltip = L.tooltip({
+              direction: 'right',
+              permanent: false, 
+              sticky: true,
+              opacity: 0.9
+            })
+            .setContent(content)
+            .setLatLng(e.latlng)
+            .openOn(map);
+          },
+          mousemove: (e) => {
+            tooltip.setLatLng(e.latlng);
+          },
+          mouseout: (e) => {
+            geoJsonLayer.resetStyle(e.target);
+            map.closeTooltip(tooltip);
+          },
+          click: (e) => {
+            map.fitBounds(e.target.getBounds(), { padding: [20, 10], animate: true});
+            updateState(feature.properties.STATE_NAME);
+          }
+        });
+      },
+      style: {
+        color: "white",
+        weight: 1,
+        opacity: 0.1,
+        fillOpacity: 0
       }
     }
       // Clean up the map instance onx component unmount
