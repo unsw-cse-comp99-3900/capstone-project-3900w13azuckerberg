@@ -11,7 +11,6 @@ const BarChart = ({}) => (
                   "Infected": 7,
                   "Susceptible": 14,
                   "Recovered": 3,
-                  "Vaccinated": 10,
                   "Exposed": 6
                 },
             ]
@@ -32,10 +31,6 @@ const BarChart = ({}) => (
                 value: 'Recovered'
             },
             {
-                id: 'Vaccinated',
-                value: 'Vaccinated'
-            },
-            {
                 id: 'Exposed',
                 value: 'Exposed'
             }
@@ -43,7 +38,7 @@ const BarChart = ({}) => (
         ]}
         layout="horizontal"
         outerPadding={-80}
-        innerPadding={-100}
+        innerPadding={-80}
         axisTop={null}
         axisRight={null}
         axisBottom={{
@@ -58,7 +53,7 @@ const BarChart = ({}) => (
         axisLeft={null}
         enableGridX={false}
         enableGridY={false}
-        margin={{ top: 200, right: 80, bottom: 100, left: 80 }}
+        margin={{ top: 150, right: 80, bottom: 100, left: 80 }}
         colors={{ scheme: 'purpleRed_green' }}
         borderWidth={1}
         borderColor={{
