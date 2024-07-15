@@ -89,3 +89,9 @@ def clean_all_virus_data():
     data = pd.concat(dataframes, ignore_index=True)
 
     return data
+
+# putting df in csv
+if __name__ == "__main__":
+    cleaned_data = clean_all_virus_data()
+    cleaned_data.to_csv('cleaned_data.csv', index=False)
+    print("Data cleaned and saved to cleaned_data.csv")
