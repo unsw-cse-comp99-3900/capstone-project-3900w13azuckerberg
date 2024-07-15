@@ -56,7 +56,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, onCompareToggl
           {allFilters.map((filter) => (
             <Button
               label={filter.label}
-              endpoint="http://127.0.0.1:5000/filter"
+              endpoint="http://127.0.0.1:5001/filter"
               selected={filter.selected}
               onSelect={(selected: boolean) =>
                 handleSetSelected(filter.label, selected)
@@ -69,7 +69,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, onCompareToggl
                 <Icon
                   icon="filter_none"
                   data={{ label: "none" }} 
-                  endpoint="http://127.0.0.1:5000/filter"
+                  endpoint="http://127.0.0.1:5001/filter"
                   onClick={() => setAll(false)}
                 />
               </div>
@@ -79,7 +79,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, onCompareToggl
                 <Icon
                   icon="select_all"
                   data={{ label: "all" }} 
-                  endpoint="http://127.0.0.1:5000/filter"
+                  endpoint="http://127.0.0.1:5001/filter"
                   onClick={() => setAll(true)}
                 />
               </div>

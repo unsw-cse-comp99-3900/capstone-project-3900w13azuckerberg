@@ -6,7 +6,7 @@ const DataFetcher: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:5000/api/data")
+      .get("http://127.0.0.1:5001/api/data")
       .then((response) => {
         setData(response.data);
       })

@@ -57,7 +57,7 @@ def load_data():
 @app.route('/map', methods=['GET'])
 def heat_map():
     # date_str = request.args.get('date')
-    start_date = datetime.strptime('2023-12-20', '%Y-%m-%d').date()
+    start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
     end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
 
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date

@@ -82,5 +82,5 @@ flask run
 **Load the Database**
 
 ```sh
-http://localhost:5000/load_data
+http://localhost:5001/load_data
 ```

@@ -1,5 +1,4 @@
 import "./icon.css";
-import axios from "axios";
 
 interface ButtonProps {
   icon: String;
