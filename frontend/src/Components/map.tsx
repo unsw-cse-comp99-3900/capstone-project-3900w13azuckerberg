@@ -60,13 +60,14 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
             });
             layer.bringToFront();
   
+            // contents can be a htmlElement too for more advanced displays
             const content = `${feature.properties.STATE_NAME} - Cases: 0`;
             tooltip = L.tooltip({
-              direction: 'right',
+              direction: 'top',
               permanent: false, 
               sticky: true,
-              opacity: 0.9,
-              color: "grey"
+              opacity: 0.7,
+              className: "tooltip"
             })
             .setContent(content)
             .setLatLng(e.latlng)
