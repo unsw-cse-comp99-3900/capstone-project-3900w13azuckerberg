@@ -30,7 +30,7 @@ type PointArray = [number, number, number];
 
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
-	const [refetch, triggerRefetch] = useState(false);
+	const [refetch, triggerRefetch] = useState("M");
 	const [allMapData, setAllMapData] = useState<MapData>({});
 	const [location, setLocation] = useState("all");
 	const [mapData, setMapData] = useState<[number, number, number][]>([]);
@@ -41,8 +41,12 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setIsLoading(true);
 			try {
 				let response: AxiosResponse;
-				if (predict) {
-					response = await axios.get("http://127.0.0.1:5000/map", {});
+				if (!predict) {
+					response = await axios.get("http://127.0.0.1:5000/map/", {
+					params: {
+						param1: refetch, // <- this will be either "M", "left", "right"
+						}
+					});
 				} else {
 					response = await axios.get("http://127.0.0.1:5000/predictive_map", {})
 				}
@@ -86,6 +90,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			showCompare={showCompare} 
 			predict={predict}
 			setPredict={setPredict}
+			containerId={containerId}
 		/>
 	</div>
   );
