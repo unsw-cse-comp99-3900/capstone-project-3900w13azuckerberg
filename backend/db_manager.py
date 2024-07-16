@@ -2,7 +2,7 @@
 from datetime import timedelta
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
-from model import db, VirusData, LabLocation
+from model import db, VirusData, LabLocation, StrainLabel
 
 def init_db(app):
     """
@@ -70,7 +70,61 @@ def get_case_by_loc(date):
     result_dict = {originating_lab: case_count for originating_lab, case_count in results}
     return result_dict
 
-def get_case_by_coordinate(date):
+def get_case_by_coordinate(date, labels = []):
+    """Get case number for each lab location given a date
+
+    Args:
+        date (datetime)
+        strains (array of string) - the strains you want to filter
+
+    Returns:
+        A dict of following format
+        originating_lab: {
+            'longitude',
+            'latitude',
+            'case_count',
+            'state'
+        }
+    """
+    start_date = date - timedelta(days=14)
+
+    query = db.session.query(
+        VirusData.originating_lab,
+        LabLocation.longitude,
+        LabLocation.latitude,
+        func.count(VirusData.id).label('case_count'),
+        VirusData.division_exposure
+    ).join(
+        LabLocation, VirusData.originating_lab == LabLocation.id
+    ).join(
+        StrainLabel, VirusData.lineage == StrainLabel.lineage
+    ).filter(
+        VirusData.date.between(start_date, date)
+    )
+
+    if labels:
+        query = query.filter(StrainLabel.label.in_(labels))
+
+    query = query.group_by(
+        VirusData.originating_lab,
+        LabLocation.longitude,
+        LabLocation.latitude,
+        VirusData.division_exposure
+    )
+
+    results = query.all()
+
+    result_dict = {
+        originating_lab: {
+            'longitude': longitude,
+            'latitude': latitude,
+            'case_count': case_count,
+            'state': division_exposure
+        } for originating_lab, longitude, latitude, case_count, division_exposure in results
+    }
+    return result_dict
+
+def get_case_by_coordinate_and_strain(date, strains=[]):
     """Get case number for each lab location given a date
 
     Args:
@@ -91,28 +145,65 @@ def get_case_by_coordinate(date):
         VirusData.originating_lab,
         LabLocation.longitude,
         LabLocation.latitude,
+        StrainLabel.label,
         func.count(VirusData.id).label('case_count'),
         VirusData.division_exposure
     ).join(
         LabLocation, VirusData.originating_lab == LabLocation.id
+    ).join(
+        StrainLabel, VirusData.lineage == StrainLabel.lineage
     ).filter(
         VirusData.date.between(start_date, date)
     ).group_by(
         VirusData.originating_lab,
         LabLocation.longitude,
         LabLocation.latitude,
+        StrainLabel.label,
         VirusData.division_exposure
     ).all()
 
-    result_dict = {
-        originating_lab: {
-            'longitude': longitude,
-            'latitude': latitude,
-            'case_count': case_count,
-            'state': division_exposure
-        } for originating_lab, longitude, latitude, case_count, division_exposure in results
-    }
+    result_dict = {}
+    for originating_lab, longitude, latitude, label, case_count, division_exposure in results:
+        if originating_lab not in result_dict:
+            result_dict[originating_lab] = {
+                'longitude': longitude,
+                'latitude': latitude,
+                'case_count': {},
+                'state': division_exposure
+            }
+        result_dict[originating_lab]['case_count'][label] = case_count
+
     return result_dict
+
+def get_all_time_case_pie_chart():
+    results = db.session.query(
+        VirusData.date,
+        VirusData.division_exposure,
+        StrainLabel.label,
+        func.count(VirusData.id).label('case_count')
+    ).join(
+        LabLocation, VirusData.originating_lab == LabLocation.id
+    ).join(
+        StrainLabel, VirusData.lineage == StrainLabel.lineage
+    ).group_by(
+        VirusData.date,
+        VirusData.division_exposure,
+        StrainLabel.label
+    ).order_by(
+        VirusData.date
+    ).all()
+
+    result_dict = {}
+    for date, division_exposure, label, case_count in results:
+        date_str = date.strftime("%Y-%m-%d")
+        if date not in result_dict:
+            result_dict[date_str] = {}
+        if division_exposure not in result_dict[date_str]:
+            result_dict[date_str][division_exposure] = {}
+        result_dict[date_str][division_exposure][label] = case_count
+
+    return result_dict
+
 
 def get_case_by_strain(date, strains):
     start_date = date - timedelta(days=14)

@@ -5,7 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
+from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
 from model import db
 from gmaps import get_coordinates
 from datetime import datetime, timedelta
@@ -42,8 +42,15 @@ def home():
 
 @app.route('/test', methods=['GET'])
 def mytest():
+    # date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    # case_counts = get_case_by_coordinate(date, ["Alpha"])
+    res = get_all_time_case_pie_chart()
+    return jsonify(res)
+
+@app.route('/test1', methods=['GET'])
+def mytest1():
     date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_coordinate(date)
+    case_counts = get_case_by_coordinate(date, ["Omicron"])
     return jsonify(case_counts)
 
 @app.route('/load_data', methods=['GET'])
