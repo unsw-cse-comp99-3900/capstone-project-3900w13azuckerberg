@@ -86,6 +86,7 @@ const Filters: React.FC<FiltersProps> = ({
                 onSelect={(selected: boolean) =>
                   handleSetSelected(filter.label, selected)
                 }
+                containerId={containerId}
               />
             ))}
             <div className="icon-container">

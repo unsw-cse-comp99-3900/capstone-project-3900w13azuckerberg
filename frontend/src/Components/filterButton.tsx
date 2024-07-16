@@ -7,6 +7,7 @@ interface ButtonProps {
   endpoint: string;
   selected: boolean;
   onSelect: (selected: boolean) => void;
+  containerId: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -14,15 +15,17 @@ const Button: React.FC<ButtonProps> = ({
   endpoint,
   selected,
   onSelect,
+  containerId,
 }) => {
   const handleClick = async () => {
     try {
       onSelect(!selected);
-
-      const newData = { label: label, selected: !selected };
-
       const response = await axios.get(endpoint, {
-        params: newData,
+        params: {
+          param1: label, // Strain ie Alpha, Beta
+          param2: selected, // True or false
+          param3: containerId, // M left or right
+        }
       });
 
       console.log("Success:", response.data);
