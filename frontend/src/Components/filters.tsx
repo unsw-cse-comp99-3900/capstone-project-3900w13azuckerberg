@@ -94,9 +94,10 @@ const Filters: React.FC<FiltersProps> = ({
                 <div>
                   <Icon
                     icon="filter_none"
-                    data={{ label: "none" }} 
+                    data={"none"} 
                     endpoint="http://127.0.0.1:5000/filter"
                     onClick={() => setAll(false)}
+                    containerId={containerId}
                   />
                 </div>
               </CustomTooltip>
@@ -104,9 +105,10 @@ const Filters: React.FC<FiltersProps> = ({
                 <div>
                   <Icon
                     icon="select_all"
-                    data={{ label: "all" }} 
+                    data={"all"} 
                     endpoint="http://127.0.0.1:5000/filter"
                     onClick={() => setAll(true)}
+                    containerId={containerId}
                   />
                 </div>
               </CustomTooltip>
