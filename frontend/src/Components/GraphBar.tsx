@@ -4,29 +4,12 @@ import GraphButton from "./GraphButton";
 import PieChart from "./PieChart";
 import LineChart from "./LineChart";
 import BarChart from "./barChart";
-
+import { PieItem, LineItem } from "./types";
 interface GraphProps {
   pieData: PieItem[],
   lineData: LineItem[],
 }
 
-interface PieItem {
-	id: string;
-	label: string;
-	value: number;
-	color: string;
-}
-
-interface DataPoint {
-	x: string;
-	y: number;
-}
-  
-interface LineItem {
-	id: string;
-	color: string;
-	data: DataPoint[];
-}
 
 const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
 
@@ -45,7 +28,7 @@ const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
       </div>
       <div className={`wrapper ${showGraph ? "open" : ""}`}>
         <div className="graphBox">
-          <PieChart />
+          <PieChart pieData={pieData}/>
         </div>
         <div className="graphBox">
           <LineChart />

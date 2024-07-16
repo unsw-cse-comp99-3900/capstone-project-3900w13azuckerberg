@@ -5,7 +5,7 @@ import GraphBar from "./GraphBar";
 import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
-
+import { MapData, GraphData, Point, PieItem, LineItem } from "./types"
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -16,46 +16,7 @@ interface MainProps {
 	setPredict: (predict: boolean) => void;
 }
 
-interface MapData {
-	[date: string]: PointArray[];
-}
 
-interface RegionData {
-	[Strain:string]: number;
-}
-interface DateData {
-	[State: string]: RegionData;
-}
-
-interface GraphData {
-	[Date: string]: DateData; 
-}
-interface Point {
-	latitude: number;
-	longitude: number;
-	intensity: number;
-}
-
-interface PieItem {
-	id: string;
-	label: string;
-	value: number;
-	color: string;
-}
-
-interface DataPoint {
-	x: string;
-	y: number;
-}
-  
-interface LineItem {
-	id: string;
-	color: string;
-	data: DataPoint[];
-}
-  
-
-type PointArray = [number, number, number];
 
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
@@ -83,7 +44,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
-					response = await axios.get("http://127.0.0.1:5000/map/", {
+					response = await axios.get("http://127.0.0.1:5000/map", {
 					params: {
 						param1: refetch, // <- this will be either "M", "left", "right"
 						}
@@ -119,7 +80,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	// Graph use effect
 	useEffect(() => {
 		// Function to fetch heat map data from the backend
-		const fetchData = async () => {
+		const fetchGraphData = async () => {
+			console.log("getting graph data");
 			setIsLoading(true);
 			try {
 				let response: AxiosResponse;
@@ -140,7 +102,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			}
 			  setIsLoading(false);
 		  };
-	  }, [refetch, predict]);
+		  fetchGraphData();
+	}, [refetch, predict]);
 
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
