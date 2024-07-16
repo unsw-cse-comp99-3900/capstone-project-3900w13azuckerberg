@@ -5,9 +5,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
+from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, get_records, init_db
 from model import db
-from gmaps import get_coordinates
 from datetime import datetime, timedelta
 from seirsplus.models import *
 import threading
@@ -207,10 +206,9 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
-    # # Now call load_data() without blocking the main thread
-    # load_data()
-    app.run(debug=True)
+    # Now call load_data() without blocking the main thread
+    load_data()

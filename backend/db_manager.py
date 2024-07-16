@@ -54,22 +54,6 @@ def get_records(model, lim=0):
         print(f"Error querying records: {e}")
         return []
 
-def get_case_by_loc(date):
-    start_date = date - timedelta(days=14)
-
-    # Query to get the count of entries grouped by originating_lab
-    results = db.session.query(
-        VirusData.originating_lab,
-        func.count(VirusData.id).label('case_count')
-    ).filter(
-        VirusData.date.between(start_date, date)
-    ).group_by(
-        VirusData.originating_lab
-    ).all()
-
-    result_dict = {originating_lab: case_count for originating_lab, case_count in results}
-    return result_dict
-
 def get_case_by_coordinate(date, labels = []):
     """Get case number for each lab location given a date
 
@@ -225,30 +209,6 @@ def get_all_time_case_pie_chart():
 
     return result_dict
 
-
-def get_case_by_strain(date, strains):
-    start_date = date - timedelta(days=14)
-
-    # Query to get the count of entries grouped by location and strain
-    results = db.session.query(
-        VirusData.location,
-        VirusData.strain,
-        func.count(VirusData.id).label('case_count')
-    ).filter(
-        VirusData.date.between(start_date, date),
-        VirusData.strain.in_(strains)
-    ).group_by(
-        VirusData.location,
-        VirusData.strain
-    ).all()
-
-    result_dict = {}
-    for location, strain, case_count in results:
-        if location not in result_dict:
-            result_dict[location] = {}
-        result_dict[location][strain] = case_count
-
-    return result_dict
 
 if __name__ == '__main__':
     ...
