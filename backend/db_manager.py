@@ -72,7 +72,7 @@ def get_case_by_coordinate(date, labels = []):
     """
     start_date = date - timedelta(days=14)
 
-    query = db.session.query(
+    result = db.session.query(
         VirusData.originating_lab,
         LabLocation.longitude,
         LabLocation.latitude,
@@ -84,19 +84,12 @@ def get_case_by_coordinate(date, labels = []):
         StrainLabel, VirusData.lineage == StrainLabel.lineage
     ).filter(
         VirusData.date.between(start_date, date)
-    )
-
-    if labels:
-        query = query.filter(StrainLabel.label.in_(labels))
-
-    query = query.group_by(
+    ).group_by(
         VirusData.originating_lab,
         LabLocation.longitude,
         LabLocation.latitude,
         VirusData.division_exposure
-    )
-
-    results = query.all()
+    ).all()
 
     result_dict = {}
     for originating_lab, longitude, latitude, case_count, division_exposure in results:
