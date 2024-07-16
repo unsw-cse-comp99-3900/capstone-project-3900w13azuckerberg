@@ -7,4 +7,9 @@ CREATE DATABASE covid OWNER user1;
 -- Grant all privileges on the database to user1
 GRANT ALL PRIVILEGES ON DATABASE covid TO user1;
 
-TRUNCATE TABLE IF EXISTS alembic_version;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'alembic_version') THEN
+        TRUNCATE TABLE alembic_version;
+    END IF;
+END $$;
