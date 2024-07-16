@@ -5,6 +5,7 @@ import Slider from "./Components/slider";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "./Components/cover.css"
+import Legend from "./Components/legend";
 
 function App() {
   const [date, setdate] = useState(new Date("2023-12-28"));
@@ -20,9 +21,13 @@ function App() {
       <div className="App">
         {isLoading && (
           <div className="loading-overlay">
-            <div className="spinner"></div> {/* Spinner added here */}
+            <div className="spinner"></div>
           </div>
         )}
+        <div className="logo-container">
+            <img src="logo.png" alt="logo" className="logo" />
+            <Legend />
+        </div>
         <Slider date={date} onDateChange={handleDateChange} />
         {showCompare ? (
           <div className="container">

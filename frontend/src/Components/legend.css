@@ -1,0 +1,22 @@
+.legend-wrapper {
+    position: relative;
+    width: 240px;
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.legend-container {
+    flex-grow: 1;
+    height: 20px;
+    background: linear-gradient(90deg, rgba(255,255,0,1) 0%, rgba(255,69,0,1) 33%, rgba(102,51,153,1) 67%, rgba(25,25,112,1) 100%);
+    border-radius: 8px;
+}
+
+.legend-label {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 5px;
+    font: white;
+}

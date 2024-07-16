@@ -13,7 +13,6 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ children, label }) => {
       color="#494949"
       position="top" offset={6}
       withArrow
-      // multiline w={220}
       transitionProps={{transition:"slide-up", duration:200}}      
       closeDelay={10}
     >

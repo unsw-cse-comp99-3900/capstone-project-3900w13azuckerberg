@@ -44,8 +44,8 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, onCompareToggl
 
   return (
     <div className="filters">
-      <img src="logo.png" alt="logo" className="logo" />
-      <Legend/>
+      {/* <img src="logo.png" alt="logo" className="logo" />
+      <Legend/> */}
       <div className="filter-container">
         <CustomTooltip label="Filter by Strain">
           <i className="material-icons icon" onClick={toggleFilters}>

@@ -82,7 +82,6 @@ def heat_map():
 
         # Use the date as a key in the data dictionary
         map_data[current_date.strftime('%Y-%m-%d')] = cases_list
-        print("date:", current_date, "added")
         current_date += timedelta(days=1)
     print("number of days:", len(data))
     return jsonify(map_data)

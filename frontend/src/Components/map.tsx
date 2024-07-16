@@ -65,7 +65,8 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
               direction: 'right',
               permanent: false, 
               sticky: true,
-              opacity: 0.9
+              opacity: 0.9,
+              color: "grey"
             })
             .setContent(content)
             .setLatLng(e.latlng)
