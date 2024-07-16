@@ -14,14 +14,12 @@
   flex-direction: column;
   position: relative;
   left: 10px;
-  margin-top: 10px;
   min-width: 6em;
   box-sizing: border-box;
 }
 
 .filter-buttons {
   display: none;
-  margin-top: 10px;
 }
 
 .filter-buttons.show {

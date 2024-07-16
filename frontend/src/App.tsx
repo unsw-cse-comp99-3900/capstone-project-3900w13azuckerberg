@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import Main from "./Components/main";
 import Slider from "./Components/slider";
@@ -8,13 +8,23 @@ import "./Components/cover.css"
 import Legend from "./Components/legend";
 
 function App() {
-  const [date, setdate] = useState(new Date("2023-12-28"));
+  const [date, setDate] = useState(new Date("2020-12-31"));
   const [isLoading, setIsLoading] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
+  const [predict, setPredict] = useState(false);
 
   const handleDateChange = (date: Date) => {
-    setdate(date);
+    setDate(date);
   };
+
+  useEffect(() => {
+		if (predict) {
+      setDate(new Date("2024-07-17"))
+    } else {
+      setDate(new Date("2020-12-31"))
+    }
+	}, [predict]);
+
 
   return (
     <MantineProvider>
@@ -28,21 +38,42 @@ function App() {
             <img src="logo.png" alt="logo" className="logo" />
             <Legend />
         </div>
-        <Slider date={date} onDateChange={handleDateChange} />
+        <Slider date={date} onDateChange={handleDateChange} predict={predict} />
         {showCompare ? (
           <div className="container">
             <div id="divider">
               </div>
             <div className="left">
-              <Main containerId="left" setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+              <Main
+                containerId="left"
+                setIsLoading={setIsLoading}
+                date={date}
+                predict={predict}
+                setPredict={setPredict}
+                showCompare={showCompare}
+                setShowCompare={setShowCompare}/>
             </div>
             <div className="right">
-              <Main containerId="right" setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+              <Main
+                containerId="right"
+                setIsLoading={setIsLoading}
+                date={date}
+                predict={predict}
+                setPredict={setPredict}
+                showCompare={showCompare}
+                setShowCompare={setShowCompare}/>
             </div>
           </div>
           ) : (
           <div>
-            <Main containerId="M" setIsLoading={setIsLoading} date={date} showCompare={showCompare} setShowCompare={setShowCompare}/>
+            <Main
+              containerId="M"
+              setIsLoading={setIsLoading}
+              date={date}
+              predict={predict}
+              setPredict={setPredict}
+              showCompare={showCompare}
+              setShowCompare={setShowCompare}/>
           </div>
         )}
       </div> 

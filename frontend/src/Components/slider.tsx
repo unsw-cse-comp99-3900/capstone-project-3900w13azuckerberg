@@ -11,11 +11,19 @@ import "./slider.css";
 interface TimelineSliderProps {
   onDateChange: (date: Date) => void;
   date: Date;
+  predict: boolean;
 }
 
-const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
-  const startDate = new Date("2020-01-01"); // Start date for the timeline
-  const endDate = new Date("2023-12-31"); // End date (current date)
+const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) => {
+  let startDate: Date;
+  let endDate: Date;
+  if (predict) {
+    startDate = new Date("2024-01-01");
+    endDate = new Date("2025-04-30");
+  } else {
+    startDate = new Date("2020-01-01");
+    endDate = new Date("2023-12-31");
+  }
 
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [speed, setSpeed] = useState<number>(1);
@@ -32,8 +40,8 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
 
   const handleCalendar = (newDate: Date) => {
     onDateChange(newDate);
-
-    setShowCalendar(false); // Close calendar after selecting date
+    // Close calendar after selecting date
+    setShowCalendar(false); 
   };
 
   useEffect(() => {
@@ -63,7 +71,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
       if (newDay <= new Date(endDate)) {
         onDateChange(newDay);
         if (playback) {
-          timer = setTimeout(updateDay,500 / speed);
+          timer = setTimeout(updateDay,250 / speed);
         }
       } else {
         onDateChange(startDate);
@@ -96,7 +104,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange }) => {
   };
 
   const handleIncreaseSpeed = () => {
-    if (speed < 5) {
+    if (speed < 8) {
         setSpeed(speed + 0.25);
     }
   };
