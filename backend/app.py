@@ -297,6 +297,7 @@ def variant_pie_chart():
 
 #     ]
 
+
 def run_server():
     app.run(debug=True)
 
