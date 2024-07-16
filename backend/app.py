@@ -54,6 +54,8 @@ def mytest1():
 
 @app.route('/load_data', methods=['GET'])
 def load_data():
+    global data_loaded
+    data_loaded = True
     load_into_db(app)
     return redirect(url_for('home'))
 
