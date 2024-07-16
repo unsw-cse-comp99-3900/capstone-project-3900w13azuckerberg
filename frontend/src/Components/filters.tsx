@@ -5,15 +5,24 @@ import "./filters.css";
 import CustomTooltip from './customTooltip';
 
 interface FiltersProps {
-  token: boolean;
-  onFilterChange: (token: boolean) => void;
+  token: string;
+  onFilterChange: (token: string) => void;
   setShowCompare: (token: boolean) => void;
   showCompare: boolean;
   predict: boolean;
 	setPredict: (predict: boolean) => void;
+  containerId: string;
 }
 
-const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare, showCompare, predict, setPredict}) => {
+const Filters: React.FC<FiltersProps> = ({ 
+    token, 
+    onFilterChange, 
+    setShowCompare, 
+    showCompare, 
+    predict, 
+    setPredict,
+    containerId
+  }) => {
   const [showFilters, setShowFilters] = useState(false); 
   const [allFilters, setAllFilters] = useState([
     { label: "Alpha", selected: true },
@@ -27,7 +36,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare
     setAllFilters(
       allFilters.map((filter) => ({ ...filter, selected: newState })),
     );
-    onFilterChange(!token);
+    onFilterChange(containerId);
   };
 
   const toggleFilters = () => {
@@ -40,7 +49,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare
     );
     setAllFilters(updatedFilters);
     console.log(updatedFilters);
-    onFilterChange(!token);
+    onFilterChange(containerId);
   };
   
   const handleCompare = () => {
@@ -78,6 +87,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare
                 onSelect={(selected: boolean) =>
                   handleSetSelected(filter.label, selected)
                 }
+                containerId={containerId}
               />
             ))}
             <div className="icon-container">
@@ -85,9 +95,10 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare
                 <div>
                   <Icon
                     icon="filter_none"
-                    data={{ label: "none" }} 
+                    data={"none"} 
                     endpoint="http://127.0.0.1:5000/filter"
                     onClick={() => setAll(false)}
+                    containerId={containerId}
                   />
                 </div>
               </CustomTooltip>
@@ -95,9 +106,10 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare
                 <div>
                   <Icon
                     icon="select_all"
-                    data={{ label: "all" }} 
+                    data={"all"} 
                     endpoint="http://127.0.0.1:5000/filter"
                     onClick={() => setAll(true)}
+                    containerId={containerId}
                   />
                 </div>
               </CustomTooltip>

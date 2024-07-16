@@ -3,19 +3,24 @@ import axios from "axios";
 
 interface ButtonProps {
   icon: string;
-  data: object;
+  data: string;
   endpoint: string;
   onClick: () => void;
+  containerId: string;
 }
 
-const Icon: React.FC<ButtonProps> = ({ icon, data, endpoint, onClick }) => {
+const Icon: React.FC<ButtonProps> = ({ icon, data, endpoint, onClick, containerId }) => {
   const handleClick = async () => {
     try {
       onClick();
 
 
       const response = await axios.get(endpoint, {
-        params: data,
+        params: {
+          param1: data, // All or none
+          param2: false,
+          param3: containerId, // M left or right
+        }
       });
 
       console.log("Success:", response.data);
