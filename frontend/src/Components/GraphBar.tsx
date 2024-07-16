@@ -4,12 +4,22 @@ import GraphButton from "./GraphButton";
 import PieChart from "./PieChart";
 import LineChart from "./LineChart";
 import BarChart from "./barChart";
-function GraphBar() {
+import { PieItem, LineItem } from "./types";
+interface GraphProps {
+  pieData: PieItem[],
+  lineData: LineItem[],
+}
+
+
+const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
+
   const [showGraph, setShowGraph] = useState(false);
 
   const handleButtonClick = () => {
     setShowGraph(!showGraph);
   };
+
+
 
   return (
     <div className={`outer ${showGraph ? "open" : ""}`}>
@@ -18,7 +28,7 @@ function GraphBar() {
       </div>
       <div className={`wrapper ${showGraph ? "open" : ""}`}>
         <div className="graphBox">
-          <PieChart />
+          <PieChart pieData={pieData}/>
         </div>
         <div className="graphBox">
           <LineChart />
