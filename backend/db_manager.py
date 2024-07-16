@@ -98,14 +98,15 @@ def get_case_by_coordinate(date, labels = []):
 
     results = query.all()
 
-    result_dict = {
-        originating_lab: {
-            'longitude': longitude,
-            'latitude': latitude,
-            'case_count': case_count,
-            'state': division_exposure
-        } for originating_lab, longitude, latitude, case_count, division_exposure in results
-    }
+    result_dict = {}
+    for originating_lab, longitude, latitude, case_count, division_exposure in results:
+        if originating_lab not in result_dict:
+            result_dict[originating_lab] = {
+                'longitude': longitude,
+                'latitude': latitude,
+                'case_count': case_count,
+                'state': division_exposure
+            }
     return result_dict
 
 # def get_case_by_coordinate_and_strain(date, strains=[]):
