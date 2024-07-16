@@ -1,11 +1,11 @@
 from datetime import datetime
-from flask import Flask, redirect, request, jsonify, url_for, render_template_string
+from flask import Flask, redirect, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, get_case_by_coordinate_and_strain, init_db, load_dataframe_to_db
+from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, init_db
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -73,13 +73,13 @@ def home():
 
 @app.route('/test', methods=['GET'])
 def mytest():
-    # date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    # case_counts = get_case_by_coordinate(date, ["Alpha"])
+    print("testing pie chart db function\n")
     res = get_all_time_case_pie_chart()
     return jsonify(res)
 
 @app.route('/test1', methods=['GET'])
 def mytest1():
+    print("testing heatmap db function\n")
     date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
     case_counts = get_case_by_coordinate(date, ["Omicron"])
     return jsonify(case_counts)
@@ -126,9 +126,6 @@ def heat_map(containerId):
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
-
-
-        # daily_cases = get_case_by_coordinate(current_date)
         daily_cases = get_case_by_coordinate(current_date, selected_strains)
 
         # Initialize a list to store the cases for the current day
