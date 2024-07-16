@@ -216,28 +216,48 @@ def predictive_map():
 # variant filter for heatmap
 @app.route('/filter', methods=['GET'])
 def filter_variant():
-    # data from frontend in the format
-    # {
-    #     "label": 'alpha',
-    #     "selected": 'true',
-    #     'containerId': 'left'
-    # }
+
+    """"
+    data from frontend in the format
+    {
+        "label": 'alpha',
+        "selected": 'true',
+        'containerId': 'left'
+    }
+    """
 
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
 
+
     if (containerId) == 'left':
         init_left_flag = False
-        selected_strains_left[label] = selected
+        if (label) == 'all':
+            selected_strains_left = selected_strains_all
+        elif (label) == 'none':
+            selected_strains_left = selected_strains_none
+        else:
+            selected_strains_left[label] = selected
     elif (containerId) == 'right':
         init_right_flag = False
-        selected_strains_right[label] = selected
+        if (label) == 'all':
+            selected_strains_right = selected_strains_all
+        elif (label) == 'none':
+            selected_strains_right = selected_strains_none
+        else:
+            selected_strains_right[label] = selected
     else:
         init_main_flag = False
-        selected_strains_main[label] = selected
+        if (label) == 'all':
+            selected_strains_main = selected_strains_all
+        elif (label) == 'none':
+            selected_strains_main = selected_strains_none
+        else:
+            selected_strains_main[label] = selected
 
     return "nil"
+
 
 def create_default_state():
      # Define the expected states and strains
@@ -298,11 +318,14 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
     # Now call load_data() without blocking the main thread
-    # load_data()
-    with app.app_context():
-        app.run(debug=True)
+    load_data()
+
+
+    # # ONLY IF RUNNING BACKEND IN TERMINAL
+    # with app.app_context():
+    #     app.run(debug=True)
