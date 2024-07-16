@@ -40,6 +40,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
 
   const handleCalendar = (newDate: Date) => {
     onDateChange(newDate);
+    setPlayback(false);
     // Close calendar after selecting date
     setShowCalendar(false); 
   };

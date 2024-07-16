@@ -19,9 +19,9 @@ function App() {
 
   useEffect(() => {
 		if (predict) {
-      setDate(new Date("2024-07-17"))
+      setDate(new Date("2025-01-01"))
     } else {
-      setDate(new Date("2020-12-31"))
+      setDate(new Date("2021-01-01"))
     }
 	}, [predict]);
 

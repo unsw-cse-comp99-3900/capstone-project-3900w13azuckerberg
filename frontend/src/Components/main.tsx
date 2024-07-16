@@ -41,21 +41,23 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setIsLoading(true);
 			try {
 				let response: AxiosResponse;
-				if (predict) {
+				if (!predict) {
 					response = await axios.get("http://127.0.0.1:5000/map", {});
 				} else {
 					response = await axios.get("http://127.0.0.1:5000/predictive_map", {})
+					console.log("predicted called");
 				}
 				const rawData: { [date: string]: Point[] } = response.data;
 				const formattedData: MapData = {};
-	
-			for (const [key, value] of Object.entries(rawData)) {
-				formattedData[key] = value.map(point => [
-				point.latitude,
-				point.longitude,
-				point.intensity
-				]);
-			}
+				
+				for (const [key, value] of Object.entries(rawData)) {
+					formattedData[key] = value.map(point => [
+						point.latitude,
+						point.longitude,
+						point.intensity
+					]);
+				}
+			console.log(formattedData);
 			setAllMapData(formattedData);
 	
 			console.log("Heatmap data updated.");

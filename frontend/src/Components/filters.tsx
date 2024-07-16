@@ -51,6 +51,7 @@ const Filters: React.FC<FiltersProps> = ({ token, onFilterChange, setShowCompare
   const handlePredict = () => {
     setPredict(!predict);
     setShowCompare(false);
+    onFilterChange(!token);
   }
 
   return (

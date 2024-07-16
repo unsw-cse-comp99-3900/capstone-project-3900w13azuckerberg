@@ -141,14 +141,15 @@ def predictive_map():
             
             # add predicted infection data to dictionary
             predictive_map_data[date_key].append({
-                "lattitude": data["latitude"],
-                "longtitude": data["longitude"],
+                "latitude": data["latitude"],
+                "longitude": data["longitude"],
+                "intensity": round(model.numI[i*10]),
                 "state": data["state"],
                 "numS": round(model.numS[i*10]),
                 "numE": round(model.numE[i*10]),
-                "numI": round(model.numI[i*10]),
                 "numR": round(model.numR[i*10])
             })
+            # print(predictive_map_data[date_key])
 
     return jsonify(predictive_map_data)
 
