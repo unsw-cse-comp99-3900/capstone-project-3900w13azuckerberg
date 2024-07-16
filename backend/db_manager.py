@@ -168,10 +168,10 @@ def get_case_by_coordinate_and_strain(date, strains=[]):
             result_dict[originating_lab] = {
                 'longitude': longitude,
                 'latitude': latitude,
-                'case_count': {},
+                'case_count': case_count,
                 'state': division_exposure
             }
-        result_dict[originating_lab]['case_count'][label] = case_count
+        # result_dict[originating_lab]['case_count'][label] = case_count
 
     return result_dict
 
