@@ -5,7 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, init_db
+from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, get_case_by_coordinate_and_strain, init_db
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -32,10 +32,10 @@ init_right_flag = True
 init_main_flag = True
 
 selected_strains_left = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
+    "Alpha": False,
+    "Beta": False,
+    "Delta": False,
+    "Omicron": False
 }
 
 selected_strains_right = {
@@ -53,10 +53,10 @@ selected_strains_main = {
 }
 
 selected_strains_all= {
-    "alpha": True,
-    "beta": True,
-    "delta": True,
-    "omicron": True
+    "Alpha": True,
+    "Beta": True,
+    "Delta": True,
+    "Omicron": True
 }
 
 @app.before_request
@@ -119,14 +119,14 @@ def heat_map(containerId):
             selected_strains = selected_strains_main
 
     selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
-
+    print(selected_strains)
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     map_data = {}
     
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_coordinate(current_date, selected_strains)
+        daily_cases = get_case_by_coordinate_and_strain(current_date, selected_strains)
 
         # Initialize a list to store the cases for the current day
         cases_list = []
@@ -144,7 +144,6 @@ def heat_map(containerId):
         map_data[current_date.strftime('%Y-%m-%d')] = cases_list
         print("date:", current_date, "added")
         current_date += timedelta(days=1)
-    print("number of days:", len(data))
     return jsonify(map_data)
 
 @app.route('/predictive_map', methods=['GET'])
@@ -299,9 +298,11 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
+    # # Start the Flask server in a separate thread
+    # server_thread = threading.Thread(target=run_server)
+    # server_thread.start()
 
     # Now call load_data() without blocking the main thread
-    load_data()
+    # load_data()
+    with app.app_context():
+        app.run(debug=True)
