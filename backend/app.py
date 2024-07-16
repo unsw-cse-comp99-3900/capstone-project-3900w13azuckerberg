@@ -5,7 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, get_case_by_coordinate_and_strain, init_db
+from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, init_db
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -126,7 +126,7 @@ def heat_map(containerId):
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_coordinate_and_strain(current_date, selected_strains)
+        daily_cases = get_case_by_coordinate(current_date, selected_strains)
 
         # Initialize a list to store the cases for the current day
         cases_list = []
