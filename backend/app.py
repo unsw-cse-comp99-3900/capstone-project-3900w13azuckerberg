@@ -28,6 +28,38 @@ migrate = Migrate(app, db)
 
 data_loaded = False
 
+init_left_flag = True
+init_right_flag = True
+init_main_flag = True
+
+selected_strains_left = {
+    "alpha": False, 
+    "beta": False, 
+    "delta": False,
+    "omicron": False
+}
+
+selected_strains_right = {
+    "alpha": False, 
+    "beta": False, 
+    "delta": False,
+    "omicron": False
+}
+
+selected_strains_main = {
+    "alpha": False, 
+    "beta": False, 
+    "delta": False,
+    "omicron": False
+}
+
+selected_strains_all= {
+    "alpha": True, 
+    "beta": True, 
+    "delta": True,
+    "omicron": True
+}
+
 @app.before_request
 def before_request():
     global data_loaded
@@ -54,11 +86,31 @@ def load_data():
 # frontend uses the midpoint of the state that's returned for below routes
 
 # returns list of coordinate cases for a particular date
-@app.route('/map', methods=['GET'])
-def heat_map():
+@app.route('/map/<containerId>', methods=['GET'])
+def heat_map(containerId):
+
     # date_str = request.args.get('date')
     start_date = datetime.strptime('2023-12-20', '%Y-%m-%d').date()
     end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
+
+    # select strains based off filter or select all if no filter has been selected
+    if (containerId) == 'left':
+        if (init_left_flag) == True:
+            selected_strains = selected_strains_all
+        else:
+            selected_strains = selected_strains_left
+    elif (containerId) == 'right':
+        if (init_right_flag) == True:
+            selected_strains = selected_strains_all
+        else:
+            selected_strains = selected_strains_right
+    elif (containerId) == 'm':
+        if (init_main_flag) == True:
+            selected_strains = selected_strains_all
+        else:
+            selected_strains = selected_strains_main
+
+    selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
 
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     map_data = {}
@@ -66,7 +118,10 @@ def heat_map():
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
+
+        
         daily_cases = get_case_by_coordinate(current_date)
+        # daily_cases = get_case_by_coordinate_strain(current_date, selected_strains)
 
         # Initialize a list to store the cases for the current day
         cases_list = []
@@ -115,7 +170,7 @@ def predictive_map():
             "longitude": data["longitude"],
             "state": data["state"],
             "initN": default_population,
-            "initI": data["case_count"]
+            "intensity": data["case_count"]
         }
 
     for location, data in init_data.items():
@@ -154,34 +209,52 @@ def predictive_map():
     return jsonify(predictive_map_data)
 
 
-# variant filter for heatmap
+# variant filter for heatm       
 @app.route('/filter', methods=['GET'])
 def filter_variant():
+
+    # data from frontend in the format
+    # {
+    #     "label": 'alpha',
+    #     "selected": 'true',
+    #     'containerId': 'left'
+    # }
+
+    label = request.args.get('label')
+    selected = request.args.get('selected')
+    containerId = request.args.get('containerId')
+    
+    if (containerId) == 'left':
+        init_left_flag = False
+        selected_strains_left[label] = selected
+    elif (containerId) == 'right':
+        init_right_flag = False
+        selected_strains_right[label] = selected
+    else: 
+        init_main_flag = False
+        selected_strains_main[label] = selected
+    
     return "nil"
-    variant = request.args.get('variant_name')
-    date = request.args.get('date')
-    variant_records = get_variant(variant, date)
-    # this function get_variant should return a list of variant records up until a particular date for displaying on the heat map
-    results = [
-        {
-            "state": variant_record.state,
-            "intensity": variant_record.intensity
-        } for variant_record in variant_records]
-    return jsonify(results)
+
 
 # graph showing distribution of infections for variant strains 
-@app.route('/pie_chart', methods=['GET'])
+@app.route('/graph_data', methods=['GET'])
 def variant_pie_chart():
-    date = request.args.get('date')
-    variant_split_records = get_variant_split(date)
+    # date = request.args.get('date')
+
+    end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
+    # start_date = datetime.strptime('2021-12-30', '%Y-%m-%d').date()
+
+
+    graph_data = get_state_strains(end_date)
     # get variant split should return 4 Records showing variant, %, number of infecteced up until a certain date
-    results = [
-        {
-            "variant": variant_split_record.variant,
-            "percentage": variant_split_record.percentage,
-            "infected": variant_split_record.infected
-        } for variant_split_record in variant_split_records]
-    return jsonify(results)
+    # results = [
+    #     {
+    #         "variant": variant_split_record.variant,
+    #         "percentage": variant_split_record.percentage,
+    #         "infected": variant_split_record.infected
+    #     } for variant_split_record in variant_split_records]
+    return jsonify(graph_data)
 
 # # TBD once we find a source of vaccination data - graph showing vaccinations
 # @app.route('/vaccination', methods=['GET'])
