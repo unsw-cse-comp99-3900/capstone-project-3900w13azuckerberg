@@ -60,7 +60,7 @@ const Filters: React.FC<FiltersProps> = ({
   const handlePredict = () => {
     setPredict(!predict);
     setShowCompare(false);
-    onFilterChange(!token);
+    onFilterChange(containerId);
   }
 
   return (
