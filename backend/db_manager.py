@@ -176,6 +176,7 @@ def get_case_by_coordinate_and_strain(date, strains=[]):
     return result_dict
 
 def get_all_time_case_pie_chart():
+        # Fetch all the data
     results = db.session.query(
         VirusData.date,
         VirusData.division_exposure,
@@ -193,14 +194,34 @@ def get_all_time_case_pie_chart():
         VirusData.date
     ).all()
 
-    result_dict = {}
+    # Organize results into a dictionary for easier cumulative sum calculation
+    temp_result_dict = {}
     for date, division_exposure, label, case_count in results:
         date_str = date.strftime("%Y-%m-%d")
-        if date not in result_dict:
-            result_dict[date_str] = {}
-        if division_exposure not in result_dict[date_str]:
+        division_exposure = division_exposure or "Unknown"  # Handle None values for division_exposure
+        label = label or "Unknown"  # Handle None values for label
+        if date_str and date_str not in temp_result_dict:
+            temp_result_dict[date_str] = {}
+        if division_exposure and division_exposure not in temp_result_dict[date_str]:
+            temp_result_dict[date_str][division_exposure] = {}
+        if label and label not in temp_result_dict[date_str][division_exposure]:
+            temp_result_dict[date_str][division_exposure][label] = 0
+        temp_result_dict[date_str][division_exposure][label] += case_count
+
+    # Calculate the cumulative sum for each date over the past 14 days
+    result_dict = {}
+    sorted_dates = sorted(temp_result_dict.keys())
+    for i, date_str in enumerate(sorted_dates):
+        result_dict[date_str] = {}
+        for division_exposure in temp_result_dict[date_str]:
             result_dict[date_str][division_exposure] = {}
-        result_dict[date_str][division_exposure][label] = case_count
+            for label in temp_result_dict[date_str][division_exposure]:
+                cumulative_sum = 0
+                for j in range(max(0, i-13), i+1):  # Consider the past 14 days including the current day
+                    prev_date_str = sorted_dates[j]
+                    if division_exposure in temp_result_dict[prev_date_str] and label in temp_result_dict[prev_date_str][division_exposure]:
+                        cumulative_sum += temp_result_dict[prev_date_str][division_exposure][label]
+                result_dict[date_str][division_exposure][label] = cumulative_sum
 
     return result_dict
 
