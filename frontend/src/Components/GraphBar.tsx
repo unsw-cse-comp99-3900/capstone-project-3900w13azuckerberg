@@ -19,8 +19,6 @@ const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
     setShowGraph(!showGraph);
   };
 
-
-
   return (
     <div className={`outer ${showGraph ? "open" : ""}`}>
       <div id="buttonBar">
@@ -31,7 +29,7 @@ const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
           <PieChart pieData={pieData}/>
         </div>
         <div className="graphBox">
-          <LineChart />
+          <LineChart lineData={lineData}/>
         </div>
         <div className="graphBox">
           <BarChart />

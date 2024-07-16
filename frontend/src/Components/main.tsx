@@ -26,7 +26,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		gamma: "#C39AE5",
 		delta: "#92278F",
 		omicron: "#6159AE"
-	  };
+	};
 
 	const [refetch, triggerRefetch] = useState("M");
 	const [allMapData, setAllMapData] = useState<MapData>({});
@@ -87,7 +87,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 			//   if (!predict) {
-				response = await axios.get("http://127.0.0.1:5000/graphdata/", {
+				response = await axios.get("http://127.0.0.1:5000/graphdata", {
 				params: {
 					param1: refetch, // <- this will be either "M", "left", "right"
 					}
@@ -116,8 +116,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	useEffect(() => {
 		if (graphData != null) {
 			const dateString = date.toISOString().split('T')[0];
+			const currLocation = (location == "all") ? "AUS" : location;
 			let p: PieItem[] = [];
-			const currData = graphData[dateString][(location == "all") ? "AUS" : location];
+			const currData = graphData[dateString][currLocation];
 			Object.keys(currData).forEach((name) => p.push({
 				id: name,
 				label: name,
@@ -125,6 +126,25 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				color: colors[name],
 			}))
 			setPieData(p);
+
+			const sorted = Object.keys(graphData)
+								 .filter(([d]) => d < dateString)
+								 .sort(([date1], [date2]) => date1.localeCompare(date2));
+			let l: LineItem[] = [];
+			Object.keys(graphData[dateString]["all"]).forEach((name) => l.push({
+				id: name,
+				color: colors[name],
+				data: [],
+			})
+			)
+			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
+				  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
+					x: dateString,
+					y: graphData[d][currLocation][strain],
+				  })
+			));
+
+			setLineData(l);
 		}
 
 	}, [date, graphData])
