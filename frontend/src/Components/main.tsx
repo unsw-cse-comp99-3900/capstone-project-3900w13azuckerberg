@@ -41,6 +41,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
       // Function to fetch heat map data from the backend
 		const fetchData = async () => {
 			setIsLoading(true);
+			console.log("Trying to get map");
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
@@ -72,9 +73,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			}
 			setIsLoading(false);
 		};
-      if (Object.keys(allMapData).length === 0 || refetch) {
         fetchData();
-      }
     }, [refetch, predict]);
 	
 
@@ -89,7 +88,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			//   if (!predict) {
 				response = await axios.get("http://127.0.0.1:5000/graphdata", {
 				params: {
-					param1: refetch, // <- this will be either "M", "left", "right"
+					param1: containerId, // <- this will be either "M", "left", "right"
 					}
 				});
 			//   } else {

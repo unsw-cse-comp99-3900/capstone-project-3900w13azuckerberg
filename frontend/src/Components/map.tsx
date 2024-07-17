@@ -103,7 +103,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
   }
 
   useEffect(() => {
-    if (!mapRef.current && containerId === "M") {
+    if (!mapRef.current && containerId === "m") {
         return createMap();
     }
   }, [containerId]);

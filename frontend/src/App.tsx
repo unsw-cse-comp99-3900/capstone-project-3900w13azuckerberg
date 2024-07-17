@@ -67,7 +67,7 @@ function App() {
           ) : (
           <div>
             <Main
-              containerId="M"
+              containerId="m"
               setIsLoading={setIsLoading}
               date={date}
               predict={predict}
