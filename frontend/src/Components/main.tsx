@@ -45,7 +45,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
-					response = await axios.get("http://127.0.0.1:5000/map/", {
+					response = await axios.get("http://127.0.0.1:5000/map", {
 					params: {
 						containerId, // <- this will be either "M", "left", "right"
 						}
@@ -67,7 +67,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setAllMapData(formattedData);
 	
 			console.log("Heatmap data updated.");
-	
+
 			} catch (error) {
 			console.error("Error fetching heat map data:", error);
 			}
@@ -82,7 +82,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
 			console.log("getting graph data");
-			setIsLoading(true);
+			// setIsLoading(true);
 			try {
 				let response: AxiosResponse;
 			//   if (!predict) {
@@ -100,7 +100,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
-			  setIsLoading(false);
+			//   setIsLoading(false);
 		  };
 		  fetchGraphData();
 	}, [refetch, predict]);
@@ -112,41 +112,41 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	  
     }, [date, allMapData]);
 
-	useEffect(() => {
-		if (graphData != null) {
-			const dateString = date.toISOString().split('T')[0];
-			const currLocation = (location == "all") ? "AUS" : location;
-			let p: PieItem[] = [];
-			const currData = graphData[dateString][currLocation];
-			Object.keys(currData).forEach((name) => p.push({
-				id: name,
-				label: name,
-				value: currData[name],
-				color: colors[name],
-			}))
-			setPieData(p);
+	// useEffect(() => {
+	// 	if (graphData != null && Object.keys(graphData).length > 0) {
+	// 		const dateString = date.toISOString().split('T')[0];
+	// 		const currLocation = (location == "all") ? "AUS" : location;
+	// 		let p: PieItem[] = [];
+	// 		const currData = graphData[dateString][currLocation];
+	// 		Object.keys(currData).forEach((name) => p.push({
+	// 			id: name,
+	// 			label: name,
+	// 			value: currData[name],
+	// 			color: colors[name],
+	// 		}))
+	// 		setPieData(p);
 
-			const sorted = Object.keys(graphData)
-								 .filter(([d]) => d < dateString)
-								 .sort(([date1], [date2]) => date1.localeCompare(date2));
-			let l: LineItem[] = [];
-			Object.keys(graphData[dateString]["all"]).forEach((name) => l.push({
-				id: name,
-				color: colors[name],
-				data: [],
-			})
-			)
-			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
-				  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
-					x: dateString,
-					y: graphData[d][currLocation][strain],
-				  })
-			));
+	// 		const sorted = Object.keys(graphData)
+	// 							 .filter(([d]) => d < dateString)
+	// 							 .sort(([date1], [date2]) => date1.localeCompare(date2));
+	// 		let l: LineItem[] = [];
+	// 		Object.keys(graphData[dateString]["all"]).forEach((name) => l.push({
+	// 			id: name,
+	// 			color: colors[name],
+	// 			data: [],
+	// 		})
+	// 		)
+	// 		sorted.forEach((d) => Object.keys(graphData[d][currLocation])
+	// 			  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
+	// 				x: dateString,
+	// 				y: graphData[d][currLocation][strain],
+	// 			  })
+	// 		));
 
-			setLineData(l);
-		}
+	// 		setLineData(l);
+	// 	}
 
-	}, [date, graphData])
+	// }, [date, graphData])
   return (
     <div id="body">
 		<GraphBar pieData={pieData} lineData={lineData} />

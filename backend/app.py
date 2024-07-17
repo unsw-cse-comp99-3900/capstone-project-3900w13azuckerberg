@@ -97,7 +97,7 @@ def load_data():
 # frontend uses the midpoint of the state that's returned for below routes
 
 # returns list of coordinate cases for a particular date
-@app.route('/map/', methods=['GET'])
+@app.route('/map', methods=['GET'])
 def heat_map():
     containerId = request.args.get('containerId')
     print(containerId)
@@ -260,7 +260,7 @@ def create_default_state():
 
 
 # graph showing distribution of infections for variant strains 
-@app.route('/graph_data', methods=['GET'])
+@app.route('/graphdata', methods=['GET'])
 def variant_pie_chart():
     # date = request.args.get('date')
     end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
