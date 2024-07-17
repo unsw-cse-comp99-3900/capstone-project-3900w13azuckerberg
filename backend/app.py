@@ -59,6 +59,13 @@ selected_strains_all= {
     "Omicron": True
 }
 
+selected_strains_none = {
+    "alpha": False,
+    "beta": False,
+    "delta": False,
+    "omicron": False
+}
+
 @app.before_request
 def before_request():
     global data_loaded
