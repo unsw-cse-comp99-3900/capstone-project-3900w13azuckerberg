@@ -27,15 +27,11 @@ migrate = Migrate(app, db)
 
 data_loaded = False
 
-init_left_flag = True
-init_right_flag = True
-init_main_flag = True
-
 selected_strains_left = {
-    "Alpha": False,
-    "Beta": False,
-    "Delta": False,
-    "Omicron": False
+    "alpha": False,
+    "beta": False,
+    "delta": False,
+    "omicron": False
 }
 
 selected_strains_right = {
@@ -53,10 +49,10 @@ selected_strains_main = {
 }
 
 selected_strains_all= {
-    "Alpha": True,
-    "Beta": True,
-    "Delta": True,
-    "Omicron": True
+    "alpha": True,
+    "beta": True,
+    "delta": True,
+    "omicron": True
 }
 
 selected_strains_none = {
@@ -172,7 +168,7 @@ def predictive_map():
     predictive_period = 365 # one year of prediction
 
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
-    loc_data = get_case_by_coordinate(current_date)
+    loc_data = get_case_by_coordinate(current_date, selected_strains_all)
 
     for key, data in loc_data.items():
         init_data[key] = {
@@ -192,7 +188,7 @@ def predictive_map():
             gamma   = default_gamma, 
             psi_E   = 1,
             psi_I   = 1,
-            initI = data["initI"]
+            initI = data["intensity"]
             # initI   = 10000 
         )
 
@@ -221,7 +217,7 @@ def predictive_map():
 
 
 # variant filter for heatmap
-@app.route('/filter', methods=['GET'])
+@app.route('/filter/', methods=['GET'])
 def filter_variant():
 
     """"
@@ -239,7 +235,6 @@ def filter_variant():
     containerId = request.args.get('containerId')
 
     if (containerId) == 'left':
-        init_left_flag = False
         if (label) == 'all':
             selected_strains_left = selected_strains_all
         elif (label) == 'none':
@@ -247,7 +242,6 @@ def filter_variant():
         else:
             selected_strains_left[label] = selected
     elif (containerId) == 'right':
-        init_right_flag = False
         if (label) == 'all':
             selected_strains_right = selected_strains_all
         elif (label) == 'none':
@@ -255,7 +249,6 @@ def filter_variant():
         else:
             selected_strains_right[label] = selected
     else:
-        init_main_flag = False
         if (label) == 'all':
             selected_strains_main = selected_strains_all
         elif (label) == 'none':

@@ -45,7 +45,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
-					response = await axios.get("http://127.0.0.1:5000/map", {
+					response = await axios.get("http://127.0.0.1:5000/map/", {
 					params: {
 						containerId, // <- this will be either "M", "left", "right"
 						}

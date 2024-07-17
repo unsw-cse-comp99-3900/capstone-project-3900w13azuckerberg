@@ -1,7 +1,7 @@
 import React from "react";
 import "./button.css";
-import axios from "axios";
-
+import AxiosError from "axios";
+import axios from "axios"
 interface ButtonProps {
   label: string;
   endpoint: string;
@@ -30,7 +30,11 @@ const Button: React.FC<ButtonProps> = ({
 
       console.log("%: filter updated %s %s", response, label, selected);
     } catch (error) {
-      console.error("Error:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Error:", error.response?.data);
+      } else {
+        console.error("Unexpected Error:", error);
+      }
     }
   };
 
