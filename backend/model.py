@@ -6,7 +6,7 @@ class VirusData(db.Model):
     __tablename__ = 'virus_data'
     
     id = db.Column(db.String, nullable=False, primary_key=True)
-    lineage = db.Column(db.String, nullable=False)
+    lineage = db.Column(db.String, db.ForeignKey('strain_label.lineage'), nullable=False)
     strain = db.Column(db.String, nullable=False)
     date = db.Column(db.Date, nullable=False)
     division = db.Column(db.String, nullable=True)
@@ -27,3 +27,9 @@ class LabLocation(db.Model):
     lab_name = db.Column(db.String, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
+
+class StrainLabel(db.Model):
+    __tablename__ = 'strain_label'
+
+    lineage = db.Column(db.String, nullable=False, primary_key=True)
+    label = db.Column(db.String, nullable=False)
