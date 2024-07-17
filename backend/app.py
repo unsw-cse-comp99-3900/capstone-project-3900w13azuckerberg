@@ -97,29 +97,20 @@ def load_data():
 # frontend uses the midpoint of the state that's returned for below routes
 
 # returns list of coordinate cases for a particular date
-@app.route('/map/<containerId>', methods=['GET'])
-def heat_map(containerId):
-
-    # date_str = request.args.get('date')
+@app.route('/map/', methods=['GET'])
+def heat_map():
+    containerId = request.args.get('containerId')
+    print(containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
     end_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
 
     # select strains based off filter or select all if no filter has been selected
     if (containerId) == 'left':
-        if (init_left_flag) == True:
-            selected_strains = selected_strains_all
-        else:
-            selected_strains = selected_strains_left
+        selected_strains = selected_strains_left
     elif (containerId) == 'right':
-        if (init_right_flag) == True:
-            selected_strains = selected_strains_all
-        else:
-            selected_strains = selected_strains_right
+        selected_strains = selected_strains_right
     elif (containerId) == 'm':
-        if (init_main_flag) == True:
-            selected_strains = selected_strains_all
-        else:
-            selected_strains = selected_strains_main
+        selected_strains = selected_strains_main
 
     selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
     print(selected_strains)
@@ -233,7 +224,7 @@ def filter_variant():
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
-
+    global selected_strains_left, selected_strains_right, selected_strains_main
     if (containerId) == 'left':
         if (label) == 'all':
             selected_strains_left = selected_strains_all
