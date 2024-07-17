@@ -22,13 +22,13 @@ const Button: React.FC<ButtonProps> = ({
       onSelect(!selected);
       const response = await axios.get(endpoint, {
         params: {
-          param1: label, // Strain ie Alpha, Beta
-          param2: selected, // True or false
-          param3: containerId, // M left or right
+          label, // Strain ie Alpha, Beta
+          selected, // True or false
+          containerId, // M left or right
         }
       });
 
-      console.log("Success:", response.data);
+      console.log("%: filter updated %s %s", response, label, selected);
     } catch (error) {
       console.error("Error:", error);
     }

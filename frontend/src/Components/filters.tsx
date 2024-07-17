@@ -5,8 +5,8 @@ import "./filters.css";
 import CustomTooltip from './customTooltip';
 
 interface FiltersProps {
-  token: string;
-  onFilterChange: (token: string) => void;
+  token: boolean;
+  onFilterChange: (token: boolean) => void;
   setShowCompare: (token: boolean) => void;
   showCompare: boolean;
   predict: boolean;
@@ -36,7 +36,7 @@ const Filters: React.FC<FiltersProps> = ({
     setAllFilters(
       allFilters.map((filter) => ({ ...filter, selected: newState })),
     );
-    onFilterChange(containerId);
+    onFilterChange(!token);
   };
 
   const toggleFilters = () => {
@@ -49,7 +49,7 @@ const Filters: React.FC<FiltersProps> = ({
     );
     setAllFilters(updatedFilters);
     console.log(updatedFilters);
-    onFilterChange(containerId);
+    onFilterChange(!token);
   };
   
   const handleCompare = () => {
@@ -60,7 +60,7 @@ const Filters: React.FC<FiltersProps> = ({
   const handlePredict = () => {
     setPredict(!predict);
     setShowCompare(false);
-    onFilterChange(containerId);
+    onFilterChange(!token);
   }
 
   return (

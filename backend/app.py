@@ -232,11 +232,11 @@ def filter_variant():
         'containerId': 'left'
     }
     """
+    print("caught filter change")
 
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
-
 
     if (containerId) == 'left':
         init_left_flag = False
@@ -263,7 +263,7 @@ def filter_variant():
         else:
             selected_strains_main[label] = selected
 
-    return "nil"
+    return "success"
 
 
 def create_default_state():
