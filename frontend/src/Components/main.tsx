@@ -21,11 +21,11 @@ interface MainProps {
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
 	const colors: { [strain: string]: string } = {
-		alpha: "#9B57D3",
-		beta: "#665EB8",
-		gamma: "#C39AE5",
-		delta: "#92278F",
-		omicron: "#6159AE"
+		Alpha: "#9B57D3",
+		Beta: "#665EB8",
+		Gamma: "#C39AE5",
+		Delta: "#92278F",
+		Omicron: "#6159AE"
 	};
 
 	const [refetch, triggerRefetch] = useState(false);
@@ -96,7 +96,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				const rawData: GraphData = response.data;
 				setGraphData(rawData);
 				console.log("Graph data updated.");
-	  
+				console.log(rawData);
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
@@ -112,41 +112,43 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	  
     }, [date, allMapData]);
 
-	// useEffect(() => {
-	// 	if (graphData != null && Object.keys(graphData).length > 0) {
-	// 		const dateString = date.toISOString().split('T')[0];
-	// 		const currLocation = (location == "all") ? "AUS" : location;
-	// 		let p: PieItem[] = [];
-	// 		const currData = graphData[dateString][currLocation];
-	// 		Object.keys(currData).forEach((name) => p.push({
-	// 			id: name,
-	// 			label: name,
-	// 			value: currData[name],
-	// 			color: colors[name],
-	// 		}))
-	// 		setPieData(p);
+	useEffect(() => {
+		if (graphData != null && Object.keys(graphData).length > 0) {
+			const dateString = date.toISOString().split('T')[0];
+			const currLocation = (location == "all") ? "Australia" : location;
+			let p: PieItem[] = [];
+			console.log(dateString);
+			const currData = graphData[dateString][currLocation];
+			Object.keys(currData).forEach((name) => p.push({
+				id: name,
+				label: name,
+				value: currData[name],
+				color: colors[name],
+			}))
+			setPieData(p);
 
-	// 		const sorted = Object.keys(graphData)
-	// 							 .filter(([d]) => d < dateString)
-	// 							 .sort(([date1], [date2]) => date1.localeCompare(date2));
-	// 		let l: LineItem[] = [];
-	// 		Object.keys(graphData[dateString]["all"]).forEach((name) => l.push({
-	// 			id: name,
-	// 			color: colors[name],
-	// 			data: [],
-	// 		})
-	// 		)
-	// 		sorted.forEach((d) => Object.keys(graphData[d][currLocation])
-	// 			  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
-	// 				x: dateString,
-	// 				y: graphData[d][currLocation][strain],
-	// 			  })
-	// 		));
+			const sorted = Object.keys(graphData)
+								 .filter(([d]) => d < dateString)
+								 .sort(([date1], [date2]) => date1.localeCompare(date2));
+			console.log(sorted)
+			let l: LineItem[] = [];
+			Object.keys(graphData[dateString]["Australia"]).forEach((name) => l.push({
+				id: name,
+				color: colors[name],
+				data: [],
+			})
+			)
+			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
+				  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
+					x: dateString,
+					y: graphData[d][currLocation][strain],
+				  })
+			));
 
-	// 		setLineData(l);
-	// 	}
+			setLineData(l);
+		}
 
-	// }, [date, graphData])
+	}, [date, graphData])
   return (
     <div id="body">
 		<GraphBar pieData={pieData} lineData={lineData} />
