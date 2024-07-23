@@ -1,16 +1,17 @@
 from datetime import datetime
+import time
 from flask import Flask, redirect, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, init_db
+from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
 import threading
-# from basic_seirs import get_predictive_data 
+# from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
 load_dotenv()
@@ -76,9 +77,21 @@ def home():
 
 @app.route('/test', methods=['GET'])
 def mytest():
-    print("testing pie chart db function\n")
-    res = get_all_time_case_pie_chart()
-    return jsonify(res)
+    print("Starting my test...")
+    start_time = time.time()
+
+
+    start_date_str = '2020-01-01'
+    end_date_str = '2023-12-31'
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    results = get_all_case_by_coordinate(start_date, end_date, labels=[])
+
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Execution time: {execution_time} seconds")
+    return jsonify(results)
 
 @app.route('/test1', methods=['GET'])
 def mytest1():
@@ -99,6 +112,7 @@ def load_data():
 # returns list of coordinate cases for a particular date
 @app.route('/map', methods=['GET'])
 def heat_map():
+    start_time = time.time()
     containerId = request.args.get('containerId')
     print(containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
@@ -116,10 +130,12 @@ def heat_map():
     print(selected_strains)
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     map_data = {}
-    
+
     # Loop over each day from start_date to end_date
     current_date = start_date
+    i = 0
     while current_date <= end_date:
+        i+=1
         daily_cases = get_case_by_coordinate(current_date, selected_strains)
 
         # Initialize a list to store the cases for the current day
@@ -137,6 +153,9 @@ def heat_map():
         # Use the date as a key in the data dictionary
         map_data[current_date.strftime('%Y-%m-%d')] = cases_list
         current_date += timedelta(days=1)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Execution time: {execution_time} seconds for {i} times")
     return jsonify(map_data)
 
 @app.route('/predictive_map', methods=['GET'])
@@ -155,7 +174,7 @@ def predictive_map():
     default_sigma = 1/5.2
     default_gamma = 1/10
     default_beta = 0.25
-    
+
     predictive_period = 365 # one year of prediction
 
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
@@ -171,27 +190,27 @@ def predictive_map():
         }
 
     for location, data in init_data.items():
-        
+
         # run model for each location
         model = SEIRSModel(initN   = data["initN"],
-            beta    = default_beta, 
-            sigma   = default_sigma, 
-            gamma   = default_gamma, 
+            beta    = default_beta,
+            sigma   = default_sigma,
+            gamma   = default_gamma,
             psi_E   = 1,
             psi_I   = 1,
             initI = data["intensity"]
-            # initI   = 10000 
+            # initI   = 10000
         )
 
         model.run(T = predictive_period, verbose=False)
 
         for i in range(1, predictive_period):
             date_key = (current_date + timedelta(days=i)).strftime('%Y-%m-%d')
-            
+
             # need to initalise if date is not alr in dictionary
             if date_key not in predictive_map_data:
-                predictive_map_data[date_key] = [] 
-            
+                predictive_map_data[date_key] = []
+
             # add predicted infection data to dictionary
             predictive_map_data[date_key].append({
                 "latitude": data["latitude"],
@@ -259,9 +278,10 @@ def create_default_state():
     return {state: {strain: 0 for strain in strains} for state in expected_states}
 
 
-# graph showing distribution of infections for variant strains 
+# graph showing distribution of infections for variant strains
 @app.route('/graphdata', methods=['GET'])
 def variant_pie_chart():
+    start_time = time.time()
     # date = request.args.get('date')
     end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
     # start_date = datetime.strptime('2021-12-30', '%Y-%m-%d').date()
@@ -286,6 +306,9 @@ def variant_pie_chart():
         result_graph_data[date] = default_states
 
 
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
 
 
@@ -296,7 +319,7 @@ def variant_pie_chart():
 # def vaccinations():
 #     date = request.args.get('date')
 #     strain = request.args.get('strain')
-#     vaccination_records = get_vaccinations(VaccinationData) 
+#     vaccination_records = get_vaccinations(VaccinationData)
 #     results = [
 #         {
 #             ""
@@ -309,14 +332,14 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
+    # # Start the Flask server in a separate thread
+    # server_thread = threading.Thread(target=run_server)
+    # server_thread.start()
 
-    # Now call load_data() without blocking the main thread
-    load_data()
+    # # Now call load_data() without blocking the main thread
+    # load_data()
 
 
-    # # ONLY IF RUNNING BACKEND IN TERMINAL
-    # with app.app_context():
-    #     app.run(debug=True)
+    # ONLY IF RUNNING BACKEND IN TERMINAL
+    with app.app_context():
+        app.run(debug=True, host='0.0.0.0', port=8964)
