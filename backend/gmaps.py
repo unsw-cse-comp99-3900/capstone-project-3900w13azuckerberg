@@ -1,11 +1,16 @@
+import os
 import googlemaps
+from dotenv import load_dotenv
 from flask import jsonify
 from datetime import datetime
 import requests
 
-API_KEY = "AIzaSyA3HeXwTCkGBW--FkTKyajWWg1nefFZq18"
+load_dotenv()
 
-gmaps = googlemaps.Client(key=API_KEY)
+# Access the GOOGLE_API_KEY environment variable
+google_api_key = os.getenv('GOOGLE_API_KEY')
+
+gmaps = googlemaps.Client(key=google_api_key)
 
 # Extract latitude and longitude
 def get_coordinates(location):
@@ -38,7 +43,7 @@ def fuzzy_search(location):
         url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
         params = {
             'query': location,
-            'key': API_KEY,
+            'key': google_api_key,
             'region': 'au',
             'location': '-25.2744,133.7751',  # Central point of Australia
             'radius': 2500000  # Approximate radius to cover most of Australia
@@ -65,6 +70,7 @@ def fuzzy_search(location):
 
 # Testing
 if __name__ == "__main__":
-    location = "blue mountains dist hosp"  # Example search query
-    coordinates = fuzzy_search(location)
-    print(f"Latitude: {coordinates['latitude']}, Longitude: {coordinates['longitude']}")
+    print(google_api_key)
+    # location = "blue mountains dist hosp"  # Example search query
+    # coordinates = fuzzy_search(location)
+    # print(f"Latitude: {coordinates['latitude']}, Longitude: {coordinates['longitude']}")
