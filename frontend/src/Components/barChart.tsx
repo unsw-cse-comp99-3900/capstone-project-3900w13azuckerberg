@@ -1,5 +1,5 @@
 import { ResponsiveMarimekko } from "@nivo/marimekko";
-import Legend from "./legend";
+// import Legend from "./legend";
 
 const BarChart = ({}) => (
     <ResponsiveMarimekko

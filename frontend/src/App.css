@@ -4,6 +4,23 @@
   overflow-x: hidden;
 }
 
+.logo-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  z-index: 10;
+  color: white;
+}
+.logo {
+  display: block;
+  height: 12vh;
+  margin-bottom: 10px;
+}
+
+
 .Map {
   z-index: 10;
 }
@@ -39,7 +56,7 @@
 #divider {
   margin: 0;
   height: 100vh;
-  width: 1vw;
+  width: 0.5vw;
   fill: #2222;
   position: absolute;
   top: 0;

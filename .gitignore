@@ -24,7 +24,6 @@ share/python-wheels/
 MANIFEST
 
 /postgres-data/
-/frontend/node_modules/
 
 # Flask-specific
 instance/

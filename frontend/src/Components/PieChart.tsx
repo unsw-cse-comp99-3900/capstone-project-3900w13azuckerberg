@@ -1,40 +1,14 @@
 import { ResponsivePie } from "@nivo/pie";
+import { PieItem } from "./types";
 
-const PieChart = () => (
+interface PieChartProps {
+  pieData: PieItem[];
+}
+
+const PieChart: React.FC<PieChartProps> = ({ pieData }) => (
   <ResponsivePie
     theme={{ legends: { text: { fontSize: 18 } }, labels: { text: { fontSize: 16} } }}
-    data={[
-      {
-        id: "Alpha",
-        label: "Alpha",
-        value: 287,
-        color: "#9B57D3",
-      },
-      {
-        id: "Beta",
-        label: "Beta",
-        value: 320,
-        color: "#665EB8",
-      },
-      {
-        id: "Delta",
-        label: "Delta",
-        value: 227,
-        color: "#92278F",
-      },
-      {
-        id: "Gamma",
-        label: "Gamma",
-        value: 150,
-        color: "#C39AE5",
-      },
-      {
-        id: "Omicron",
-        label: "Omicron",
-        value: 459,
-        color: "#6159AE",
-      },
-    ]}
+    data={pieData}
     margin={{ left: 100, top: 10, bottom: 10 }}
     startAngle={-180}
     innerRadius={0.3}

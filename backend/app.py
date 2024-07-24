@@ -1,13 +1,12 @@
 from datetime import datetime
-from flask import Flask, redirect, request, jsonify, url_for, render_template_string
+from flask import Flask, redirect, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_case_by_coordinate, get_case_by_loc, get_records, init_db, load_dataframe_to_db
+from db_manager import get_all_time_case_pie_chart, get_case_by_coordinate, init_db
 from model import db
-from gmaps import get_coordinates
 from datetime import datetime, timedelta
 from seirsplus.models import *
 import threading
@@ -28,6 +27,41 @@ migrate = Migrate(app, db)
 
 data_loaded = False
 
+selected_strains_left = {
+    "alpha": False,
+    "beta": False,
+    "delta": False,
+    "omicron": False
+}
+
+selected_strains_right = {
+    "alpha": False,
+    "beta": False,
+    "delta": False,
+    "omicron": False
+}
+
+selected_strains_main = {
+    "alpha": False,
+    "beta": False,
+    "delta": False,
+    "omicron": False
+}
+
+selected_strains_all= {
+    "alpha": True,
+    "beta": True,
+    "delta": True,
+    "omicron": True
+}
+
+selected_strains_none = {
+    "alpha": False,
+    "beta": False,
+    "delta": False,
+    "omicron": False
+}
+
 @app.before_request
 def before_request():
     global data_loaded
@@ -42,12 +76,21 @@ def home():
 
 @app.route('/test', methods=['GET'])
 def mytest():
+    print("testing pie chart db function\n")
+    res = get_all_time_case_pie_chart()
+    return jsonify(res)
+
+@app.route('/test1', methods=['GET'])
+def mytest1():
+    print("testing heatmap db function\n")
     date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_coordinate(date)
+    case_counts = get_case_by_coordinate(date, ["Omicron"])
     return jsonify(case_counts)
 
 @app.route('/load_data', methods=['GET'])
 def load_data():
+    global data_loaded
+    data_loaded = True
     load_into_db(app)
     return redirect(url_for('home'))
 
@@ -56,17 +99,28 @@ def load_data():
 # returns list of coordinate cases for a particular date
 @app.route('/map', methods=['GET'])
 def heat_map():
-    # date_str = request.args.get('date')
-    start_date = datetime.strptime('2023-12-20', '%Y-%m-%d').date()
-    end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
+    containerId = request.args.get('containerId')
+    print(containerId)
+    start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
+    end_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
 
+    # select strains based off filter or select all if no filter has been selected
+    if (containerId) == 'left':
+        selected_strains = selected_strains_left
+    elif (containerId) == 'right':
+        selected_strains = selected_strains_right
+    elif (containerId) == 'm':
+        selected_strains = selected_strains_main
+
+    selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
+    print(selected_strains)
     # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
     map_data = {}
     
     # Loop over each day from start_date to end_date
     current_date = start_date
     while current_date <= end_date:
-        daily_cases = get_case_by_coordinate(current_date)
+        daily_cases = get_case_by_coordinate(current_date, selected_strains)
 
         # Initialize a list to store the cases for the current day
         cases_list = []
@@ -82,9 +136,7 @@ def heat_map():
 
         # Use the date as a key in the data dictionary
         map_data[current_date.strftime('%Y-%m-%d')] = cases_list
-        print("date:", current_date, "added")
         current_date += timedelta(days=1)
-    print("number of days:", len(data))
     return jsonify(map_data)
 
 @app.route('/predictive_map', methods=['GET'])
@@ -107,7 +159,7 @@ def predictive_map():
     predictive_period = 365 # one year of prediction
 
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
-    loc_data = get_case_by_coordinate(current_date)
+    loc_data = get_case_by_coordinate(current_date, selected_strains_all)
 
     for key, data in loc_data.items():
         init_data[key] = {
@@ -115,7 +167,7 @@ def predictive_map():
             "longitude": data["longitude"],
             "state": data["state"],
             "initN": default_population,
-            "initI": data["case_count"]
+            "intensity": data["case_count"]
         }
 
     for location, data in init_data.items():
@@ -127,7 +179,7 @@ def predictive_map():
             gamma   = default_gamma, 
             psi_E   = 1,
             psi_I   = 1,
-            initI = data["initI"]
+            initI = data["intensity"]
             # initI   = 10000 
         )
 
@@ -142,46 +194,102 @@ def predictive_map():
             
             # add predicted infection data to dictionary
             predictive_map_data[date_key].append({
-                "lattitude": data["latitude"],
-                "longtitude": data["longitude"],
+                "latitude": data["latitude"],
+                "longitude": data["longitude"],
+                "intensity": round(model.numI[i*10]),
                 "state": data["state"],
                 "numS": round(model.numS[i*10]),
                 "numE": round(model.numE[i*10]),
-                "numI": round(model.numI[i*10]),
                 "numR": round(model.numR[i*10])
             })
+            # print(predictive_map_data[date_key])
 
     return jsonify(predictive_map_data)
 
 
 # variant filter for heatmap
-@app.route('/filter', methods=['GET'])
+@app.route('/filter/', methods=['GET'])
 def filter_variant():
-    return "nil"
-    variant = request.args.get('variant_name')
-    date = request.args.get('date')
-    variant_records = get_variant(variant, date)
-    # this function get_variant should return a list of variant records up until a particular date for displaying on the heat map
-    results = [
-        {
-            "state": variant_record.state,
-            "intensity": variant_record.intensity
-        } for variant_record in variant_records]
-    return jsonify(results)
+
+    """"
+    data from frontend in the format
+    {
+        "label": 'alpha',
+        "selected": 'true',
+        'containerId': 'left'
+    }
+    """
+    print("caught filter change")
+
+    label = request.args.get('label')
+    selected = request.args.get('selected')
+    containerId = request.args.get('containerId')
+    global selected_strains_left, selected_strains_right, selected_strains_main
+    if (containerId) == 'left':
+        if (label) == 'all':
+            selected_strains_left = selected_strains_all
+        elif (label) == 'none':
+            selected_strains_left = selected_strains_none
+        else:
+            selected_strains_left[label] = selected
+    elif (containerId) == 'right':
+        if (label) == 'all':
+            selected_strains_right = selected_strains_all
+        elif (label) == 'none':
+            selected_strains_right = selected_strains_none
+        else:
+            selected_strains_right[label] = selected
+    else:
+        if (label) == 'all':
+            selected_strains_main = selected_strains_all
+        elif (label) == 'none':
+            selected_strains_main = selected_strains_none
+        else:
+            selected_strains_main[label] = selected
+
+    return "success"
+
+
+def create_default_state():
+     # Define the expected states and strains
+    expected_states = ['Australia', 'New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'Tasmania', 'Northern Territory']
+    strains = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omicron']
+
+    # Initialize the dictionary with default values
+    return {state: {strain: 0 for strain in strains} for state in expected_states}
+
 
 # graph showing distribution of infections for variant strains 
-@app.route('/pie_chart', methods=['GET'])
+@app.route('/graphdata', methods=['GET'])
 def variant_pie_chart():
-    date = request.args.get('date')
-    variant_split_records = get_variant_split(date)
-    # get variant split should return 4 Records showing variant, %, number of infecteced up until a certain date
-    results = [
-        {
-            "variant": variant_split_record.variant,
-            "percentage": variant_split_record.percentage,
-            "infected": variant_split_record.infected
-        } for variant_split_record in variant_split_records]
-    return jsonify(results)
+    # date = request.args.get('date')
+    end_date = datetime.strptime('2023-12-30', '%Y-%m-%d').date()
+    # start_date = datetime.strptime('2021-12-30', '%Y-%m-%d').date()
+
+    graph_data = get_all_time_case_pie_chart()
+
+    result_graph_data = {}
+
+    for date, states_info in graph_data.items():
+
+        default_states = create_default_state()
+
+        for state, strains_info in states_info.items():
+            if state in default_states:
+                for strain, count in strains_info.items():
+                    if strain in default_states[state]:
+                        default_states[state][strain] += count
+                        # Also add this count to the 'Australia' total
+                        default_states['Australia'][strain] += count
+
+
+        result_graph_data[date] = default_states
+
+
+    return jsonify(result_graph_data)
+
+
+
 
 # # TBD once we find a source of vaccination data - graph showing vaccinations
 # @app.route('/vaccination', methods=['GET'])
@@ -196,14 +304,19 @@ def variant_pie_chart():
 
 #     ]
 
+
 def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
-    # # Now call load_data() without blocking the main thread
-    # load_data()
-    app.run(debug=True)
+    # Now call load_data() without blocking the main thread
+    load_data()
+
+
+    # # ONLY IF RUNNING BACKEND IN TERMINAL
+    # with app.app_context():
+    #     app.run(debug=True)

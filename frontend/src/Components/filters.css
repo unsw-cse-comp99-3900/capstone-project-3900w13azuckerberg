@@ -1,7 +1,7 @@
 .filters {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 12vh;
+  left: 0px;
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -9,24 +9,17 @@
   color: white;
 }
 
-.logo {
-  height: 12vh;
-  margin-bottom: 10px;
-}
-
 .filter-container {
   display: inline-block;
   flex-direction: column;
   position: relative;
-  left: 20px;
-  margin-top: 10px;
+  left: 10px;
   min-width: 6em;
   box-sizing: border-box;
 }
 
 .filter-buttons {
   display: none;
-  margin-top: 10px;
 }
 
 .filter-buttons.show {
