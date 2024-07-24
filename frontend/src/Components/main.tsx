@@ -117,6 +117,16 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			const dateString = date.toISOString().split('T')[0];
 			const currLocation = (location == "all") ? "Australia" : location;
 			let p: PieItem[] = [];
+			if (!graphData[dateString]) {
+				graphData[dateString] = {
+					"Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"New South Wales": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Queensland": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+				};
+			}
 			console.log(dateString);
 			const currData = graphData[dateString][currLocation];
 			Object.keys(currData).forEach((name) => p.push({
@@ -128,8 +138,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setPieData(p);
 
 			const sorted = Object.keys(graphData)
-								 .filter(([d]) => d < dateString)
-								 .sort(([date1], [date2]) => date1.localeCompare(date2));
+								 .filter(d => d < dateString)
+								 .sort((date1, date2) => date1.localeCompare(date2));
 			console.log(sorted)
 			let l: LineItem[] = [];
 			Object.keys(graphData[dateString]["Australia"]).forEach((name) => l.push({
@@ -140,11 +150,11 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			)
 			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
 				  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
-					x: dateString,
+					x: d,
 					y: graphData[d][currLocation][strain],
 				  })
 			));
-
+			console.log(l);
 			setLineData(l);
 		}
 
