@@ -128,35 +128,13 @@ def heat_map():
 
     selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
     print(selected_strains)
-    # Dictionary for daily cases grouped by location from 1-Jan-21 up until provided date
-    map_data = {}
 
-    # Loop over each day from start_date to end_date
-    current_date = start_date
-    i = 0
-    while current_date <= end_date:
-        i+=1
-        daily_cases = get_case_by_coordinate(current_date, selected_strains)
+    results = get_all_case_by_coordinate(start_date, end_date, selected_strains)
 
-        # Initialize a list to store the cases for the current day
-        cases_list = []
-
-        for location, data in daily_cases.items():
-
-            cases_list.append({
-                "latitude": data['latitude'],
-                "longitude": data['longitude'],
-                "intensity": data['case_count'],
-                "state": data["state"]
-            })
-
-        # Use the date as a key in the data dictionary
-        map_data[current_date.strftime('%Y-%m-%d')] = cases_list
-        current_date += timedelta(days=1)
     end_time = time.time()
     execution_time = end_time - start_time
-    print(f"Execution time: {execution_time} seconds for {i} times")
-    return jsonify(map_data)
+    print(f"Execution time: {execution_time} seconds")
+    return jsonify(results)
 
 @app.route('/predictive_map', methods=['GET'])
 def predictive_map():
