@@ -142,3 +142,58 @@ if __name__ == '__main__':
     # print(lab_df)
     df.to_parquet('covid_data.parquet', index=False)
     lab_df.to_parquet('lab_location.parquet', index=False)
+
+# putting df in csv
+    cleaned_data = clean_all_virus_data()
+    cleaned_data.to_csv('cleaned_data.csv', index=False)
+    print("Data cleaned and saved to cleaned_data.csv")
+
+
+def get_lab_df(df):
+    unique_labs = df['originating_lab'].unique()
+    lab_df = pd.DataFrame({
+        'id': range(1, len(unique_labs) + 1),
+        'lab_name': unique_labs
+    })
+
+    # Initialize empty lists for latitudes and longitudes
+    latitudes = []
+    longitudes = []
+
+    # Get coordinates for each unique originating_lab and append to lists
+    for lab in lab_df['lab_name']:
+        coords = get_coordinates(lab)
+        latitudes.append(coords['latitude'])
+        longitudes.append(coords['longitude'])
+
+    # Assign the lists to the new_labs_df DataFrame
+    lab_df['latitude'] = latitudes
+    lab_df['longitude'] = longitudes
+
+    lab_df = lab_df[(lab_df['latitude'] != 'Invalid location') & (lab_df['longitude'] != 'Invalid location')]
+
+    return lab_df
+
+
+def clean_virus_data_after_lab(df, lab_df):
+    lab_id_map = lab_df.set_index('lab_name')['id'].to_dict()
+
+    df['originating_lab'] = df['originating_lab'].map(lab_id_map)
+
+    df = df.dropna(subset=['originating_lab'])
+
+    return df
+
+if __name__ == '__main__':
+    df = clean_all_virus_data()
+    lab_df = get_lab_df(df)
+    df = clean_virus_data_after_lab(df, lab_df)
+    # print(df.head)
+    # print(lab_df)
+    df.to_parquet('covid_data.parquet', index=False)
+    lab_df.to_parquet('lab_location.parquet', index=False)
+    
+    # putting df in csv
+    cleaned_data = clean_all_virus_data()
+    cleaned_data.to_csv('cleaned_data.csv', index=False)
+    print("Data cleaned and saved to cleaned_data.csv")
