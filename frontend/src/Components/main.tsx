@@ -88,7 +88,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			//   if (!predict) {
 				response = await axios.get("http://127.0.0.1:5001/graphdata", {
 				params: {
-					param1: containerId, // <- this will be either "M", "left", "right"
+					containerId: containerId, // <- this will be either "M", "left", "right"
 					}
 				});
 			//   } else {

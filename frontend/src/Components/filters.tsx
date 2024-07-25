@@ -25,10 +25,10 @@ const Filters: React.FC<FiltersProps> = ({
   }) => {
   const [showFilters, setShowFilters] = useState(false); 
   const [allFilters, setAllFilters] = useState([
-    { label: "alpha", selected: true },
-    { label: "beta", selected: true },
-    { label: "delta", selected: true },
-    { label: "omicron", selected: true },
+    { label: "Alpha", selected: true },
+    { label: "Beta", selected: true },
+    { label: "Delta", selected: true },
+    { label: "Omicron", selected: true },
   ]);
 
   const setAll = (newState: boolean) => {
@@ -81,7 +81,7 @@ const Filters: React.FC<FiltersProps> = ({
             {allFilters.map((filter) => (
               <Button
                 label={filter.label}
-                endpoint="http://127.0.0.1:5000/filter/"
+                endpoint="http://127.0.0.1:5001/filter/"
                 selected={filter.selected}
                 onSelect={(selected: boolean) =>
                   handleSetSelected(filter.label, selected)
@@ -95,7 +95,7 @@ const Filters: React.FC<FiltersProps> = ({
                   <Icon
                     icon="filter_none"
                     data={"none"} 
-                    endpoint="http://127.0.0.1:5000/filter/"
+                    endpoint="http://127.0.0.1:5001/filter/"
                     onClick={() => setAll(false)}
                     containerId={containerId}
                   />
@@ -106,7 +106,7 @@ const Filters: React.FC<FiltersProps> = ({
                   <Icon
                     icon="select_all"
                     data={"all"} 
-                    endpoint="http://127.0.0.1:5000/filter/"
+                    endpoint="http://127.0.0.1:5001/filter/"
                     onClick={() => setAll(true)}
                     containerId={containerId}
                   />

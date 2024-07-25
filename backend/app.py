@@ -61,11 +61,11 @@ selected_strains_all= {
 }
 
 selected_strains_none = {
-    "Alpha": True,
-    "Beta": True,
-    "Delta": True,
-    "Gamma": True,
-    "Omicron": True
+    "Alpha": False,
+    "Beta": False,
+    "Delta": False,
+    "Gamma": False,
+    "Omicron": False
 }
 
 @app.before_request
@@ -119,9 +119,11 @@ def load_data():
 def heat_map():
     start_time = time.time()
     containerId = request.args.get('containerId')
-    print(containerId)
+    print("/map containerId", containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
     end_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+
+    global selected_strains_left, selected_strains_right, selected_strains_main
 
     # select strains based off filter or select all if no filter has been selected
     if (containerId) == 'left':
@@ -131,8 +133,9 @@ def heat_map():
     elif (containerId) == 'm':
         selected_strains = selected_strains_main
 
-    selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
-    print(selected_strains)
+    print("/map selected strains dic: ", selected_strains)
+    selected_strains = [strain for strain, selected in selected_strains.items() if selected == True or selected == 'true']
+    print("/map selected strains", selected_strains)
 
     results = get_all_case_by_coordinate(start_date, end_date, selected_strains)
 
@@ -214,7 +217,7 @@ def predictive_map():
 
 
 # variant filter for heatmap
-@app.route('/filter/', methods=['GET'])
+@app.route('/filter', methods=['GET'])
 def filter_variant():
 
     """"
@@ -230,6 +233,11 @@ def filter_variant():
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
+
+    print("label:", label)
+    print("selected:", selected)
+    print("containerId:", containerId)
+
     global selected_strains_left, selected_strains_right, selected_strains_main
     if (containerId) == 'left':
         if (label) == 'all':
@@ -238,6 +246,7 @@ def filter_variant():
             selected_strains_left = selected_strains_none
         else:
             selected_strains_left[label] = selected
+            print(selected_strains_left[label])
     elif (containerId) == 'right':
         if (label) == 'all':
             selected_strains_right = selected_strains_all
