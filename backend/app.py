@@ -29,38 +29,43 @@ migrate = Migrate(app, db)
 data_loaded = False
 
 selected_strains_left = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
+    "Alpha": True,
+    "Beta": True,
+    "Delta": True,
+    "Gamma": True,
+    "Omicron": True
 }
 
 selected_strains_right = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
+    "Alpha": True,
+    "Beta": True,
+    "Delta": True,
+    "Gamma": True,
+    "Omicron": True
 }
 
 selected_strains_main = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
+   "Alpha": True,
+    "Beta": True,
+    "Delta": True,
+    "Gamma": True,
+    "Omicron": True
 }
 
 selected_strains_all= {
-    "alpha": True,
-    "beta": True,
-    "delta": True,
-    "omicron": True
+   "Alpha": True,
+    "Beta": True,
+    "Delta": True,
+    "Gamma": True,
+    "Omicron": True
 }
 
 selected_strains_none = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
+    "Alpha": True,
+    "Beta": True,
+    "Delta": True,
+    "Gamma": True,
+    "Omicron": True
 }
 
 @app.before_request
@@ -155,8 +160,12 @@ def predictive_map():
 
     predictive_period = 365 # one year of prediction
 
+    selected_strains = [strain for strain, selected in selected_strains_all.items() if selected is True]
+
+    print(selected_strains)
+
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
-    loc_data = get_case_by_coordinate(current_date, selected_strains_all)
+    loc_data = get_case_by_coordinate(current_date, selected_strains)
 
     for key, data in loc_data.items():
         init_data[key] = {
