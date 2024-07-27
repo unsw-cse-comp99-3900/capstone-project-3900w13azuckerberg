@@ -41,6 +41,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   const handleCalendar = (newDate: Date) => {
     onDateChange(newDate);
     setPlayback(false);
+    setPlaybackIcon("play_arrow");
     // Close calendar after selecting date
     setShowCalendar(false); 
   };
@@ -72,7 +73,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
       if (newDay <= new Date(endDate)) {
         onDateChange(newDay);
         if (playback) {
-          timer = setTimeout(updateDay,250 / speed);
+          timer = setTimeout(updateDay, 250 / speed);
         }
       } else {
         onDateChange(startDate);
@@ -80,17 +81,15 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     };
   
     if (playback) {
-      timer = setTimeout(updateDay, 1000 / speed);
+      timer = setTimeout(updateDay, 250 / speed);
     }
   
     return () => clearTimeout(timer);
   }, [playback, speed, date, onDateChange]);
 
   function handlePlayback(): void {
-    setPlayback(current => {
-      setPlaybackIcon(current ? "play_arrow" : "pause");
-      return !current;
-    });
+    setPlaybackIcon(playback ? "play_arrow" : "pause");
+    setPlayback(!playback);
   }
 
   // Calculate number of days between start and end dates

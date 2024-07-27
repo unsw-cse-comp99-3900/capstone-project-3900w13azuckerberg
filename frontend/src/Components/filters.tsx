@@ -3,6 +3,9 @@ import Button from "./filterButton";
 import Icon from "./iconButton";
 import "./filters.css";
 import CustomTooltip from './customTooltip';
+import { arrayToCSV, downloadFile } from './export'
+import { MapData } from "./types"
+
 
 interface FiltersProps {
   token: boolean;
@@ -12,6 +15,7 @@ interface FiltersProps {
   predict: boolean;
 	setPredict: (predict: boolean) => void;
   containerId: string;
+  allMapData: MapData;
 }
 
 const Filters: React.FC<FiltersProps> = ({ 
@@ -21,7 +25,8 @@ const Filters: React.FC<FiltersProps> = ({
     showCompare, 
     predict, 
     setPredict,
-    containerId
+    containerId,
+    allMapData,
   }) => {
   const [showFilters, setShowFilters] = useState(false); 
   const [allFilters, setAllFilters] = useState([
@@ -63,15 +68,40 @@ const Filters: React.FC<FiltersProps> = ({
     onFilterChange(!token);
   }
 
+  const handleExport = () => {
+    const data = arrayToCSV(allMapData);
+
+    let filename: string;
+    if (predict) {
+      filename = "predictive_model.csv";
+    } else if (allFilters.every(filter => filter.selected)) {
+      filename = "all_variants_data.csv";
+    } else {
+      const selectedFilters = allFilters
+        .filter(filter => filter.selected)
+        .map(filter => filter.label)
+        .join('_');
+  
+      filename = `${selectedFilters}_data.csv`;
+    }
+
+    downloadFile(data, filename, 'text/csv');
+  }
+
   return (
     <div className="filters">
       <div className="filter-container">
-        <CustomTooltip label="Filter by Strain">
+        <CustomTooltip label="Menu Options">
           <i className="material-icons icon" onClick={toggleFilters}>
             filter_list
           </i>
         </CustomTooltip>
         <div className={`filter-buttons ${showFilters ? "show" : "hide"}`}>
+          <CustomTooltip label="Export Current Filters">
+            <button className={`compare-button`} onClick={handleExport}>
+              Export
+            </button>
+          </CustomTooltip>
           <button className={`compare-button ${!showCompare ? "" : "selected"}`} onClick={handleCompare}>
             Compare
           </button>
