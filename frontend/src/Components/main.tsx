@@ -6,6 +6,7 @@ import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
 import { MapData, GraphData, Point, PieItem, LineItem } from "./types"
+import RadiusSlider from "./radiusSlider";
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -35,7 +36,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [graphData, setGraphData] = useState<GraphData>();
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
-	
+	const [radius, setRadius] = useState(20);
 	// Map use effect
     useEffect(() => {
       // Function to fetch heat map data from the backend
@@ -125,6 +126,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Tasmania": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 				};
 			}
 			console.log(dateString);
@@ -162,7 +164,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
   return (
     <div id="body">
 		<GraphBar pieData={pieData} lineData={lineData} />
-		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location}/>
+		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location} radius={radius}/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
 			setShowCompare={setShowCompare}
@@ -171,6 +173,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setPredict={setPredict}
 			containerId={containerId}
 		/>
+		<RadiusSlider setRadius={setRadius}/>
 	</div>
   );
 }

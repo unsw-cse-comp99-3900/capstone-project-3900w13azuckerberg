@@ -12,9 +12,10 @@ interface HeatMapProps {
   showCompare: boolean;
   updateState: (state: string) => void;
   currentState: string;
+  radius: number;
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState }) => {
+const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
   
@@ -127,14 +128,14 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
         minOpacity: 0.6,
         maxZoom: 1,
         max,
-        radius: 20,
+        radius: radius,
         blur: 15,
         gradient: {0: "midnightblue", 0.33: "rebeccapurple", 0.67: "orangered", 1: "yellow" },
       }).addTo(map);
 
       heatLayerRef.current = heatLayer;
     }
-  }, [mapData]);
+  }, [mapData, radius]);
 
   return <div id={containerId} style={{ height: "100vh", width: "100%", zIndex: 0 }}></div>;
 };
