@@ -45,13 +45,13 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
-					response = await axios.get("http://127.0.0.1:5000/map", {
+					response = await axios.get("http://127.0.0.1:5001/map", {
 					params: {
 						containerId, // <- this will be either "M", "left", "right"
 						}
 					});
 				} else {
-					response = await axios.get("http://127.0.0.1:5000/predictive_map", {})
+					response = await axios.get("http://127.0.0.1:5001/predictive_map", {})
 				}
 				const rawData: { [date: string]: Point[] } = response.data;
 				const formattedData: MapData = {};
@@ -86,9 +86,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 			//   if (!predict) {
-				response = await axios.get("http://127.0.0.1:5000/graphdata", {
+				response = await axios.get("http://127.0.0.1:5001/graphdata", {
 				params: {
-					param1: containerId, // <- this will be either "M", "left", "right"
+					containerId, // <- this will be either "M", "left", "right"
 					}
 				});
 			//   } else {
@@ -115,7 +115,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	useEffect(() => {
 		if (graphData != null && Object.keys(graphData).length > 0) {
 			const dateString = date.toISOString().split('T')[0];
-			const currLocation = (location == "all") ? "Australia" : location;
+			const currLocation = (location === "all") ? "Australia" : location;
 			let p: PieItem[] = [];
 			if (!graphData[dateString]) {
 				graphData[dateString] = {
@@ -149,7 +149,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			})
 			)
 			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
-				  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
+				  .forEach((strain) => l.find(item => item.id === strain)?.data.push({
 					x: d,
 					y: graphData[d][currLocation][strain],
 				  })
