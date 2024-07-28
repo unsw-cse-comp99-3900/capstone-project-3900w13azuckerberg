@@ -20,7 +20,7 @@ interface HeatMapProps {
 const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius, graphData }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
-  
+
   const createMap = () => {
     const australiaBounds = L.latLngBounds(
       L.latLng(-45.2, 80),
@@ -34,7 +34,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
       maxBounds: australiaBounds,
       minZoom: 4,
     });
-    
+
     // Add a tile layer to the map (OpenStreetMap)
     L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
@@ -88,7 +88,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
         onEachFeature: (feature, layer) => {
           let tooltip: L.Tooltip;
           const state = feature.properties.STATE_NAME;
-    
+
           layer.on({
             mouseover: (e) => {
               const layer = e.target;
@@ -99,7 +99,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
                 fillOpacity: 0.1
               });
               layer.bringToFront();
-    
+
               let cases: RegionData;
               let result = 0;
               if (graphData && graphData[state]) {
@@ -112,7 +112,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
               const content = `${state} - ${result} total covid cases`;
               tooltip = L.tooltip({
                 direction: 'top',
-                permanent: false, 
+                permanent: false,
                 sticky: true,
                 opacity: 0.7,
                 className: "tooltip"
