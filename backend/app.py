@@ -245,7 +245,7 @@ def filter_variant():
 
 def create_default_state():
      # Define the expected states and strains
-    expected_states = ['Australia', 'New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'Tasmania', 'Northern Territory']
+    expected_states = ['Australia', 'New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory', 'South Australia']
     strains = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omicron']
 
     # Initialize the dictionary with default values
