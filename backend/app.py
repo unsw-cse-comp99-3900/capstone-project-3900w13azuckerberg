@@ -293,9 +293,46 @@ def variant_pie_chart():
     return jsonify(result_graph_data)
 
 
+@app.route('/SEIRS_data', methods=['GET'])
+def SEIR_data():
+    infected_per_day = {
+        "2022-02-01": 423,
+        "2022-02-02": 431,
+        "2022-02-03": 389,
+        "2022-02-04": 237,
+        "2022-02-05": 531,
+        "2022-02-06": 543
+    }
 
+    default_population = 100000000
+    default_sigma = 1/5.2
+    default_gamma = 1/10
+    default_beta = 0.25
 
+    SEIRS_output = {}
 
+    for day, infections in infected_per_day.items():
+
+        model = SEIRSModel(
+            initN   = default_population,
+            beta    = default_beta,
+            sigma   = default_sigma,
+            gamma   = default_gamma,
+            psi_E   = 1,
+            psi_I   = 1,
+            initI = infections
+        )
+
+        model.run(T = 2, verbose=False)
+
+        SEIRS_output[day] = {
+            "numS": round(model.numS[10]),
+            "numE": round(model.numE[10]),
+            "numI": round(model.numI[10]),
+            "numR": round(model.numR[10]),
+        }
+
+    return jsonify(SEIRS_output)
 # # TBD once we find a source of vaccination data - graph showing vaccinations
 # @app.route('/vaccination', methods=['GET'])
 # def vaccinations():
