@@ -5,7 +5,7 @@ import GraphBar from "./GraphBar";
 import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
-import { MapData, GraphData, Point, PieItem, LineItem } from "./types"
+import { MapData, GraphData, Point, PieItem, LineItem, PolicyData } from "./types"
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -33,6 +33,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [graphData, setGraphData] = useState<GraphData>({});
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
+	const [policies, setPolicies] = useState<PolicyData>({});
 	
 	// Map useeffect when filters change
     useEffect(() => {
@@ -103,7 +104,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
-      console.log("Data for selected date:", allMapData[dateString] || []);
+	//   console.log("New Date", dateString);
+    //   console.log("Data for selected date:", allMapData[dateString] || []);
 	  
     }, [date, allMapData]);
 
@@ -174,6 +176,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setPredict={setPredict}
 			containerId={containerId}
 			allMapData={allMapData}
+			policies={policies}
+			setPolicies={setPolicies}
 		/>
 	</div>
   );

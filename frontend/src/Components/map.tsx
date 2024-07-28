@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import "./map.css";
 import { FeatureCollection } from 'geojson';
 import stateMapping from "./states.json";
-import { DateData } from "./types";
+import { DateData, RegionData } from "./types";
 
 interface HeatMapProps {
   mapData: [number, number, number][];
@@ -81,28 +81,6 @@ const HeatMap: React.FC<HeatMapProps> = ({mapData, containerId, showCompare, cur
   useEffect(() => {
     const map = mapRef.current;
     if (map) {
-      if (heatLayerRef.current) {
-        heatLayerRef.current?.remove();
-        heatLayerRef.current = null;
-
-      }
-      const max = mapData.reduce((acc, point) => Math.max(acc, point[2]), 0) || 1;
-      const heatLayer = L.heatLayer(mapData, {
-        minOpacity: 0.6,
-        maxZoom: 1,
-        max,
-        radius: 20,
-        blur: 15,
-        gradient: {0: "midnightblue", 0.33: "rebeccapurple", 0.67: "orangered", 1: "yellow" },
-      }).addTo(map);
-
-      heatLayerRef.current = heatLayer;
-    }
-  }, [mapData]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (map) {
 
       const states: FeatureCollection = stateMapping as FeatureCollection;
       const geoJsonLayer = L.geoJson(states, {
@@ -121,15 +99,13 @@ const HeatMap: React.FC<HeatMapProps> = ({mapData, containerId, showCompare, cur
               });
               layer.bringToFront();
     
-              // contents can be a htmlElement too for more advanced displays
-              const cases = graphData[state];
-
-              // Initialize the result string for the tooltip.
+              let cases: RegionData;
               let result = 0;
-              if (cases) { // Check if there's data for the selected state
-                  for (const [strain, count] of Object.entries(cases)) {
-                      result += count;
-                  }
+              if (graphData && graphData[state]) {
+                cases = graphData[state];
+                for (const [strain, count] of Object.entries(cases)) {
+                    result += count;
+                }
               }
 
               const content = `${state} - ${result} total covid cases`;
@@ -165,7 +141,29 @@ const HeatMap: React.FC<HeatMapProps> = ({mapData, containerId, showCompare, cur
         }
       }).addTo(map);
     }
-  }, [mapData])
+  })
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) {
+      if (heatLayerRef.current) {
+        heatLayerRef.current?.remove();
+        heatLayerRef.current = null;
+
+      }
+      const max = mapData.reduce((acc, point) => Math.max(acc, point[2]), 0) || 1;
+      const heatLayer = L.heatLayer(mapData, {
+        minOpacity: 0.6,
+        maxZoom: 1,
+        max,
+        radius: 20,
+        blur: 15,
+        gradient: {0: "midnightblue", 0.33: "rebeccapurple", 0.67: "orangered", 1: "yellow" },
+      }).addTo(map);
+
+      heatLayerRef.current = heatLayer;
+    }
+  }, [mapData]);
 
   return <div id={containerId} style={{ height: "100vh", width: "100%", zIndex: 0 }}></div>;
 };

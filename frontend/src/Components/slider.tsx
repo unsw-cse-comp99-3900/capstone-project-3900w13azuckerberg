@@ -4,7 +4,7 @@ import CustomTooltip from './customTooltip';
 import Calendar from "react-calendar"; // Import Calendar component
 import "react-calendar/dist/Calendar.css"; // Import Calendar CSS
 import "./calendar.css";
-import "./button.css";
+import "./filters.css";
 import "./slider.css";
 
 
@@ -39,9 +39,13 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   };
 
   const handleCalendar = (newDate: Date) => {
-    onDateChange(newDate);
     setPlayback(false);
     setPlaybackIcon("play_arrow");
+    const adjustedDate = new Date(newDate);
+    adjustedDate.setDate(newDate.getDate() + 1);
+    const dateString = adjustedDate.toISOString().slice(0, 10);
+    console.log("selected date", dateString);
+    onDateChange(new Date(dateString));
     // Close calendar after selecting date
     setShowCalendar(false); 
   };
@@ -168,7 +172,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
         {showCalendar && (
           <Calendar
             className="react-calendar"
-            value={date}
+            // value={date}
             onClickDay={handleCalendar}
           />
         )}

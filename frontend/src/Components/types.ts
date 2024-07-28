@@ -39,3 +39,13 @@ export interface LineItem {
     color: string;
     data: DataPoint[];
 }
+
+export interface Policy {
+    startDate: string;
+    endDate: string;
+    policy: string;
+}
+
+export interface PolicyData {
+    [state: string]: Policy;
+  }
