@@ -13,17 +13,11 @@ interface HeatMapProps {
   showCompare: boolean;
   updateState: (state: string) => void;
   currentState: string;
-<<<<<<< HEAD
   graphData: DateData;
-}
-
-const HeatMap: React.FC<HeatMapProps> = ({mapData, containerId, showCompare, currentState, updateState, graphData }) => {
-=======
   radius: number;
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius }) => {
->>>>>>> origin/main
+const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius, graphData }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
   
