@@ -17,9 +17,9 @@ const Icon: React.FC<ButtonProps> = ({ icon, data, endpoint, onClick, containerI
 
       const response = await axios.get(endpoint, {
         params: {
-          param1: data, // All or none
-          param2: false,
-          param3: containerId, // M left or right
+          label: data, // All or none
+          selected: false,
+          containerId: containerId, // M left or right
         }
       });
 
