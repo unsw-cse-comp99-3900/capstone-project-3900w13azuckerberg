@@ -6,6 +6,7 @@ import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
 import { MapData, GraphData, Point, PieItem, LineItem } from "./types"
+import RadiusSlider from "./radiusSlider";
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -21,12 +22,13 @@ interface MainProps {
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
 	const colors: { [strain: string]: string } = {
-		Alpha: "#9B57D3",
-		Beta: "#665EB8",
-		Gamma: "#C39AE5",
-		Delta: "#92278F",
-		Omicron: "#6159AE"
+		Alpha: "#4B0082",     // Indigo
+		Beta: "#6A0DAD",      // Royal Purple
+		Gamma: "#483D8B",     // Dark Slate Blue
+		Delta: "#7B68EE",     // Medium Slate Blue
+		Omicron: "#8A2BE2"    // Blue Violet
 	};
+	
 
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
@@ -35,7 +37,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [graphData, setGraphData] = useState<GraphData>();
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
-	
+	const [radius, setRadius] = useState(20);
 	// Map use effect
     useEffect(() => {
       // Function to fetch heat map data from the backend
@@ -125,6 +127,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Tasmania": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"South Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Australian Capital Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 				};
 			}
 			console.log(dateString);
@@ -149,11 +154,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			})
 			)
 			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
-				  .forEach((strain) => l.find(item => item.id === strain)?.data.push({
-					x: d,
-					y: graphData[d][currLocation][strain],
-				  })
-			));
+					.forEach((strain) => {
+						let yValue = graphData[d][currLocation][strain];
+							l.find(item => item.id == strain)?.data.push({
+								x: d,
+								y: yValue,
+							});
+					})
+			);
 			console.log(l);
 			setLineData(l);
 		}
@@ -162,7 +170,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
   return (
     <div id="body">
 		<GraphBar pieData={pieData} lineData={lineData} />
-		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location}/>
+		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location} radius={radius}/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
 			setShowCompare={setShowCompare}
@@ -171,6 +179,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setPredict={setPredict}
 			containerId={containerId}
 		/>
+		<RadiusSlider setRadius={setRadius}/>
 	</div>
   );
 }
