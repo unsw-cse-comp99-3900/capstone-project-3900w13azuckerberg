@@ -11,6 +11,8 @@ from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
 import threading
+from seirsplus.networks import custom_exponential_graph
+import networkx as nx
 # from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
@@ -157,6 +159,10 @@ def predictive_map():
 
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_all)
+
+    # network model
+    num_nodes = 10000
+    graph = nx.Graph()
 
     for key, data in loc_data.items():
         init_data[key] = {
