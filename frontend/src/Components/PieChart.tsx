@@ -7,7 +7,7 @@ interface PieChartProps {
 
 const PieChart: React.FC<PieChartProps> = ({ pieData }) => (
   <ResponsivePie
-    theme={{ legends: { text: { fontSize: 18 } }, labels: { text: { fontSize: 16} } }}
+    theme={{ legends: { text: { fontSize: 16 } }, labels: { text: { fontSize: 16} } }}
     data={pieData}
     margin={{ left: 100, top: 10, bottom: 10 }}
     startAngle={-180}
