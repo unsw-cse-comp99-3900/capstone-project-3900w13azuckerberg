@@ -16,8 +16,6 @@ interface MainProps {
 	setPredict: (predict: boolean) => void;
 }
 
-
-
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
 	const colors: { [strain: string]: string } = {
@@ -30,13 +28,13 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
-	const [location, setLocation] = useState("all");
+	const [location, setLocation] = useState("Australia");
 	const [mapData, setMapData] = useState<[number, number, number][]>([]);
-	const [graphData, setGraphData] = useState<GraphData>();
+	const [graphData, setGraphData] = useState<GraphData>({});
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
 	
-	// Map use effect
+	// Map useeffect when filters change
     useEffect(() => {
       // Function to fetch heat map data from the backend
 		const fetchData = async () => {
@@ -101,6 +99,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		  fetchGraphData();
 	}, [refetch, predict]);
 
+	// map useeffect when date changes
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
@@ -121,6 +120,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"South Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Australian Capital Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 				};
 			}
 			console.log(dateString);
@@ -158,7 +159,13 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
   return (
     <div id="body">
 		<GraphBar pieData={pieData} lineData={lineData} />
-		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location}/>
+		<HeatMap showCompare={showCompare} 
+			containerId={containerId} 
+			mapData={mapData} 
+			updateState={setLocation} 
+			currentState={location}
+			graphData={graphData[date.toISOString().split('T')[0]]}
+		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
 			setShowCompare={setShowCompare}

@@ -18,11 +18,11 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   let startDate: Date;
   let endDate: Date;
   if (predict) {
-    startDate = new Date("2024-01-01");
-    endDate = new Date("2025-04-30");
+    startDate = new Date("2024-05-30");
+    endDate = new Date("2025-05-30");
   } else {
     startDate = new Date("2020-01-01");
-    endDate = new Date("2023-12-31");
+    endDate = new Date("2024-05-29");
   }
 
   const [showCalendar, setShowCalendar] = useState<boolean>(false);

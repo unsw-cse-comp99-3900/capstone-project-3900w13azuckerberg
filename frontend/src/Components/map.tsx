@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import "./map.css";
 import { FeatureCollection } from 'geojson';
 import stateMapping from "./states.json";
+import { DateData } from "./types";
 
 interface HeatMapProps {
   mapData: [number, number, number][];
@@ -12,9 +13,10 @@ interface HeatMapProps {
   showCompare: boolean;
   updateState: (state: string) => void;
   currentState: string;
+  graphData: DateData;
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState }) => {
+const HeatMap: React.FC<HeatMapProps> = ({mapData, containerId, showCompare, currentState, updateState, graphData }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
   
@@ -44,63 +46,25 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
 
     L.control.zoom({ position: "bottomleft" }).addTo(map);
 
-    const states: FeatureCollection = stateMapping as FeatureCollection;
-    const geoJsonLayer = L.geoJson(states, {
-      onEachFeature: (feature, layer) => {
-        let tooltip: L.Tooltip;
-  
-        layer.on({
-          mouseover: (e) => {
-            const layer = e.target;
-            layer.setStyle({
-              weight: 1,
-              color: 'white',
-              dashArray: '',
-              fillOpacity: 0.1
-            });
-            layer.bringToFront();
-  
-            // contents can be a htmlElement too for more advanced displays
-            const content = `${feature.properties.STATE_NAME} - Cases: 0`;
-            tooltip = L.tooltip({
-              direction: 'top',
-              permanent: false, 
-              sticky: true,
-              opacity: 0.7,
-              className: "tooltip"
-            })
-            .setContent(content)
-            .setLatLng(e.latlng)
-            .openOn(map);
-          },
-          mousemove: (e) => {
-            tooltip.setLatLng(e.latlng);
-          },
-          mouseout: (e) => {
-            geoJsonLayer.resetStyle(e.target);
-            map.closeTooltip(tooltip);
-          },
-          click: (e) => {
-            map.fitBounds(e.target.getBounds(), { padding: [20, 10], animate: true});
-            updateState(feature.properties.STATE_NAME);
-          }
-        });
-      },
-      style: {
-        color: "white",
-        weight: 1,
-        opacity: 0.1,
-        fillOpacity: 0
-      }
-    }).addTo(map);
+
+    const checkAndUpdateState = () => {
+      updateState("Australia");
+    };
+
+    map.on('dragend', checkAndUpdateState);
 
     mapRef.current = map;
 
     return () => {
+      map.off('dragend', checkAndUpdateState);
       mapRef.current?.remove();
       mapRef.current = null;
     };
   }
+
+  useEffect(() => {
+    console.log("Updated currentState:", currentState);
+  }, [currentState]);
 
   useEffect(() => {
     if (!mapRef.current && containerId === "m") {
@@ -135,6 +99,73 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
       heatLayerRef.current = heatLayer;
     }
   }, [mapData]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) {
+
+      const states: FeatureCollection = stateMapping as FeatureCollection;
+      const geoJsonLayer = L.geoJson(states, {
+        onEachFeature: (feature, layer) => {
+          let tooltip: L.Tooltip;
+          const state = feature.properties.STATE_NAME;
+    
+          layer.on({
+            mouseover: (e) => {
+              const layer = e.target;
+              layer.setStyle({
+                weight: 1,
+                color: 'white',
+                dashArray: '',
+                fillOpacity: 0.1
+              });
+              layer.bringToFront();
+    
+              // contents can be a htmlElement too for more advanced displays
+              const cases = graphData[state];
+
+              // Initialize the result string for the tooltip.
+              let result = 0;
+              if (cases) { // Check if there's data for the selected state
+                  for (const [strain, count] of Object.entries(cases)) {
+                      result += count;
+                  }
+              }
+
+              const content = `${state} - ${result} total covid cases`;
+              tooltip = L.tooltip({
+                direction: 'top',
+                permanent: false, 
+                sticky: true,
+                opacity: 0.7,
+                className: "tooltip"
+              })
+              .setContent(content)
+              .setLatLng(e.latlng)
+              .openOn(map);
+            },
+            mousemove: (e) => {
+              tooltip.setLatLng(e.latlng);
+            },
+            mouseout: (e) => {
+              geoJsonLayer.resetStyle(e.target);
+              map.closeTooltip(tooltip);
+            },
+            click: (e) => {
+              map.fitBounds(e.target.getBounds(), { padding: [20, 10], animate: true});
+              updateState(state);
+            }
+          });
+        },
+        style: {
+          color: "#494949",
+          weight: 1,
+          opacity: 0.1,
+          fillOpacity: 0
+        }
+      }).addTo(map);
+    }
+  }, [mapData])
 
   return <div id={containerId} style={{ height: "100vh", width: "100%", zIndex: 0 }}></div>;
 };
