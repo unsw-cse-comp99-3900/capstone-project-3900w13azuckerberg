@@ -156,18 +156,10 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
 					.forEach((strain) => {
 						let yValue = graphData[d][currLocation][strain];
-						if (yValue > 0) {
 							l.find(item => item.id == strain)?.data.push({
 								x: d,
 								y: yValue,
 							});
-						}
-						else {
-							l.find(item => item.id == strain)?.data.push({
-								x: d,
-								y: 0,
-							});
-						}
 					})
 			);
 			console.log(l);
