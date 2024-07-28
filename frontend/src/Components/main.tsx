@@ -6,6 +6,7 @@ import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
 import { MapData, GraphData, Point, PieItem, LineItem, PolicyData } from "./types"
+
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -160,7 +161,13 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	}, [date, graphData])
   return (
     <div id="body">
-		<GraphBar pieData={pieData} lineData={lineData} />
+		<GraphBar 
+			pieData={pieData} 
+			lineData={lineData}
+			policies={policies}
+			predict={predict}
+			setPolicies={setPolicies}
+		/>
 		<HeatMap showCompare={showCompare} 
 			containerId={containerId} 
 			mapData={mapData} 

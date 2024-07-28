@@ -64,7 +64,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
   const handleApply = async () => {
     try {
       onFilterChange(!token);
-      const response = await axios.get("http://127.0.0.1:5001/policy", {
+      const response = await axios.get("http://127.0.0.1:5001/policies", {
         params: {
           state,
           startDate,
@@ -153,7 +153,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
         </select>
       </CustomTooltip>
       <CustomTooltip label={policy === none ? none : "Policy"}>
-        <select className={`dropdown button ${state === none ? "" : "selected"}`} value={policy} onChange={handlePolicyChange}>
+        <select className={`dropdown button ${policy === none ? "" : "selected"}`} value={policy} onChange={handlePolicyChange}>
           {policy === none && <option value="">Policy</option>}
           <option value="Lockdown">Lockdown </option>
           <option value="Social Distancing">Social Distancing </option>
