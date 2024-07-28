@@ -253,6 +253,7 @@ def create_default_state():
 
 
 # graph showing distribution of infections for variant strains
+# graph showing distribution of infections for variant strains
 @app.route('/graphdata', methods=['GET'])
 def variant_pie_chart():
     start_time = time.time()
@@ -264,6 +265,11 @@ def variant_pie_chart():
 
     result_graph_data = {}
 
+    global selected_strains
+
+    selected_strains_dict = selected_strains['m']
+    selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
+
     for date, states_info in graph_data.items():
 
         default_states = create_default_state()
@@ -271,7 +277,8 @@ def variant_pie_chart():
         for state, strains_info in states_info.items():
             if state in default_states:
                 for strain, count in strains_info.items():
-                    if strain in default_states[state]:
+                    # Only add to australia if strain is selected
+                    if strain in selected_strains_arr:
                         default_states[state][strain] += count
                         # Also add this count to the 'Australia' total
                         default_states['Australia'][strain] += count
@@ -284,6 +291,7 @@ def variant_pie_chart():
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
+
 
 
 
