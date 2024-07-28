@@ -4,9 +4,12 @@ from seirsplus.models import SEIRSNetworkModel
 import matplotlib.pyplot as plt
 
 # SEIRS Model parameters (example values)
-beta = 0.25
-sigma = 1/5.2
-gamma = 1/10
+# beta = 0.25
+# sigma = 1/5.2
+# gamma = 1/10
+beta = 0.9994680678176857
+sigma = 0.05893301173140339
+gamma = 0.9787453097779406
 mu_I = 0.01
 P = 0.5
 Q = 0.1
