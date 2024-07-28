@@ -1,0 +1,19 @@
+#slider {
+    position: absolute;
+    bottom: 12vh;
+    left: 3vw;
+    width: 7vw;
+}
+
+#small {
+    position: absolute;
+    bottom: 12vh;
+    left: 1vw;
+    width: 0;
+}
+
+#big {
+    position: absolute;
+    bottom: 12vh;
+    left: 11vw;
+}
