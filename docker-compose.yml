@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres
+    build: ./db
     restart: always
     environment:
       POSTGRES_USER: user1
@@ -9,7 +9,6 @@ services:
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-      - ./covid_backup.sql:/docker-entrypoint-initdb.d/covid_backup.sql
     ports:
       - "5432:5432"
     healthcheck:

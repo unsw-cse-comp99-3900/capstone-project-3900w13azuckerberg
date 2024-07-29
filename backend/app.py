@@ -66,12 +66,12 @@ selected_strains = {
     }
 }
 
-@app.before_request
-def before_request():
-    global data_loaded
-    if not data_loaded:
-        load_data()
-        data_loaded = True
+# @app.before_request
+# def before_request():
+#     global data_loaded
+#     if not data_loaded:
+#         load_data()
+#         data_loaded = True
 
 # Route for the home page
 @app.route('/')
@@ -312,7 +312,7 @@ if __name__ == '__main__':
     server_thread.start()
 
     # Now call load_data() without blocking the main thread
-    load_data()
+    # load_data()
 
 
     # # ONLY IF RUNNING BACKEND IN TERMINAL
