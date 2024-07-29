@@ -6,7 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
+from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db, get_all_case_by_date
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -83,13 +83,7 @@ def mytest():
     print("Starting my test...")
     start_time = time.time()
 
-
-    start_date_str = '2020-01-01'
-    end_date_str = '2023-12-31'
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    results = get_all_case_by_coordinate(start_date, end_date, labels=[])
-
+    results = get_all_case_by_date()
 
     end_time = time.time()
     execution_time = end_time - start_time
@@ -314,14 +308,14 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
-    # # Now call load_data() without blocking the main thread
-    # load_data()
+    # Now call load_data() without blocking the main thread
+    load_data()
 
 
-    # ONLY IF RUNNING BACKEND IN TERMINAL
-    with app.app_context():
-        app.run(debug=True, host='0.0.0.0', port=8964)
+    # # ONLY IF RUNNING BACKEND IN TERMINAL
+    # with app.app_context():
+    #     app.run(debug=True)
