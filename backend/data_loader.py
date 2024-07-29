@@ -9,6 +9,11 @@ def load_into_db(app):
     load_dataframe_to_db(lab_df, "lab_location", app)
     load_dataframe_to_db(strain_df, "strain_label", app)
 
+def load_policy():
+    df = pd.read_csv('raw_data/policy.csv')
+    dict_result = df.groupby('Date').apply(lambda x: x.to_dict(orient='records')).to_dict()
+    return dict_result
+
 if __name__ == '__main__':
     from app import app
     with app.app_context():
