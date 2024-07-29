@@ -13,6 +13,7 @@ from seirsplus.models import *
 import threading
 from seirsplus.networks import custom_exponential_graph
 import networkx as nx
+from network import *
 # from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
