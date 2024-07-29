@@ -181,7 +181,8 @@ def calculate_14_day_sums(data):
 
 def get_case_by_coordinate_and_strain(date, strains=[]):
     # deprecated function
-    """Get case number for each lab location given a date
+    """--deprecated function--
+    Get case number for each lab location given a date
 
     Args:
         date (datetime)
@@ -232,7 +233,7 @@ def get_case_by_coordinate_and_strain(date, strains=[]):
     return result_dict
 
 def get_all_time_case_pie_chart():
-        # Fetch all the data
+    # Fetch all the data
     results = db.session.query(
         VirusData.date,
         VirusData.division_exposure,

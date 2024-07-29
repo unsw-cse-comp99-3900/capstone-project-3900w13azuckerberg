@@ -83,13 +83,7 @@ def mytest():
     print("Starting my test...")
     start_time = time.time()
 
-
-    start_date_str = '2020-01-01'
-    end_date_str = '2023-12-31'
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
     results = get_all_case_by_date()
-
 
     end_time = time.time()
     execution_time = end_time - start_time
