@@ -66,12 +66,12 @@ selected_strains = {
     }
 }
 
-# @app.before_request
-# def before_request():
-#     global data_loaded
-#     if not data_loaded:
-#         load_data()
-#         data_loaded = True
+@app.before_request
+def before_request():
+    global data_loaded
+    if not data_loaded:
+        load_data()
+        data_loaded = True
 
 # Route for the home page
 @app.route('/')
