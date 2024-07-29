@@ -5,8 +5,9 @@ import GraphBar from "./GraphBar";
 import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
-import { MapData, GraphData, Point, PieItem, LineItem } from "./types"
+import { MapData, GraphData, Point, PieItem, LineItem, PolicyData } from "./types"
 import RadiusSlider from "./radiusSlider";
+
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -16,8 +17,6 @@ interface MainProps {
 	predict: boolean;
 	setPredict: (predict: boolean) => void;
 }
-
-
 
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
@@ -32,13 +31,15 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
-	const [location, setLocation] = useState("all");
+	const [location, setLocation] = useState("Australia");
 	const [mapData, setMapData] = useState<[number, number, number][]>([]);
-	const [graphData, setGraphData] = useState<GraphData>();
+	const [graphData, setGraphData] = useState<GraphData>({});
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
+	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
-	// Map use effect
+
+	// Map useeffect when filters change
     useEffect(() => {
       // Function to fetch heat map data from the backend
 		const fetchData = async () => {
@@ -84,17 +85,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
 			console.log("getting graph data");
-			// setIsLoading(true);
 			try {
 				let response: AxiosResponse;
-			//   if (!predict) {
 				response = await axios.get("http://127.0.0.1:5001/graphdata", {
 				params: {
 					containerId, // <- this will be either "M", "left", "right"
 					}
 				});
-			//   } else {
-			// 	  response = await axios.get("http://127.0.0.1:5000/predictive_map", {})
+
 				const rawData: GraphData = response.data;
 				setGraphData(rawData);
 				console.log("Graph data updated.");
@@ -102,15 +100,16 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
-			//   setIsLoading(false);
 		  };
 		  fetchGraphData();
 	}, [refetch, predict]);
 
+	// map useeffect when date changes
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
-      console.log("Data for selected date:", allMapData[dateString] || []);
+	//   console.log("New Date", dateString);
+    //   console.log("Data for selected date:", allMapData[dateString] || []);
 	  
     }, [date, allMapData]);
 
@@ -169,8 +168,21 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	}, [date, graphData])
   return (
     <div id="body">
-		<GraphBar pieData={pieData} lineData={lineData} />
-		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location} radius={radius}/>
+		<GraphBar 
+			pieData={pieData} 
+			lineData={lineData}
+			policies={policies}
+			predict={predict}
+			setPolicies={setPolicies}
+		/>
+		<HeatMap showCompare={showCompare} 
+			containerId={containerId} 
+			mapData={mapData} 
+			updateState={setLocation} 
+			currentState={location}
+			graphData={graphData[date.toISOString().split('T')[0]]}
+			radius={radius}
+		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
 			setShowCompare={setShowCompare}
@@ -178,6 +190,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			predict={predict}
 			setPredict={setPredict}
 			containerId={containerId}
+			allMapData={allMapData}
+			policies={policies}
+			setPolicies={setPolicies}
 		/>
 		<RadiusSlider setRadius={setRadius}/>
 	</div>

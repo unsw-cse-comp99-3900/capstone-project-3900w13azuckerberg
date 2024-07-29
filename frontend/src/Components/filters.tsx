@@ -3,6 +3,10 @@ import Button from "./filterButton";
 import Icon from "./iconButton";
 import "./filters.css";
 import CustomTooltip from './customTooltip';
+import { arrayToCSV, downloadFile } from './export'
+import { MapData, PolicyData } from "./types"
+import PolicyFilters from "./policyFilters";
+
 
 interface FiltersProps {
   token: boolean;
@@ -12,6 +16,9 @@ interface FiltersProps {
   predict: boolean;
 	setPredict: (predict: boolean) => void;
   containerId: string;
+  allMapData: MapData;
+  policies: PolicyData;
+  setPolicies: (policies: PolicyData) => void;
 }
 
 const Filters: React.FC<FiltersProps> = ({ 
@@ -21,8 +28,12 @@ const Filters: React.FC<FiltersProps> = ({
     showCompare, 
     predict, 
     setPredict,
-    containerId
+    containerId,
+    allMapData,
+    policies,
+    setPolicies
   }) => {
+  const [showMenu, setShowMenu] = useState(false);
   const [showFilters, setShowFilters] = useState(false); 
   const [allFilters, setAllFilters] = useState([
     { label: "Alpha", selected: true },
@@ -31,6 +42,9 @@ const Filters: React.FC<FiltersProps> = ({
     { label: "Gamma", selected: true },
     { label: "Omicron", selected: true },
   ]);
+  const [filterIcon, setFilterIcon] = useState<string>("filter_list");
+  const [policyFilters, setPolicyFilters] = useState(false);
+
 
   const setAll = (newState: boolean) => {
     setAllFilters(
@@ -40,7 +54,15 @@ const Filters: React.FC<FiltersProps> = ({
   };
 
   const toggleFilters = () => {
-    setShowFilters((prev) => !prev);
+    if (!predict) {
+      setShowFilters((prev) => !prev);
+    } else {
+      setPolicyFilters((prev) => !prev);
+    }
+  };
+
+  const toggleMenu = () => {
+    setShowMenu((prev) => !prev);
   };
 
   const handleSetSelected = (label: string, newState: boolean) => {
@@ -54,31 +76,78 @@ const Filters: React.FC<FiltersProps> = ({
   
   const handleCompare = () => {
     setShowCompare(!showCompare);
-    setPredict(false);
+    // setPredict(false);
   }
 
   const handlePredict = () => {
+    setFilterIcon(predict ? "filter_list" : "add");
     setPredict(!predict);
-    setShowCompare(false);
+    setShowFilters(false);
+    setPolicyFilters(false);
+
+    // setShowCompare(false);
     onFilterChange(!token);
+  }
+
+  const handleExport = () => {
+    const data = arrayToCSV(allMapData);
+
+    let filename: string;
+    if (predict) {
+      filename = "predictive_model.csv";
+    } else if (allFilters.every(filter => filter.selected)) {
+      filename = "all_variants_data.csv";
+    } else {
+      const selectedFilters = allFilters
+        .filter(filter => filter.selected)
+        .map(filter => filter.label)
+        .join('_');
+  
+      filename = `${selectedFilters}_data.csv`;
+    }
+
+    downloadFile(data, filename, 'text/csv');
   }
 
   return (
     <div className="filters">
       <div className="filter-container">
-        <CustomTooltip label="Filter by Strain">
-          <i className="material-icons icon" onClick={toggleFilters}>
-            filter_list
+        <CustomTooltip label="Menu Options">
+          <i className="material-icons icon square" onClick={toggleMenu}>
+            menu
           </i>
         </CustomTooltip>
-        <div className={`filter-buttons ${showFilters ? "show" : "hide"}`}>
-          <button className={`compare-button ${!showCompare ? "" : "selected"}`} onClick={handleCompare}>
-            Compare
-          </button>
-          <button className={`compare-button ${!predict ? "" : "selected"}`} onClick={handlePredict}>
-            Predict
-          </button>
-          <div className={`filter-buttons ${predict ? "hide" : "show"}`}>
+        <div className={`filter-buttons ${showMenu ? "show" : "hide"}`}>
+          <CustomTooltip label={predict ? "Export Current Policies" : "Export Currently Selected Strains"}>
+            <button className={`button`} onClick={handleExport}>
+              Export
+            </button>
+          </CustomTooltip>
+          <CustomTooltip label={showCompare ? "Return to Single View" : "Compare Cases"}>
+            <button className={`button ${!showCompare ? "" : "selected"}`} onClick={handleCompare}>
+              Compare
+            </button>
+          </CustomTooltip>
+          <CustomTooltip label={predict ? "Return to Historic Data" : "Model Future Cases"}>
+            <button className={`button ${!predict ? "" : "selected"}`} onClick={handlePredict}>
+              Predict
+            </button>
+          </CustomTooltip>
+          <CustomTooltip label={predict ? "Add Government Policy" : "Filter by Strain"}>
+            <i className="material-icons icon square" onClick={toggleFilters}>
+              {filterIcon}
+            </i>
+          </CustomTooltip>
+          <div className={`filter-buttons ${policyFilters ? "show" : "hide"}`}>
+            <PolicyFilters 
+              token={token} 
+              onFilterChange={onFilterChange} 
+              containerId={containerId} 
+              policies={policies}
+              setPolicies={setPolicies}
+            />
+          </div>
+          <div className={`filter-buttons ${showFilters ? "show" : "hide"}`}>
             {allFilters.map((filter) => (
               <Button
                 label={filter.label}

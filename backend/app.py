@@ -119,7 +119,7 @@ def heat_map():
     containerId = request.args.get('containerId')
     print("/map containerId", containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
-    end_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    end_date = datetime.strptime('2024-4-29', '%Y-%m-%d').date()
 
     global selected_strains
 

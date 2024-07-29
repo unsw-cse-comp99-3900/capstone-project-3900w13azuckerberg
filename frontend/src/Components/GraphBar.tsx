@@ -4,14 +4,18 @@ import GraphButton from "./GraphButton";
 import PieChart from "./PieChart";
 import LineChart from "./LineChart";
 import BarChart from "./barChart";
-import { PieItem, LineItem } from "./types";
+import { PieItem, LineItem, PolicyData } from "./types";
+import PolicyGraph from "./policyGraph";
 interface GraphProps {
   pieData: PieItem[],
   lineData: LineItem[],
+  policies: PolicyData, 
+  predict: boolean,
+  setPolicies: (policies: PolicyData) => void;
 }
 
 
-const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
+const GraphBar: React.FC<GraphProps> = ({ pieData, lineData, policies, predict, setPolicies}) => {
 
   const [showGraph, setShowGraph] = useState(false);
 
@@ -26,7 +30,11 @@ const GraphBar: React.FC<GraphProps> = ({ pieData, lineData}) => {
       </div>
       <div className={`wrapper ${showGraph ? "open" : ""}`}>
         <div className="graphBox">
-          <PieChart pieData={pieData}/>
+          {predict ? (
+            <PolicyGraph policies={policies} setPolicies={setPolicies}/>
+          ) : (
+            <PieChart pieData={pieData}/>
+          )}
         </div>
         <div className="graphBox">
           <LineChart lineData={lineData}/>
