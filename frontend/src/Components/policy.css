@@ -1,0 +1,38 @@
+.policy-summary {
+    margin: 20px;
+    padding: 10px;
+    color: white;
+  }
+  
+  .policy-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .policy-item:last-child {
+    border-bottom: none;
+  }
+  
+  .policy-item h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #ffffff;
+  }
+  
+  .policy-item p {
+    margin: 5px 0;
+  }
+  
+  .cross {
+    color: red;
+    cursor: pointer;
+    font-size: 1em;
+    transition: color 0.3s ease;
+    border-color: red;
+  }
+  
+  .cross:hover {
+    color: white;
+    background-color: darkred;
+  }

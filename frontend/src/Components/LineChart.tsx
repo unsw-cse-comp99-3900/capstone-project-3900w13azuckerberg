@@ -8,10 +8,10 @@ const LineChart: React.FC<LineChartProps> = ({ lineData }) => (
   <ResponsiveLine
     data={lineData}
     theme={{
-      legends: { text: { fontSize: 16 } },
+      legends: { text: { fontSize: 14, fill:"#999" } },
       axis: {
-        legend: { text: { fontSize: 16, fill: "#494949" } },
-        ticks: { text: { fontSize: 12, fill: "#494949" } },
+        legend: { text: { fontSize: 16, fill: "#494949", color: "#0e0e0e" } },
+        ticks: { text: { fontSize: 12, fill: "#0e0e0e" } },
       },
     }}
     margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
@@ -62,14 +62,14 @@ const LineChart: React.FC<LineChartProps> = ({ lineData }) => (
         anchor: "top",
         direction: "row",
         justify: false,
-        translateX: 0,
+        translateX: -10,
         translateY: -25,
         itemsSpacing: 20,
         itemDirection: "left-to-right",
-        itemWidth: 60,
+        itemWidth: 50,
         itemHeight: 20,
         itemOpacity: 1,
-        symbolSize: 14,
+        symbolSize: 12,
         symbolShape: "circle",
         symbolBorderColor: "rgba(0, 0, 0, .5)",
         effects: [

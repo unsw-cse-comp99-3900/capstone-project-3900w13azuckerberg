@@ -30,39 +30,42 @@ migrate = Migrate(app, db)
 
 data_loaded = False
 
-selected_strains_left = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
-}
-
-selected_strains_right = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
-}
-
-selected_strains_main = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
-}
-
-selected_strains_all= {
-    "alpha": True,
-    "beta": True,
-    "delta": True,
-    "omicron": True
-}
-
-selected_strains_none = {
-    "alpha": False,
-    "beta": False,
-    "delta": False,
-    "omicron": False
+selected_strains = {
+    "left": {
+        "Alpha": 'true',
+        "Beta": 'true',
+        "Delta": 'true',
+        "Gamma": 'true',
+        "Omicron": 'true'
+    },
+    "right": {
+        "Alpha": 'true',
+        "Beta": 'true',
+        "Delta": 'true',
+        "Gamma": 'true',
+        "Omicron": 'true'
+    },
+    "m": {
+        "Alpha": 'true',
+        "Beta": 'true',
+        "Delta": 'true',
+        "Gamma": 'true',
+        "Omicron": 'true'
+    },
+    "all": {
+        "Alpha": 'true',
+        "Beta": 'true',
+        "Delta": 'true',
+        "Gamma": 'true',
+        "Omicron": 'true'
+    },
+    "none": {
+        "Alpha": 'false',
+        "Beta": 'false',
+        "Delta": 'false',
+        "Gamma": 'false',
+        "Omicron": 'false'
+    }
 }
 
 @app.before_request
@@ -116,22 +119,17 @@ def load_data():
 def heat_map():
     start_time = time.time()
     containerId = request.args.get('containerId')
-    print(containerId)
+    print("/map containerId", containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
-    end_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    end_date = datetime.strptime('2024-4-29', '%Y-%m-%d').date()
 
-    # select strains based off filter or select all if no filter has been selected
-    if (containerId) == 'left':
-        selected_strains = selected_strains_left
-    elif (containerId) == 'right':
-        selected_strains = selected_strains_right
-    elif (containerId) == 'm':
-        selected_strains = selected_strains_main
+    global selected_strains
 
-    selected_strains = [strain for strain, selected in selected_strains.items() if selected is True]
-    print(selected_strains)
+    selected_strains_dict = selected_strains[containerId]
+    # convert to list for db function
+    selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
 
-    results = get_all_case_by_coordinate(start_date, end_date, selected_strains)
+    results = get_all_case_by_coordinate(start_date, end_date, selected_strains_arr)
 
     end_time = time.time()
     execution_time = end_time - start_time
@@ -157,8 +155,15 @@ def predictive_map():
 
     predictive_period = 365 # one year of prediction
 
+    global selected_strains
+
+    selected_strains_dict = selected_strains['all']
+    selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
+
+    print(selected_strains_arr)
+
     current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
-    loc_data = get_case_by_coordinate(current_date, selected_strains_all)
+    loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
 
     # network model
     num_nodes = 10000
@@ -209,9 +214,16 @@ def predictive_map():
 
     return jsonify(predictive_map_data)
 
+def update_selected_strains(container_id, label, selected):
+    global selected_strains
+    if label == 'all' or label == 'none':
+        selected_strains[container_id] = selected_strains[label].copy()
+    else:
+        selected_strains[container_id][label] = selected
+
 
 # variant filter for heatmap
-@app.route('/filter/', methods=['GET'])
+@app.route('/filter', methods=['GET'])
 def filter_variant():
 
     """"
@@ -227,41 +239,26 @@ def filter_variant():
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
-    global selected_strains_left, selected_strains_right, selected_strains_main
-    if (containerId) == 'left':
-        if (label) == 'all':
-            selected_strains_left = selected_strains_all
-        elif (label) == 'none':
-            selected_strains_left = selected_strains_none
-        else:
-            selected_strains_left[label] = selected
-    elif (containerId) == 'right':
-        if (label) == 'all':
-            selected_strains_right = selected_strains_all
-        elif (label) == 'none':
-            selected_strains_right = selected_strains_none
-        else:
-            selected_strains_right[label] = selected
-    else:
-        if (label) == 'all':
-            selected_strains_main = selected_strains_all
-        elif (label) == 'none':
-            selected_strains_main = selected_strains_none
-        else:
-            selected_strains_main[label] = selected
+
+    print("label:", label)
+    print("selected:", selected)
+    print("containerId:", containerId)
+
+    update_selected_strains(containerId, label, selected)
 
     return "success"
 
 
 def create_default_state():
      # Define the expected states and strains
-    expected_states = ['Australia', 'New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'Tasmania', 'Northern Territory']
+    expected_states = ['Australia', 'New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory', 'South Australia']
     strains = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omicron']
 
     # Initialize the dictionary with default values
     return {state: {strain: 0 for strain in strains} for state in expected_states}
 
 
+# graph showing distribution of infections for variant strains
 # graph showing distribution of infections for variant strains
 @app.route('/graphdata', methods=['GET'])
 def variant_pie_chart():
@@ -274,6 +271,11 @@ def variant_pie_chart():
 
     result_graph_data = {}
 
+    global selected_strains
+
+    selected_strains_dict = selected_strains['m']
+    selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
+
     for date, states_info in graph_data.items():
 
         default_states = create_default_state()
@@ -281,7 +283,8 @@ def variant_pie_chart():
         for state, strains_info in states_info.items():
             if state in default_states:
                 for strain, count in strains_info.items():
-                    if strain in default_states[state]:
+                    # Only add to australia if strain is selected
+                    if strain in selected_strains_arr:
                         default_states[state][strain] += count
                         # Also add this count to the 'Australia' total
                         default_states['Australia'][strain] += count
@@ -294,6 +297,7 @@ def variant_pie_chart():
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
+
 
 
 
