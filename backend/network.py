@@ -26,8 +26,8 @@ seconds_range = 100
 degree_range = seconds_range / 3600.0
 
 # Create latitude and longitude values within the defined range
-latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=3)  
-longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=3) 
+latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=4)  
+longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=4) 
 
 # Create a grid of nodes
 G_normal = nx.Graph()
@@ -85,11 +85,12 @@ def print_cases_at_each_node(model, G):
         print(f"{name} at coordinates {pos} has {count} cases.")
 
 # Run the model and print cases at each node
-T = 100
+T = 200
 for t in range(T):
     model.run_iteration()
    # if t % 10 == 0:  # Print every 10 time steps for clarity
     print(f"Time step {t}:")
     print_cases_at_each_node(model, model.G)
 
-model.figure_infections(plot_percentages=False)
+model.figure_infections(plot_percentages=False, plot_S='line', plot_E='line', plot_I='line', plot_R='line', plot_F='line',
+                        combine_D=False)
