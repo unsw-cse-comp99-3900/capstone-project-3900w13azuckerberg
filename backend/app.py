@@ -66,12 +66,12 @@ selected_strains = {
     }
 }
 
-@app.before_request
-def before_request():
-    global data_loaded
-    if not data_loaded:
-        load_data()
-        data_loaded = True
+# @app.before_request
+# def before_request():
+#     global data_loaded
+#     if not data_loaded:
+#         load_data()
+#         data_loaded = True
 
 # Route for the home page
 @app.route('/')
@@ -308,14 +308,14 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
-    # # Now call load_data() without blocking the main thread
-    # load_data()
+    # Now call load_data() without blocking the main thread
+    load_data()
 
 
-    # ONLY IF RUNNING BACKEND IN TERMINAL
-    with app.app_context():
-        app.run(debug=True, host='0.0.0.0', port=8964)
+    # # ONLY IF RUNNING BACKEND IN TERMINAL
+    # with app.app_context():
+    #     app.run(debug=True, host='0.0.0.0', port=8964)
