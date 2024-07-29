@@ -141,7 +141,6 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
       <CustomTooltip label={state === none ? none : "State"}>
         <select className={`dropdown button ${state === none ? "" : "selected"}`} value={state} onChange={handleStateChange}>
           {state === none && <option value="">State</option>}
-          <option value="Australia">Australia</option>
           <option value="New South Wales">New South Wales </option>
           <option value="Queensland">Queensland </option>
           <option value="Victoria">Victoria </option>
