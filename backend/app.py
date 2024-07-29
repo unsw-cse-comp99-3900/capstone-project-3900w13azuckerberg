@@ -6,7 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from data_loader import load_into_db
-from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
+from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db, get_all_case_by_date
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -88,7 +88,7 @@ def mytest():
     end_date_str = '2023-12-31'
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    results = get_all_case_by_coordinate(start_date, end_date, labels=[])
+    results = get_all_case_by_date()
 
 
     end_time = time.time()
