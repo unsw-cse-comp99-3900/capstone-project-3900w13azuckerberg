@@ -1,12 +1,12 @@
 import React from "react";
-import "./button.css";
-import AxiosError from "axios";
+import "./filters.css";
 import axios from "axios"
+
 interface ButtonProps {
   label: string;
   endpoint: string;
   selected: boolean;
-  onSelect: (selected: boolean) => void;
+  onSelect: () => void;
   containerId: string;
 }
 
@@ -19,11 +19,11 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   const handleClick = async () => {
     try {
-      onSelect(!selected);
+      onSelect();
       const response = await axios.get(endpoint, {
         params: {
           label, // Strain ie Alpha, Beta
-          selected, // True or false
+          selected: !selected, // True or false
           containerId, // M left or right
         }
       });

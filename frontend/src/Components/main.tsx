@@ -5,7 +5,9 @@ import GraphBar from "./GraphBar";
 import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
-import { MapData, GraphData, Point, PieItem, LineItem } from "./types"
+import { MapData, GraphData, Point, PieItem, LineItem, PolicyData } from "./types"
+import RadiusSlider from "./radiusSlider";
+
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -16,27 +18,28 @@ interface MainProps {
 	setPredict: (predict: boolean) => void;
 }
 
-
-
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
 	const colors: { [strain: string]: string } = {
-		Alpha: "#9B57D3",
-		Beta: "#665EB8",
-		Gamma: "#C39AE5",
-		Delta: "#92278F",
-		Omicron: "#6159AE"
+		Alpha: "#4B0082",     // Indigo
+		Beta: "#6A0DAD",      // Royal Purple
+		Gamma: "#483D8B",     // Dark Slate Blue
+		Delta: "#7B68EE",     // Medium Slate Blue
+		Omicron: "#8A2BE2"    // Blue Violet
 	};
+	
 
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
-	const [location, setLocation] = useState("all");
+	const [location, setLocation] = useState("Australia");
 	const [mapData, setMapData] = useState<[number, number, number][]>([]);
-	const [graphData, setGraphData] = useState<GraphData>();
+	const [graphData, setGraphData] = useState<GraphData>({});
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
-	
-	// Map use effect
+	const [policies, setPolicies] = useState<PolicyData>({});
+	const [radius, setRadius] = useState(20);
+
+	// Map useeffect when filters change
     useEffect(() => {
       // Function to fetch heat map data from the backend
 		const fetchData = async () => {
@@ -45,13 +48,13 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
-					response = await axios.get("http://127.0.0.1:5000/map", {
+					response = await axios.get("http://127.0.0.1:5001/map", {
 					params: {
 						containerId, // <- this will be either "M", "left", "right"
 						}
 					});
 				} else {
-					response = await axios.get("http://127.0.0.1:5000/predictive_map", {})
+					response = await axios.get("http://127.0.0.1:5001/predictive_map", {})
 				}
 				const rawData: { [date: string]: Point[] } = response.data;
 				const formattedData: MapData = {};
@@ -82,17 +85,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
 			console.log("getting graph data");
-			// setIsLoading(true);
 			try {
 				let response: AxiosResponse;
-			//   if (!predict) {
-				response = await axios.get("http://127.0.0.1:5000/graphdata", {
+				response = await axios.get("http://127.0.0.1:5001/graphdata", {
 				params: {
-					param1: containerId, // <- this will be either "M", "left", "right"
+					containerId, // <- this will be either "M", "left", "right"
 					}
 				});
-			//   } else {
-			// 	  response = await axios.get("http://127.0.0.1:5000/predictive_map", {})
+
 				const rawData: GraphData = response.data;
 				setGraphData(rawData);
 				console.log("Graph data updated.");
@@ -100,22 +100,23 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
-			//   setIsLoading(false);
 		  };
 		  fetchGraphData();
 	}, [refetch, predict]);
 
+	// map useeffect when date changes
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
-      console.log("Data for selected date:", allMapData[dateString] || []);
+	//   console.log("New Date", dateString);
+    //   console.log("Data for selected date:", allMapData[dateString] || []);
 	  
     }, [date, allMapData]);
 
 	useEffect(() => {
 		if (graphData != null && Object.keys(graphData).length > 0) {
 			const dateString = date.toISOString().split('T')[0];
-			const currLocation = (location == "all") ? "Australia" : location;
+			const currLocation = (location === "all") ? "Australia" : location;
 			let p: PieItem[] = [];
 			if (!graphData[dateString]) {
 				graphData[dateString] = {
@@ -125,6 +126,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 					"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Tasmania": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"South Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+					"Australian Capital Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 				};
 			}
 			console.log(dateString);
@@ -149,11 +153,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			})
 			)
 			sorted.forEach((d) => Object.keys(graphData[d][currLocation])
-				  .forEach((strain) => l.find(item => item.id == strain)?.data.push({
-					x: d,
-					y: graphData[d][currLocation][strain],
-				  })
-			));
+					.forEach((strain) => {
+						let yValue = graphData[d][currLocation][strain];
+							l.find(item => item.id == strain)?.data.push({
+								x: d,
+								y: yValue,
+							});
+					})
+			);
 			console.log(l);
 			setLineData(l);
 		}
@@ -161,8 +168,21 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	}, [date, graphData])
   return (
     <div id="body">
-		<GraphBar pieData={pieData} lineData={lineData} />
-		<HeatMap showCompare={showCompare} containerId={containerId} mapData={mapData} updateState={setLocation} currentState={location}/>
+		<GraphBar 
+			pieData={pieData} 
+			lineData={lineData}
+			policies={policies}
+			predict={predict}
+			setPolicies={setPolicies}
+		/>
+		<HeatMap showCompare={showCompare} 
+			containerId={containerId} 
+			mapData={mapData} 
+			updateState={setLocation} 
+			currentState={location}
+			graphData={graphData[date.toISOString().split('T')[0]]}
+			radius={radius}
+		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
 			setShowCompare={setShowCompare}
@@ -170,7 +190,11 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			predict={predict}
 			setPredict={setPredict}
 			containerId={containerId}
+			allMapData={allMapData}
+			policies={policies}
+			setPolicies={setPolicies}
 		/>
+		<RadiusSlider setRadius={setRadius}/>
 	</div>
   );
 }
