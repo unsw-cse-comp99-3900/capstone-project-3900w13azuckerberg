@@ -318,4 +318,4 @@ if __name__ == '__main__':
 
     # # ONLY IF RUNNING BACKEND IN TERMINAL
     # with app.app_context():
-    #     app.run(debug=True, host='0.0.0.0', port=8964)
+    #     app.run(debug=True)
