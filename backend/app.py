@@ -163,12 +163,8 @@ def predictive_map():
 
     print(selected_strains_arr)
 
-    current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
+    current_date = datetime.strptime('2024-5-29', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
-
-    # network model
-    num_nodes = 10000
-    graph = nx.Graph()
 
     for key, data in loc_data.items():
         init_data[key] = {
@@ -181,15 +177,21 @@ def predictive_map():
 
     for location, data in init_data.items():
 
+        # running the network model
+        
+        center_lat = data["latitude"]
+        center_lon = data["longitude"]
+
+        G_normal = create_graph(center_lat, center_lon)
+        init_N = get_init_N(data["state"])
+
         # run model for each location
-        model = SEIRSModel(initN   = data["initN"],
+        model = SEIRSNetworkModel(initN   = init_N,
+            G       = G_normal,
             beta    = default_beta,
             sigma   = default_sigma,
             gamma   = default_gamma,
-            psi_E   = 1,
-            psi_I   = 1,
             initI = data["intensity"]
-            # initI   = 10000
         )
 
         model.run(T = predictive_period, verbose=False)
