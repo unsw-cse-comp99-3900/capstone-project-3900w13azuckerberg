@@ -18,14 +18,13 @@ def plot_graph(G, title):
     plt.title(title)
     plt.show()
 
-plot_graph(baseGraph, 'Barabási-Albert Graph')
+#plot_graph(baseGraph, 'Barabási-Albert Graph')
 
 model = SEIRSNetworkModel(G=G_normal, beta=0.155, sigma=1/5.2, gamma=1/12.39, mu_I=0.0004, p=0.5,
                           theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
                           initI=10)
 
-checkpoints = {'t': [20, 100], 'G': [G_distancing, G_normal], 'p': [0.1, 0.5], 'theta_E': [0.02, 0.02], 'theta_I': [0.02, 0.02], 'phi_E':   [0.2, 0.2], 'phi_I':   [0.2, 0.2]}
+#checkpoints = {'t': [20, 100], 'G': [G_distancing, G_normal], 'p': [0.1, 0.5], 'theta_E': [0.02, 0.02], 'theta_I': [0.02, 0.02], 'phi_E':   [0.2, 0.2], 'phi_I':   [0.2, 0.2]}
 
-model.run(T=300, checkpoints=checkpoints)
-
-#model.figure_infections()
+model.run(T=10)
+model.figure_infections(plot_percentages=False)
