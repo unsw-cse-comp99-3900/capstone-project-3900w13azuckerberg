@@ -4,12 +4,12 @@ from seirsplus.models import SEIRSNetworkModel
 import matplotlib.pyplot as plt
 
 # SEIRS Model parameters (example values)
-# beta = 0.25
-# sigma = 1/5.2
-# gamma = 1/10
-beta = 0.9994680678176857
-sigma = 0.05893301173140339
-gamma = 0.9787453097779406
+beta = 0.25
+sigma = 1/5.2
+gamma = 1/10
+# beta = 0.9994680678176857
+# sigma = 0.05893301173140339
+# gamma = 0.9787453097779406
 mu_I = 0.01
 P = 0.5
 Q = 0.1
@@ -26,8 +26,8 @@ seconds_range = 100
 degree_range = seconds_range / 3600.0
 
 # Create latitude and longitude values within the defined range
-latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=5)  # 3 points for clarity
-longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=5)  # 3 points for clarity
+latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=3)  
+longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=3) 
 
 # Create a grid of nodes
 G_normal = nx.Graph()
@@ -59,7 +59,7 @@ plt.show()
 # Initialize SEIRS model
 model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
                           theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-                          initI=1)
+                          initI=1, initE=1, initR=1)
 
 # Function to print coordinates and number of cases at each node
 
@@ -85,11 +85,11 @@ def print_cases_at_each_node(model, G):
         print(f"{name} at coordinates {pos} has {count} cases.")
 
 # Run the model and print cases at each node
-T = 200
+T = 100
 for t in range(T):
     model.run_iteration()
-    if t % 10 == 0:  # Print every 10 time steps for clarity
-        print(f"Time step {t}:")
-        print_cases_at_each_node(model, model.G)
+   # if t % 10 == 0:  # Print every 10 time steps for clarity
+    print(f"Time step {t}:")
+    print_cases_at_each_node(model, model.G)
 
 model.figure_infections(plot_percentages=False)
