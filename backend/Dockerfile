@@ -13,8 +13,10 @@ RUN rm -rf seirsplus
 # Clone your forked repository and install the seirsplus package
 RUN git clone https://github.com/lindawang01/seirsplus.git
 
-# Install the seirsplus package from the local cloned repository
 WORKDIR /app/backend/seirsplus
+# Uninstall any existing seirsplus packages
+RUN pip uninstall -y seirsplus || true
+# Install the seirsplus package from the local cloned repository
 RUN pip install --no-cache-dir .
 
 # Set the working directory for your application
