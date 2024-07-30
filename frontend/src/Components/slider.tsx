@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Icon from "./timelineButton";
 import CustomTooltip from './customTooltip';
 import Calendar from "react-calendar"; // Import Calendar component
@@ -6,12 +6,16 @@ import "react-calendar/dist/Calendar.css"; // Import Calendar CSS
 import "./calendar.css";
 import "./filters.css";
 import "./slider.css";
-
+import axios, { AxiosResponse } from "axios";
 
 interface TimelineSliderProps {
   onDateChange: (date: Date) => void;
   date: Date;
   predict: boolean;
+}
+interface Mark {
+  date: Date;
+  description: string;
 }
 
 const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) => {
@@ -30,7 +34,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   const [playback, setPlayback] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
   const [playbackIcon, setPlaybackIcon] = useState<string>("play_arrow");
-
+  const [policies, setPolicies] = useState<Record<string, { Date: string, Description: string, Entities?: string }[]> | null>(null);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const days = parseInt(event.target.value);
     const newDate = new Date(startDate);
@@ -91,10 +95,12 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     return () => clearTimeout(timer);
   }, [playback, speed, date, onDateChange]);
 
-  function handlePlayback(): void {
-    setPlaybackIcon(playback ? "play_arrow" : "pause");
-    setPlayback(!playback);
-  }
+  const handlePlayback = (): void => {
+    setPlayback(current => {
+      setPlaybackIcon(current ? "play_arrow" : "pause");
+      return !current;
+    });
+  };
 
   // Calculate number of days between start and end dates
   const totalDays = Math.ceil(
@@ -113,6 +119,116 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     }
   };
 
+  // const dict_result: Record<string, { Date: string, Description: string, Entities?: string }[]> = {
+  //   '1/02/2020': [
+  //     {
+  //       'Date': '1/02/2020',
+  //       'Description': 'International travel restrictions are implemented for foreign nationals entering Australia from China.',
+  //       'Entities': 'Home Affairs; Health'
+  //     },
+  //     {
+  //       'Date': '1/02/2020',
+  //       'Description': 'Travel advice for mainland China is raised to ‘Level 4 – Do not travel’.',
+  //       'Entities': 'DFAT'
+  //     }
+  //   ],
+  //   '1/03/2020': [
+  //     {
+  //       'Date': '1/03/2020',
+  //       'Description': 'Inward travel restrictions on foreign nationals entering Australia from Iran implemented.',
+  //       'Entities': 'Home Affairs'
+  //     }
+  //   ],
+  //   '1/11/2021': [
+  //     {
+  //       'Date': '1/11/2021',
+  //       'Description': 'Fully vaccinated Australians permitted to travel overseas.',
+  //       'Entities': 'Health; Home Affairs'
+  //     }
+  //   ],
+  //   '1/12/2021': [
+  //     {
+  //       'Date': '1/12/2021',
+  //       'Description': 'Australian international borders reopened to fully vaccinated eligible visa holders.',
+  //       'Entities': 'Health; Home Affairs'
+  //     }
+  //   ],
+  //   '10/07/2020': [
+  //     {
+  //       'Date': '10/07/2020',
+  //       'Description': 'National Cabinet agrees on incoming passenger caps at major international airports.',
+  //       'Entities': 'DITRDC'
+  //     }
+  //   ],
+  //   '13/03/2020': [
+  //     {
+  //       'Date': '13/03/2020',
+  //       'Description': 'Travel advice for all countries raised to ‘Level 3 – Reconsider your need to travel’.',
+  //       'Entities': 'DFAT'
+  //     }
+  //   ],
+  //   '11/03/2020': [
+  //     {
+  //       'Date': '11/03/2020',
+  //       'Description': 'Inward travel restrictions on foreign nationals entering Australia from Italy implemented.',
+  //       'Entities': 'Home Affairs'
+  //     }
+  //   ],
+  // };
+
+  useEffect(() => {
+    if (!predict) {
+      getPolicy().then(data => {
+        setPolicies(data);
+      });
+    }
+  }, [predict]);
+
+  const getPolicy = async () => {
+    try {
+      let response: AxiosResponse;
+      response = await axios.get("http://127.0.0.1:5001/policy", {});
+      return response.data
+      console.log("Heatmap data updated.");
+
+    } catch (error) {
+      console.error("Error fetching heat map data:", error);
+    }
+  };
+
+
+  // Parse dates and descriptions from dict_result
+  const marks: Mark[] = useMemo(() => {
+    if (!policies) return [];
+  
+    // Create a map to aggregate descriptions by month and year
+    const monthMap: Record<string, string[]> = {};
+  
+    Object.keys(policies).forEach(dateStr => {
+      const [day, month, year] = dateStr.split('/').map(Number);
+      const date = new Date(year, month - 1, day);
+      const monthYearKey = `${year}-${month.toString().padStart(2, '0')}`;
+  
+      if (!monthMap[monthYearKey]) {
+        monthMap[monthYearKey] = [];
+      }
+  
+      const descriptions = policies[dateStr].map(item => item.Description).join('\n');
+      monthMap[monthYearKey].push(descriptions);
+    });
+  
+    // Convert monthMap to an array of marks
+    return Object.keys(monthMap).map(monthYearKey => {
+      const [year, month] = monthYearKey.split('-').map(Number);
+      const date = new Date(year, month - 1, 1); // Use the 1st day of the month for the mark
+      const description = monthMap[monthYearKey].join(' \n ');
+      
+      return {
+        date,
+        description,
+      };
+    });
+  }, [policies]);
 
   return (
     <div>
@@ -121,7 +237,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
           <div>
             <Icon
               icon="fast_rewind"
-              onClick={() => handleDecreaseSpeed()}
+              onClick={handleDecreaseSpeed}
             />
           </div>
         </CustomTooltip>
@@ -130,7 +246,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
           <div>
             <Icon
               icon="fast_forward"
-              onClick={() => handleIncreaseSpeed()}
+              onClick={handleIncreaseSpeed}
             />
           </div>
         </CustomTooltip>
@@ -138,7 +254,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
           <div>
             <Icon
               icon={playbackIcon}
-              onClick={() => handlePlayback()}
+              onClick={handlePlayback}
             />
           </div>
         </CustomTooltip>
@@ -154,6 +270,31 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
           </div>
         </CustomTooltip>
         <div className="slider">
+          <div style={{ position: 'relative', height: 10 }}>
+          {marks.map((mark) => {
+              const leftPosition = ((mark.date.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * totalDays)) * 100;
+              return (
+                <div key={mark.date.toISOString()}
+                  style={{
+                    position: 'absolute',
+                    left: `${leftPosition}%`,
+                    transform: 'translateX(-50%)',
+                  }}
+                >
+                  <CustomTooltip label={mark.description}>
+                    <div style={{
+                      width: 0,
+                      height: 0,
+                      borderLeft: '6px solid transparent',
+                      borderRight: '6px solid transparent',
+                      borderTop: '10px solid white',
+                      borderRadius: '3px',
+                    }} />
+                  </CustomTooltip>
+                </div>
+              );
+            })}
+          </div>
           <input
             type="range"
             id="timeline-slider"
@@ -166,6 +307,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
             )}
             onChange={handleChange}
           />
+          
         </div>
       </div>
       <div className="calendar-container" ref={calendarRef}>

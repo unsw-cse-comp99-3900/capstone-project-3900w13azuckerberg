@@ -5,8 +5,8 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-from data_loader import load_into_db
-from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db, get_all_case_by_date
+from data_loader import load_into_db, load_policy
+from db_manager import get_all_case_by_coordinate, get_all_case_by_date, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -288,6 +288,23 @@ def variant_pie_chart():
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
+
+@app.route('/policy', methods=['GET'])
+def get_policy():
+    return jsonify(load_policy())
+
+# # TBD once we find a source of vaccination data - graph showing vaccinations
+# @app.route('/vaccination', methods=['GET'])
+# def vaccinations():
+#     date = request.args.get('date')
+#     strain = request.args.get('strain')
+#     vaccination_records = get_vaccinations(VaccinationData)
+#     results = [
+#         {
+#             ""
+#         }
+
+#     ]
 
 
 def run_server():
