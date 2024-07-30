@@ -133,12 +133,6 @@ def predictive_map():
 
     # for each location in the db
 
-    # set beta, sigma, gamma
-
-    sigma = 1/5.2
-    gamma = 1/10
-    beta = 0.25
-
     predictive_period = 365 # one year of prediction
 
     global selected_strains

@@ -19,8 +19,25 @@ def get_parameters(state):
     daily_cases = state_cases.groupby('date').size().reset_index(name='cases')
 
     # Initial conditions
-    # if statements
-    N = 2700000
+
+    # initial population as at 2020
+    if state == "South Australia":
+        N = 1769300
+    elif state == "Western Australia":
+        N = 2661900 
+    elif state == "Northern Territory":
+        N = 233000
+    elif state == "New South Wales":
+        N = 8164100
+    elif state == "Victoria":
+        N = 6694900
+    elif state == "Tasmania":
+        N = 540600
+    elif state == "Australian Capital Territory":
+        N = 431100
+    elif state == "Queensland":
+        N = 5174400 
+
     E0 = 100
     R0 = 0
     I0 = daily_cases['cases'].iloc[0] 
