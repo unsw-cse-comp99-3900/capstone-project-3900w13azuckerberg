@@ -68,12 +68,44 @@ selected_strains = {
 }
 
 selected_policies = {
-    "left": {}, 
-    "right": {},
-    "m": {}
+    "left": {
+        "New South Wales":{},
+        "Victoria": {}, 
+        "Queensland": {}, 
+        "Western Australia": {},
+        "Tasmania": {}, 
+        "Northern Territory": {}, 
+        "Australian Capital Territory": {}, 
+        "South Australia": {}
+    }, 
+    "right": {
+        "New South Wales":{},
+        "Victoria": {}, 
+        "Queensland": {}, 
+        "Western Australia": {},
+        "Tasmania": {}, 
+        "Northern Territory": {}, 
+        "Australian Capital Territory": {}, 
+        "South Australia": {}
+    },
+    "m": {
+        "New South Wales":{},
+        "Victoria": {}, 
+        "Queensland": {}, 
+        "Western Australia": {},
+        "Tasmania": {}, 
+        "Northern Territory": {}, 
+        "Australian Capital Territory": {}, 
+        "South Australia": {}
+    }
 }
 
-predictive_data = {}
+predictive_data = {
+    "left": {},
+    "right": {},
+    "m":{}
+
+}
 
 # Route for the home page
 @app.route('/')
@@ -145,8 +177,8 @@ def predictive_map():
     gamma = 1/10
     beta = 0.25
 
-    social_distancing_beta = 0.15
-    lockdown_beta = 0.05
+    social_distancing_beta = 0.08
+    lockdown_beta = 0.00
 
     # beta = 0.9994680678176857
     # sigma = 0.05893301173140339
@@ -156,8 +188,8 @@ def predictive_map():
 
     global selected_strains
 
-    selected_strains_dict = selected_strains[containerId]
     containerId = request.args.get('containerId')
+    selected_strains_dict = selected_strains[containerId]
 
     # selected_strains_dict = selected_strains['all']
     selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
@@ -187,31 +219,42 @@ def predictive_map():
 
         # run model for each location
 
-        model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
-                           theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-                           initI=data["intensity"], initE=5, initR=2)
+        # model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+        #                    theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+        #                    initI=data["intensity"], initE=5, initR=2)
 
         if bool(selected_policies[containerId][data["state"]]):
+            print(f"policy in {data["state"]}")
             if (selected_policies[containerId][data["state"]]["policy"] == 'Social Distancing'):
                 selected_beta = social_distancing_beta
             else:
                 selected_beta = lockdown_beta
             
+            model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+                        theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+                        initI=data["intensity"]/2, initE=5, initR=2)
+
             policy_start = selected_policies[containerId][data["state"]]["start_date"]
             policy_end = policy_start = selected_policies[containerId][data["state"]]["end_date"]
 
             checkpoints = {
                 't':       [policy_start, policy_end], 
                 'beta':    [selected_beta, beta], 
-                'theta_E': [0.02, 0.02], 
-                'theta_I': [0.02, 0.02]
+                'sigma':   [1/50, 1/5.2],
+                'theta_E': [0.02, 1], 
+                'theta_I': [0.01, 1]
             }
+
+            print("lockdown")
 
             model.run(T = predictive_period, checkpoints=checkpoints, verbose=False)
         else: 
+            model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+                        theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+                        initI=data["intensity"], initE=5, initR=2)
             model.run(T = predictive_period, verbose=False)
 
-        model.run(T = predictive_period, verbose=False)
+        # model.run(T = predictive_period, verbose=False)
 
         for i in range(1, predictive_period):
 
@@ -240,7 +283,7 @@ def predictive_map():
             # print(predictive_map_data[date_key])
 
     global predictive_data
-    predictive_data = predictive_map_data
+    predictive_data[containerId] = predictive_map_data
     
     return jsonify(predictive_map_data)
 
@@ -290,7 +333,7 @@ def select_policy():
     start_date_obj = datetime.strptime(policy_start, "%Y-%m-%d")
     end_date_obj = datetime.strptime(policy_end, "%Y-%m-%d")
 
-    reference_date = datetime.strptime('2024-4-30', '%Y-%m-%d')
+    reference_date = datetime.strptime('2024-5-29', '%Y-%m-%d')
     start_date_days = (start_date_obj - reference_date).days
     end_date_days = (end_date_obj - reference_date).days
 
@@ -304,6 +347,17 @@ def select_policy():
 
     selected_policies[containerId][state] = policy_information
     return jsonify(selected_policies)
+
+@app.route('/delete_policy', methods=['GET'])
+def delete_policy():
+    state = request.args.get('state')
+    containerId = request.args.get('containerId')
+
+    global selected_policies
+    selected_policies[containerId][state] = {}
+
+    return jsonify(selected_policies)
+
 
 def create_default_state():
      # Define the expected states and strains
@@ -372,8 +426,34 @@ def get_policy():
 
 
 @app.route('/predictive_graphdata', methods=['GET'])
-    # def predictive_graph():
+def predictive_graph():
+    global predictive_data
+    containerId = request.args.get('containerId')
+
+    return_data = {}
     
+    for date, entries in predictive_data[containerId].items():
+        if date not in return_data:
+            return_data[date] = {}
+        for entry in entries:
+            state = entry["state"]
+            if state not in return_data[date]:
+                return_data[date][state] = {"numI": 0, "numE": 0, "numR": 0, "numS": 0}
+            if "Australia" not in return_data[date]:
+                return_data[date]["Australia"] = {"numI": 0, "numE": 0, "numR": 0, "numS": 0}
+            
+            return_data[date][state]["numI"] += entry["intensity"]
+            return_data[date][state]["numE"] += entry["numE"]
+            return_data[date][state]["numR"] += entry["numR"]
+            return_data[date][state]["numS"] += entry["numS"]
+
+            # Update Australia data
+            return_data[date]["Australia"]["numI"] += entry["intensity"]
+            return_data[date]["Australia"]["numE"] += entry["numE"]
+            return_data[date]["Australia"]["numR"] += entry["numR"]
+            return_data[date]["Australia"]["numS"] += entry["numS"]
+
+    return jsonify(return_data)
 
 def run_server():
     app.run(debug=True)
