@@ -67,6 +67,12 @@ selected_strains = {
     }
 }
 
+selected_policies = {
+    "left": {}, 
+    "right": {},
+    "m": {}
+}
+
 # Route for the home page
 @app.route('/')
 def home():
@@ -122,7 +128,7 @@ def heat_map():
 
 @app.route('/predictive_map', methods=['GET'])
 def predictive_map():
-    # predictive_map = get_predictive_data()
+    
 
     # dictionary to store map data
     predictive_map_data = {}
@@ -136,6 +142,10 @@ def predictive_map():
     sigma = 1/5.2
     gamma = 1/10
     beta = 0.25
+
+    social_distancing_beta = 0.15
+    lockdown_beta = 0.05
+
     # beta = 0.9994680678176857
     # sigma = 0.05893301173140339
     # gamma = 0.9787453097779406
@@ -144,7 +154,10 @@ def predictive_map():
 
     global selected_strains
 
-    selected_strains_dict = selected_strains['all']
+    selected_strains_dict = selected_strains[containerId]
+    containerId = request.args.get('containerId')
+
+    # selected_strains_dict = selected_strains['all']
     selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
 
     print(selected_strains_arr)
@@ -175,6 +188,26 @@ def predictive_map():
         model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
                            theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
                            initI=data["intensity"], initE=5, initR=2)
+
+        if bool(selected_policies[containerId][data["state"]]):
+            if (selected_policies[containerId][data["state"]]["policy"] == 'Social Distancing'):
+                selected_beta = social_distancing_beta
+            else:
+                selected_beta = lockdown_beta
+            
+            policy_start = selected_policies[containerId][data["state"]]["start_date"]
+            policy_end = policy_start = selected_policies[containerId][data["state"]]["end_date"]
+
+            checkpoints = {
+                't':       [policy_start, policy_end], 
+                'beta':    [selected_beta, beta], 
+                'theta_E': [0.02, 0.02], 
+                'theta_I': [0.02, 0.02]
+            }
+
+            model.run(T = predictive_period, checkpoints=checkpoints, verbose=False)
+        else: 
+            model.run(T = predictive_period, verbose=False)
 
         model.run(T = predictive_period, verbose=False)
 
@@ -240,6 +273,32 @@ def filter_variant():
 
     return "success"
 
+
+@app.route('/policies', methods=['GET'])
+def select_policy():
+    state = request.args.get('state')
+    policy_start = request.args.get('startDate')
+    policy_end = request.args.get('endDate')
+    policy = request.args.get('policy')
+    containerId = request.args.get('containerId')
+
+    start_date_obj = datetime.strptime(policy_start, "%Y-%m-%d")
+    end_date_obj = datetime.strptime(policy_end, "%Y-%m-%d")
+
+    reference_date = datetime.strptime('2024-4-30', '%Y-%m-%d')
+    start_date_days = (start_date_obj - reference_date).days
+    end_date_days = (end_date_obj - reference_date).days
+
+    policy_information = {
+        "start_date": start_date_days,
+        "end_date": end_date_days,
+        "policy": policy
+    }
+
+    global selected_policies
+
+    selected_policies[containerId][state] = policy_information
+    return jsonify(selected_policies)
 
 def create_default_state():
      # Define the expected states and strains
