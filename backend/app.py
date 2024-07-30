@@ -73,6 +73,8 @@ selected_policies = {
     "m": {}
 }
 
+predictive_data = {}
+
 # Route for the home page
 @app.route('/')
 def home():
@@ -237,6 +239,9 @@ def predictive_map():
             })
             # print(predictive_map_data[date_key])
 
+    global predictive_data
+    predictive_data = predictive_map_data
+    
     return jsonify(predictive_map_data)
 
 def update_selected_strains(container_id, label, selected):
@@ -350,6 +355,10 @@ def variant_pie_chart():
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
 
+
+@app.route('/predictive_graphdata', methods=['GET'])
+    # def predictive_graph():
+    
 
 def run_server():
     app.run(debug=True)
