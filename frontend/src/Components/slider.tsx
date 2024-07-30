@@ -7,6 +7,7 @@ import "./calendar.css";
 import "./filters.css";
 import "./slider.css";
 import axios, { AxiosResponse } from "axios";
+import PolicyTooltip from "./policyToolTip";
 
 interface TimelineSliderProps {
   onDateChange: (date: Date) => void;
@@ -119,63 +120,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     }
   };
 
-  // const dict_result: Record<string, { Date: string, Description: string, Entities?: string }[]> = {
-  //   '1/02/2020': [
-  //     {
-  //       'Date': '1/02/2020',
-  //       'Description': 'International travel restrictions are implemented for foreign nationals entering Australia from China.',
-  //       'Entities': 'Home Affairs; Health'
-  //     },
-  //     {
-  //       'Date': '1/02/2020',
-  //       'Description': 'Travel advice for mainland China is raised to ‘Level 4 – Do not travel’.',
-  //       'Entities': 'DFAT'
-  //     }
-  //   ],
-  //   '1/03/2020': [
-  //     {
-  //       'Date': '1/03/2020',
-  //       'Description': 'Inward travel restrictions on foreign nationals entering Australia from Iran implemented.',
-  //       'Entities': 'Home Affairs'
-  //     }
-  //   ],
-  //   '1/11/2021': [
-  //     {
-  //       'Date': '1/11/2021',
-  //       'Description': 'Fully vaccinated Australians permitted to travel overseas.',
-  //       'Entities': 'Health; Home Affairs'
-  //     }
-  //   ],
-  //   '1/12/2021': [
-  //     {
-  //       'Date': '1/12/2021',
-  //       'Description': 'Australian international borders reopened to fully vaccinated eligible visa holders.',
-  //       'Entities': 'Health; Home Affairs'
-  //     }
-  //   ],
-  //   '10/07/2020': [
-  //     {
-  //       'Date': '10/07/2020',
-  //       'Description': 'National Cabinet agrees on incoming passenger caps at major international airports.',
-  //       'Entities': 'DITRDC'
-  //     }
-  //   ],
-  //   '13/03/2020': [
-  //     {
-  //       'Date': '13/03/2020',
-  //       'Description': 'Travel advice for all countries raised to ‘Level 3 – Reconsider your need to travel’.',
-  //       'Entities': 'DFAT'
-  //     }
-  //   ],
-  //   '11/03/2020': [
-  //     {
-  //       'Date': '11/03/2020',
-  //       'Description': 'Inward travel restrictions on foreign nationals entering Australia from Italy implemented.',
-  //       'Entities': 'Home Affairs'
-  //     }
-  //   ],
-  // };
-
+  
   useEffect(() => {
     if (!predict) {
       getPolicy().then(data => {
@@ -188,9 +133,9 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     try {
       let response: AxiosResponse;
       response = await axios.get("http://127.0.0.1:5001/policy", {});
+      console.log("Policy data updated.");
       return response.data
-      console.log("Heatmap data updated.");
-
+      
     } catch (error) {
       console.error("Error fetching heat map data:", error);
     }
