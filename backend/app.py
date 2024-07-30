@@ -29,8 +29,6 @@ init_db(app)
 
 migrate = Migrate(app, db)
 
-data_loaded = False
-
 selected_strains = {
     "left": {
         "Alpha": 'true',
@@ -69,13 +67,6 @@ selected_strains = {
     }
 }
 
-@app.before_request
-def before_request():
-    global data_loaded
-    if not data_loaded:
-        load_data()
-        data_loaded = True
-
 # Route for the home page
 @app.route('/')
 def home():
@@ -93,15 +84,13 @@ def mytest():
     print(f"Execution time: {execution_time} seconds")
     return jsonify(results)
 
-@app.route('/test1', methods=['GET'])
-def mytest1():
-    print("testing heatmap db function\n")
-    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_coordinate(date, ["Omicron"])
-    return jsonify(case_counts)
-
 @app.route('/load_data', methods=['GET'])
 def load_data():
+    """This function should ONLY be called to manually load data into DB
+
+    Returns:
+        redirect: redirect to home
+    """
     global data_loaded
     data_loaded = True
     load_into_db(app)
@@ -318,23 +307,6 @@ def variant_pie_chart():
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
-
-
-
-
-
-# # TBD once we find a source of vaccination data - graph showing vaccinations
-# @app.route('/vaccination', methods=['GET'])
-# def vaccinations():
-#     date = request.args.get('date')
-#     strain = request.args.get('strain')
-#     vaccination_records = get_vaccinations(VaccinationData)
-#     results = [
-#         {
-#             ""
-#         }
-
-#     ]
 
 
 def run_server():
