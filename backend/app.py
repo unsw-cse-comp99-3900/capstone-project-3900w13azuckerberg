@@ -276,18 +276,9 @@ def variant_pie_chart():
     return jsonify(result_graph_data)
 
 @app.route('/SEIRS_data', methods=['GET'])
-def SEIR_data():
-    # infected_per_day = {
-    #     "2022-02-01": 423,
-    #     "2022-02-02": 431,
-    #     "2022-02-03": 389,
-    #     "2022-02-04": 237,
-    #     "2022-02-05": 531,
-    #     "2022-02-06": 543
-    # }
+def SEIRS_data():
 
     infected_per_day = get_all_case_by_date()
-
 
     default_population = 100000000
     default_sigma = 1/5.2
