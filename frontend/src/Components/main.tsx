@@ -74,7 +74,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						point.intensity
 					]);
 				}
-			console.log(formattedData);
+
 			setAllMapData(formattedData);
 	
 			console.log("Heatmap data updated.");
@@ -103,7 +103,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				const rawData: GraphData = response.data;
 				setGraphData(rawData);
 				console.log("Graph data updated.");
-				console.log(rawData);
+
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
@@ -115,8 +115,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
-	//   console.log("New Date", dateString);
-    //   console.log("Data for selected date:", allMapData[dateString] || []);
+
 	  
     }, [date, allMapData]);
 
@@ -138,7 +137,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					"Australian Capital Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
 				};
 			}
-			console.log(dateString);
+	
 			const currData = graphData[dateString][currLocation];
 			Object.keys(currData).forEach((name) => p.push({
 				id: name,
@@ -151,7 +150,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			const sorted = Object.keys(graphData)
 								 .filter(d => d < dateString)
 								 .sort((date1, date2) => date1.localeCompare(date2));
-			console.log(sorted)
+		
 			let l: LineItem[] = [];
 			Object.keys(graphData[dateString]["Australia"]).forEach((name) => l.push({
 				id: name,
@@ -168,7 +167,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 							});
 					})
 			);
-			console.log(l);
+
 			setLineData(l);
 		}
 
@@ -183,7 +182,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				const rawData: SeirsData = response.data;
 				setAllBarData(rawData);
 				console.log("SEIRS data updated.");
-				console.log(rawData);
+
 			} catch (error) {
 			console.error("Error fetching Bar data:", error);
 			}
