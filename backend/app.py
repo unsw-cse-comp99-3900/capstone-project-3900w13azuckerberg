@@ -13,7 +13,7 @@ from seirsplus.models import *
 import threading
 from seirsplus.networks import custom_exponential_graph
 import networkx as nx
-from network import get_init_N, create_graph
+from network import create_graph
 # from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
@@ -179,8 +179,7 @@ def predictive_map():
         model.run(T = predictive_period, verbose=False)
 
         for i in range(1, predictive_period):
-            #print(f"Number of nodes in model: {model.numNodes}")
-            #print(f"Actual size of arrays: {len(model.tseries)}, {len(model.numS)}, {len(model.numE)}, {len(model.numI)}, {len(model.numR)}")
+
             date_key = (current_date + timedelta(days=i)).strftime('%Y-%m-%d')
 
             # need to initalise if date is not alr in dictionary
