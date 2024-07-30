@@ -6,11 +6,10 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 
 # converting csv to df and convert 'date' to datetime
-df = pd.read_csv("cleaned_data.csv")
+df = pd.read_csv("raw_data/cleaned_data.csv")
 df['date'] = pd.to_datetime(df['date'])
 
 # Contact rate, incubation rate, recovery rate (1/days) for beta, sigma and gamma
-# used the initial values that they used in the package - should represent approximate numbers as observed during COVID
 initial_params = [25, 1/5.2, 1/10]
 
 def get_parameters(state):
@@ -18,10 +17,6 @@ def get_parameters(state):
 
     # group by date
     daily_cases = state_cases.groupby('date').size().reset_index(name='cases')
-
-    # calculate cumulative cases
-    # daily_cases['cumulative_cases'] = daily_cases['cases'].cumsum()
-    # print(daily_cases)
 
     # Initial conditions
     # if statements
@@ -38,6 +33,8 @@ def get_parameters(state):
     # Observed data (number of infected individuals)
     observed_data = daily_cases['cases'].values
 
+    return y0, N, t, observed_data
+
 # SEIR model differential equations
 def deriv(y, t, N, beta, sigma, gamma):
     S, E, I, R = y
@@ -48,18 +45,20 @@ def deriv(y, t, N, beta, sigma, gamma):
     return dSdt, dEdt, dIdt, dRdt
 
 # Define the objective function for optimization
-def objective(params, *args):
+def objective(params, y0, N, t, data):
     beta, sigma, gamma = params
-    t, data = args
     solution = odeint(deriv, y0, t, args=(N, beta, sigma, gamma))
     I = solution[:, 2]
-    return np.sum((I - data)**2)
+    return np.sum((I - data) ** 2)
 
-# Perform the optimization
-result = minimize(objective, initial_params, args=(t, observed_data), method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
-beta_opt, sigma_opt, gamma_opt = result.x
+def minimise(state):
+    # Get parameters
+    y0, N, t, observed_data = get_parameters(state)
 
-if __name__ == '__main__':
+    # Perform the optimization
+    result = minimize(objective, initial_params, args=(y0, N, t, observed_data), method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+    beta_opt, sigma_opt, gamma_opt = result.x
+    return beta_opt, sigma_opt, gamma_opt
 
 
 # print(f'Estimated beta: {beta_opt}')
