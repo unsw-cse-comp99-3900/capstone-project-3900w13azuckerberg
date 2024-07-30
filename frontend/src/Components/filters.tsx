@@ -94,7 +94,15 @@ const Filters: React.FC<FiltersProps> = ({
 
     let filename: string;
     if (predict) {
-      filename = "predictive_model.csv";
+      if (Object.keys(policies).length === 0) {
+        filename = "predictive_model.csv";
+      } else {
+        let states = ""; 
+        for (const [state, info] of Object.entries(policies)) {
+          states += `${state}_${info.policy}_`;
+        }
+        filename = `${states}predictive.csv`;
+      }
     } else if (allFilters.every(filter => filter.selected)) {
       filename = "all_variants_data.csv";
     } else {

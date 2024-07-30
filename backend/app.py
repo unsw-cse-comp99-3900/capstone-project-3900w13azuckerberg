@@ -5,8 +5,8 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-from data_loader import load_into_db, load_policy
-from db_manager import get_all_case_by_coordinate, get_all_case_by_date, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
+from data_loader import load_into_db
+from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db, get_all_case_by_date
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -14,7 +14,7 @@ import threading
 from seirsplus.networks import custom_exponential_graph
 import networkx as nx
 from network import create_graph
-# from basic_seirs import get_predictive_data
+from parameters import get_parameters, minimise
 
 # Load environment variables from .env file
 load_dotenv()
@@ -173,16 +173,8 @@ def predictive_map():
     # for each location in the db
     # set beta, sigma, gamma
     default_population = 10000
-    sigma = 1/5.2
-    gamma = 1/10
-    beta = 0.25
-
     social_distancing_beta = 0.08
     lockdown_beta = 0.00
-
-    # beta = 0.9994680678176857
-    # sigma = 0.05893301173140339
-    # gamma = 0.9787453097779406
 
     predictive_period = 365 # one year of prediction
 
@@ -204,24 +196,22 @@ def predictive_map():
             "latitude": data["latitude"],
             "longitude": data["longitude"],
             "state": data["state"],
-            "initN": default_population,
             "intensity": data["case_count"]
         }
 
     for location, data in init_data.items():
 
-        # running the network model
+        state = data["state"]
+
+        # getting optimised parameters
+
+        y0, N, t, observed_data = get_parameters(state)
+        beta_opt, sigma_opt, gamma_opt = minimise(state)
         
         center_lat = data["latitude"]
         center_lon = data["longitude"]
 
         G_normal = create_graph(center_lat, center_lon)
-
-        # run model for each location
-
-        # model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
-        #                    theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-        #                    initI=data["intensity"], initE=5, initR=2)
 
         if bool(selected_policies[containerId][data["state"]]):
             print(f"policy in {data["state"]}")
@@ -230,7 +220,7 @@ def predictive_map():
             else:
                 selected_beta = lockdown_beta
             
-            model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+            model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
                         theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
                         initI=data["intensity"]/2, initE=5, initR=2)
 
@@ -239,8 +229,8 @@ def predictive_map():
 
             checkpoints = {
                 't':       [policy_start, policy_end], 
-                'beta':    [selected_beta, beta], 
-                'sigma':   [1/50, 1/5.2],
+                'beta':    [selected_beta, beta_opt], 
+                # 'sigma':   [1/50, 1/5.2],
                 'theta_E': [0.02, 1], 
                 'theta_I': [0.01, 1]
             }
@@ -249,7 +239,7 @@ def predictive_map():
 
             model.run(T = predictive_period, checkpoints=checkpoints, verbose=False)
         else: 
-            model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+            model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
                         theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
                         initI=data["intensity"], initE=5, initR=2)
             model.run(T = predictive_period, verbose=False)

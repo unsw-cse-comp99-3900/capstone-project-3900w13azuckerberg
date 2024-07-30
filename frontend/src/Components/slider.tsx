@@ -69,7 +69,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  });
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
