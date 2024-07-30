@@ -14,10 +14,10 @@ def init_db(app):
         app (Flask): The Flask application instance
     """
     db.init_app(app)
-    with app.app_context():
-        db.drop_all()
-        db.create_all()
-        print("Database initialized successfully.")
+    # with app.app_context():
+    #     # db.drop_all()
+    #     db.create_all()
+    #     print("Database initialized successfully.")
 
 def load_dataframe_to_db(dataframe, table_name, app):
     """
