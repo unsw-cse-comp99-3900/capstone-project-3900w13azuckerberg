@@ -1,5 +1,5 @@
 from seirsplus.models import *
-import networkx
+import networkx as nx
 
 #SIGMA = 1/5.2
 #GAMMA = 1/10
@@ -11,8 +11,10 @@ R0    = 2.5
 BETA = 0.9994680678176857
 SIGMA = 0.05893301173140339
 GAMMA = 0.9787453097779406
+graph = nx.Graph()
 
 model = SEIRSModel(initN   = 28997000,
+                   G       = graph,
                    beta    = BETA, 
                    sigma   = SIGMA, 
                    gamma   = GAMMA, 

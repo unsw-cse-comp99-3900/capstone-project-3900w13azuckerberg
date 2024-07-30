@@ -11,6 +11,10 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Clone your forked repository and install the seirsplus package
+RUN git clone https://github.com/lindawang01/seirsplus.git
+RUN pip install ./seirsplus
+
 # Expose the port the app runs on
 EXPOSE 5000
 
@@ -20,6 +24,8 @@ ENV FLASK_ENV=development
 ENV DATABASE_URL=postgresql://user1:password@db/covid
 ENV SECRET_KEY=1LAKeDYR83stxYv
 
+# Copy the rest of the application code to the container
+COPY . /app
 
 # Define a script to run additional setups after database init
 CMD ["bash", "/app/entrypoint.sh"]
