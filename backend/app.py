@@ -291,7 +291,7 @@ def variant_pie_chart():
 
 @app.route('/policy', methods=['GET'])
 def get_policy():
-    return load_policy()
+    return jsonify(load_policy())
 
 # # TBD once we find a source of vaccination data - graph showing vaccinations
 # @app.route('/vaccination', methods=['GET'])
