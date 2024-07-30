@@ -180,32 +180,56 @@ def predictive_map():
         init_N = get_init_N(data["state"])
 
         # run model for each location
-        model = SEIRSNetworkModel(initN   = init_N,
-            G       = G_normal,
-            beta    = default_beta,
-            sigma   = default_sigma,
-            gamma   = default_gamma,
-            initI = data["intensity"]
-        )
+        print(f"the initial intensity is {data['intensity']}")
+
+        
+
+
+        model = SEIRSNetworkModel(G=G_normal, beta=default_beta, sigma=default_sigma, gamma=default_gamma, mu_I=0.0004, p=0.5,
+                           theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+                           initI=data["intensity"], initE=1, initR=1)
+        
+        print(f"NumS: {model.numS[1]}, NumE: {model.numE[1]}, NumI: {model.numI[1]}, NumR: {model.numR[1]}, NumF: {model.numF[1]}, NumQ_E: {model.numQ_E[1]}, NumQ_I: {model.numQ_I[1]}")
+        print(f"Total nodes calculated: {int(model.numS[1]) + int(model.numE[1]) + int(model.numI[1]) + int(model.numR[1]) + int(model.numF[1]) + int(model.numQ_E[1]) + int(model.numQ_I[1])}")
+        print(f"Expected number of nodes: {model.numNodes}")
+
+        # model = SEIRSNetworkModel(
+        #     #initN   = init_N,
+        #     G       = G_normal,
+        #     beta    = default_beta,
+        #     sigma   = default_sigma,
+        #     gamma   = default_gamma,
+        #     initI = data["intensity"]
+        # )
+
+        print(f"Number of nodes in graph G: {len(G_normal.nodes)}")
 
         model.run(T = predictive_period, verbose=False)
 
         for i in range(1, predictive_period):
+            #print(f"Number of nodes in model: {model.numNodes}")
+            #print(f"Actual size of arrays: {len(model.tseries)}, {len(model.numS)}, {len(model.numE)}, {len(model.numI)}, {len(model.numR)}")
             date_key = (current_date + timedelta(days=i)).strftime('%Y-%m-%d')
 
             # need to initalise if date is not alr in dictionary
             if date_key not in predictive_map_data:
                 predictive_map_data[date_key] = []
 
-            # add predicted infection data to dictionary
+            # Accessing the data for the current time step
+            numI = model.numI[i] if i < len(model.numI) else 0
+            numS = model.numS[i] if i < len(model.numS) else 0
+            numE = model.numE[i] if i < len(model.numE) else 0
+            numR = model.numR[i] if i < len(model.numR) else 0
+            print(f"for time step {i}, numI is {numI}, numS is {numS}, numE is {numE}, numR is {numR}")
+
             predictive_map_data[date_key].append({
                 "latitude": data["latitude"],
                 "longitude": data["longitude"],
-                "intensity": round(model.numI[i*10]),
+                "intensity": round(numI),
                 "state": data["state"],
-                "numS": round(model.numS[i*10]),
-                "numE": round(model.numE[i*10]),
-                "numR": round(model.numR[i*10])
+                "numS": round(numS),
+                "numE": round(numE),
+                "numR": round(numR)
             })
             # print(predictive_map_data[date_key])
 
@@ -316,15 +340,18 @@ def variant_pie_chart():
 def run_server():
     app.run(debug=True)
 
+# if __name__ == '__main__':
+#     run_server()
+
 if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
+#     # Start the Flask server in a separate thread
+#     server_thread = threading.Thread(target=run_server)
+#     server_thread.start()
 
-    # Now call load_data() without blocking the main thread
-    load_data()
+#     # Now call load_data() without blocking the main thread
+#     load_data()
 
 
-    # # ONLY IF RUNNING BACKEND IN TERMINAL
-    # with app.app_context():
-    #     app.run(debug=True)
+    # ONLY IF RUNNING BACKEND IN TERMINAL
+    with app.app_context():
+        app.run(debug=True, host='0.0.0.0', port=8964)
