@@ -5,7 +5,7 @@ import GraphBar from "./GraphBar";
 import HeatMap from "./map";
 import Filters from "./filters";
 import "./main.css"
-import { MapData, GraphData, Point, PieItem, LineItem, PolicyData } from "./types"
+import { MapData, GraphData, Point, PieItem, LineItem, PolicyData, SeirsData, BarItem } from "./types"
 import RadiusSlider from "./radiusSlider";
 
 interface MainProps {
@@ -27,8 +27,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		Delta: "#7B68EE",     // Medium Slate Blue
 		Omicron: "#8A2BE2"    // Blue Violet
 	};
-	
 
+	const defaultBarData = {
+		statement: "Status",
+		Infected: 0,	
+		Recovered: 0,
+		Exposed: 0,
+	}
+	
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
 	const [location, setLocation] = useState("Australia");
@@ -36,6 +42,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [graphData, setGraphData] = useState<GraphData>({});
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
+	const [barData, setBarData] = useState<BarItem>(defaultBarData);
+	const [allBarData, setAllBarData] = useState<SeirsData>({});
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
 
@@ -92,7 +100,6 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					containerId, // <- this will be either "M", "left", "right"
 					}
 				});
-
 				const rawData: GraphData = response.data;
 				setGraphData(rawData);
 				console.log("Graph data updated.");
@@ -166,11 +173,44 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		}
 
 	}, [date, graphData])
+
+	useEffect(() => {
+		const fetchBarData = async () => {
+			console.log("getting bar data");
+			try {
+				let response: AxiosResponse;
+				response = await axios.get("http://127.0.0.1:5001/SEIRS_data", {});
+				const rawData: SeirsData = response.data;
+				setAllBarData(rawData);
+				console.log("SEIRS data updated.");
+				console.log(rawData);
+			} catch (error) {
+			console.error("Error fetching Bar data:", error);
+			}
+		};
+		fetchBarData();
+	}, []);
+	
+	useEffect(() => {
+		const dateString = date.toISOString().split('T')[0];
+		if (allBarData[dateString]) {
+			setBarData({
+				statement: "Status:",
+				Infected: allBarData[dateString].numI,
+				Recovered: allBarData[dateString].numR,
+				Exposed: allBarData[dateString].numE,
+			});
+		} else {
+			setBarData(defaultBarData);
+		}
+	}, [date, allBarData]);
+	
   return (
     <div id="body">
 		<GraphBar 
 			pieData={pieData} 
 			lineData={lineData}
+			barData={barData}
 			policies={policies}
 			predict={predict}
 			setPolicies={setPolicies}

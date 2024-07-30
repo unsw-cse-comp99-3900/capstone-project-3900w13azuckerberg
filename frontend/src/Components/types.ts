@@ -46,6 +46,23 @@ export interface Policy {
     policy: string;
 }
 
+export interface SeirsData {
+	[date: string]: {
+		numE: number;
+		numI: number;
+		numR: number;
+		numS: number;
+	};
+}
+
+export interface BarItem {
+	statement: string;
+	Infected: number;
+	Recovered: number;
+	Exposed: number;
+}
+
+
 export interface PolicyData {
     [state: string]: Policy;
   }
