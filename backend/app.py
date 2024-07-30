@@ -14,6 +14,7 @@ import threading
 from seirsplus.networks import custom_exponential_graph
 import networkx as nx
 from network import create_graph
+from parameters import get_parameters, minimise
 # from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
@@ -161,10 +162,13 @@ def predictive_map():
     for location, data in init_data.items():
 
         state = data["state"]
+
         # getting optimised parameters
 
         y0, N, t, observed_data = get_parameters(state)
         beta_opt, sigma_opt, gamma_opt = minimise(state)
+
+        print(f"The optimised parameters are beta {beta_opt}, sigma {sigma_opt}, gamma {gamma_opt}")
 
         # creating graph
         
@@ -175,7 +179,7 @@ def predictive_map():
 
         # running the network model
 
-        model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+        model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
                            theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
                            initI=data["intensity"], initE=5, initR=2)
 
