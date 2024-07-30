@@ -11,6 +11,9 @@ from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
 import threading
+from seirsplus.networks import custom_exponential_graph
+import networkx as nx
+from network import create_graph
 # from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
@@ -130,9 +133,12 @@ def predictive_map():
     # for each location in the db
     # set beta, sigma, gamma
     default_population = 10000
-    default_sigma = 1/5.2
-    default_gamma = 1/10
-    default_beta = 0.25
+    sigma = 1/5.2
+    gamma = 1/10
+    beta = 0.25
+    # beta = 0.9994680678176857
+    # sigma = 0.05893301173140339
+    # gamma = 0.9787453097779406
 
     predictive_period = 365 # one year of prediction
 
@@ -143,7 +149,7 @@ def predictive_map():
 
     print(selected_strains_arr)
 
-    current_date = datetime.strptime('2024-4-30', '%Y-%m-%d').date()
+    current_date = datetime.strptime('2024-5-29', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
 
     for key, data in loc_data.items():
@@ -157,35 +163,44 @@ def predictive_map():
 
     for location, data in init_data.items():
 
+        # running the network model
+        
+        center_lat = data["latitude"]
+        center_lon = data["longitude"]
+
+        G_normal = create_graph(center_lat, center_lon)
+
         # run model for each location
-        model = SEIRSModel(initN   = data["initN"],
-            beta    = default_beta,
-            sigma   = default_sigma,
-            gamma   = default_gamma,
-            psi_E   = 1,
-            psi_I   = 1,
-            initI = data["intensity"]
-            # initI   = 10000
-        )
+
+        model = SEIRSNetworkModel(G=G_normal, beta=beta, sigma=sigma, gamma=gamma, mu_I=0.0004, p=0.5,
+                           theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+                           initI=data["intensity"], initE=5, initR=2)
 
         model.run(T = predictive_period, verbose=False)
 
         for i in range(1, predictive_period):
+
             date_key = (current_date + timedelta(days=i)).strftime('%Y-%m-%d')
 
             # need to initalise if date is not alr in dictionary
             if date_key not in predictive_map_data:
                 predictive_map_data[date_key] = []
 
-            # add predicted infection data to dictionary
+            # Accessing the data for the current time step
+            numI = model.numI[i] if i < len(model.numI) else 0
+            numS = model.numS[i] if i < len(model.numS) else 0
+            numE = model.numE[i] if i < len(model.numE) else 0
+            numR = model.numR[i] if i < len(model.numR) else 0
+            # print(f"for time step {i}, numI is {numI}, numS is {numS}, numE is {numE}, numR is {numR}")
+
             predictive_map_data[date_key].append({
                 "latitude": data["latitude"],
                 "longitude": data["longitude"],
-                "intensity": round(model.numI[i*10]),
+                "intensity": round(numI),
                 "state": data["state"],
-                "numS": round(model.numS[i*10]),
-                "numE": round(model.numE[i*10]),
-                "numR": round(model.numR[i*10])
+                "numS": round(numS),
+                "numE": round(numE),
+                "numR": round(numR)
             })
             # print(predictive_map_data[date_key])
 
@@ -279,11 +294,30 @@ def variant_pie_chart():
 def run_server():
     app.run(debug=True)
 
-if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
+# if __name__ == '__main__':
+#     run_server()
 
-    # # ONLY IF RUNNING BACKEND IN TERMINAL
-    # with app.app_context():
-    #     app.run(debug=True)
+data_loaded = False
+
+@app.before_request
+def before_request():
+    global data_loaded
+    if not data_loaded:
+        load_data()
+        data_loaded = True
+
+if __name__ == '__main__':
+#     # Start the Flask server in a separate thread
+#     server_thread = threading.Thread(target=run_server)
+#     server_thread.start()
+
+#     # Now call load_data() without blocking the main thread
+    #load_data()
+    
+    # ONLY IF RUNNING BACKEND IN TERMINAL
+    with app.app_context():
+        app.run(debug=True, host='0.0.0.0', port=8963)
+
+
+
+
