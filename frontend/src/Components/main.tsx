@@ -54,7 +54,11 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						}
 					});
 				} else {
-					response = await axios.get("http://127.0.0.1:5001/predictive_map", {})
+					response = await axios.get("http://127.0.0.1:5001/predictive_map", {
+					params: {
+						containerId, // <- this will be either "M", "left", "right"
+						}
+					})
 				}
 				const rawData: { [date: string]: Point[] } = response.data;
 				const formattedData: MapData = {};
@@ -66,7 +70,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						point.intensity
 					]);
 				}
-			console.log(formattedData);
+			// console.log(formattedData);
 			setAllMapData(formattedData);
 	
 			console.log("Heatmap data updated.");
@@ -99,7 +103,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				const rawData: GraphData = response.data;
 				setGraphData(rawData);
 				console.log("Graph data updated.");
-				console.log(rawData);
+				// console.log(rawData);
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
@@ -111,7 +115,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
-      console.log("Data for selected date:", allMapData[dateString] || []);
+    //   console.log("Data for selected date:", allMapData[dateString] || []);
 	  
     }, [date, allMapData]);
 
@@ -163,7 +167,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 							});
 					})
 			);
-			console.log(l);
+			// console.log(l);
 			setLineData(l);
 		}
 
@@ -176,6 +180,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			policies={policies}
 			predict={predict}
 			setPolicies={setPolicies}
+			token={refetch}
+			onFilterChange={triggerRefetch}
+			containerId={containerId}
 		/>
 		<HeatMap showCompare={showCompare} 
 			containerId={containerId} 

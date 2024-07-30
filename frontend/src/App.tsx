@@ -21,7 +21,7 @@ function App() {
 		if (predict) {
       setDate(new Date("2025-01-01"))
     } else {
-      setDate(new Date("2021-01-01"))
+      setDate(new Date("2022-10-11"))
     }
 	}, [predict]);
 
