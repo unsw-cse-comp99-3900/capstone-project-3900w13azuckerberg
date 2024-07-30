@@ -54,7 +54,11 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						}
 					});
 				} else {
-					response = await axios.get("http://127.0.0.1:5001/predictive_map", {})
+					response = await axios.get("http://127.0.0.1:5001/predictive_map", {
+					params: {
+						containerId, // <- this will be either "M", "left", "right"
+						}
+					})
 				}
 				const rawData: { [date: string]: Point[] } = response.data;
 				const formattedData: MapData = {};
@@ -174,6 +178,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			policies={policies}
 			predict={predict}
 			setPolicies={setPolicies}
+			token={refetch}
+			onFilterChange={triggerRefetch}
+			containerId={containerId}
 		/>
 		<HeatMap showCompare={showCompare} 
 			containerId={containerId} 

@@ -30,7 +30,9 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
   const [apply, setApply] = useState(false);
 
   const handleStartDate = (newDate: Date) => {
-    const dateString = newDate.toISOString().slice(0, 10);
+    const adjustedDate = new Date(newDate);
+    adjustedDate.setDate(newDate.getDate() + 1);
+    const dateString = adjustedDate.toISOString().slice(0, 10);
     setStartDate(dateString);
 
     // Close calendar after selecting date
@@ -38,7 +40,9 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
   };
 
   const handleEndDate = (newDate: Date) => {
-    const dateString = newDate.toISOString().slice(0, 10);
+    const adjustedDate = new Date(newDate);
+    adjustedDate.setDate(newDate.getDate() + 1);
+    const dateString = adjustedDate.toISOString().slice(0, 10);
     setEndDate(dateString);
     // Close calendar after selecting date
     setShowEndDateCalendar(false); 

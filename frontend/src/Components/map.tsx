@@ -40,24 +40,23 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
       "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
       {
         maxZoom: 18,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution:`
+        &copy; <a href="https://gisaid.org/">GISAID</a>
+        &copy; <a href="https://www.aph.gov.au/Parliamentary_Business/Committees/Joint/Public_Accounts_and_Audit/DFATcrisismanagement/Report_494_Inquiry_into_the_Department_of_Foreign_Affairs_and_Trades_crisis_management_arrangem/C_Timeline_of_key_events">Australian Parliament House</a> 
+        &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>
+        &copy; <a href="https://carto.com/attributions">CARTO</a> 
+        `,
       },
     ).addTo(map);
 
     L.control.zoom({ position: "bottomleft" }).addTo(map);
 
-
-    const checkAndUpdateState = () => {
-      updateState("Australia");
-    };
-
-    map.on('dragend', checkAndUpdateState);
+    // map.on('dragend', () => updateState("Australia"));
 
     mapRef.current = map;
 
     return () => {
-      map.off('dragend', checkAndUpdateState);
+      // map.off('dragend', checkAndUpdateState);
       mapRef.current?.remove();
       mapRef.current = null;
     };
@@ -131,6 +130,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
             click: (e) => {
               map.fitBounds(e.target.getBounds(), { padding: [20, 10], animate: true});
               updateState(state);
+              L.DomEvent.stopPropagation(e);
             }
           });
         },
@@ -141,6 +141,10 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
           fillOpacity: 0
         }
       }).addTo(map);
+
+      map.on('click', () => {
+        updateState('Australia');
+      });
     }
   })
 
