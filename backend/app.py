@@ -249,8 +249,6 @@ def create_default_state():
     # Initialize the dictionary with default values
     return {state: {strain: 0 for strain in strains} for state in expected_states}
 
-
-# graph showing distribution of infections for variant strains
 # graph showing distribution of infections for variant strains
 @app.route('/graphdata', methods=['GET'])
 def variant_pie_chart():
