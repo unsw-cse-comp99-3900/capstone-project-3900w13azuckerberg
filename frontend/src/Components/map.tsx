@@ -51,20 +51,17 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
 
     L.control.zoom({ position: "bottomleft" }).addTo(map);
 
-    // map.on('dragend', () => updateState("Australia"));
-
     mapRef.current = map;
 
     return () => {
-      // map.off('dragend', checkAndUpdateState);
       mapRef.current?.remove();
       mapRef.current = null;
     };
   }
 
-  useEffect(() => {
-    console.log("Updated currentState:", currentState);
-  }, [currentState]);
+  // useEffect(() => {
+  //   console.log("Updated currentState:", currentState);
+  // }, [currentState]);
 
   useEffect(() => {
     if (!mapRef.current && containerId === "m") {
@@ -119,6 +116,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
               .setContent(content)
               .setLatLng(e.latlng)
               .openOn(map);
+              
             },
             mousemove: (e) => {
               tooltip.setLatLng(e.latlng);

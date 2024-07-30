@@ -63,7 +63,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  });
 
   const handleApply = async () => {
     try {
@@ -87,7 +87,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
       setEndDate(none);
       setstate(none);
       setPolicy(none);
-      console.log("Success:", response.data);
+      // console.log("Success:", response.data);
 
     } catch (error) {
       console.error("Error:", error);
