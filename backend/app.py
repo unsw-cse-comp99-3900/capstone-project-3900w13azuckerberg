@@ -15,7 +15,6 @@ from seirsplus.networks import custom_exponential_graph
 import networkx as nx
 from network import create_graph
 from parameters import get_parameters, minimise
-# from basic_seirs import get_predictive_data
 
 # Load environment variables from .env file
 load_dotenv()
@@ -162,7 +161,7 @@ def predictive_map():
         y0, N, t, observed_data = get_parameters(state)
         beta_opt, sigma_opt, gamma_opt = minimise(state)
 
-        print(f"The optimised parameters are beta {beta_opt}, sigma {sigma_opt}, gamma {gamma_opt}")
+        # print(f"The optimised parameters are beta {beta_opt}, sigma {sigma_opt}, gamma {gamma_opt}")
 
         # creating graph
         

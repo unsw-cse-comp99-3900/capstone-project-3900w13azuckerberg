@@ -2,8 +2,6 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.integrate import odeint
 import pandas as pd
-# from sklearn.metrics import mean_squared_error, mean_absolute_error
-# import matplotlib.pyplot as plt
 
 # converting csv to df and convert 'date' to datetime
 df = pd.read_csv("raw_data/cleaned_data.csv")
@@ -20,7 +18,7 @@ def get_parameters(state):
 
     # Initial conditions
 
-    # initial population as at 2020
+    # initial population as at 2020-06-30 (ABS)
     if state == "South Australia":
         N = 1769300
     elif state == "Western Australia":
@@ -76,33 +74,3 @@ def minimise(state):
     result = minimize(objective, initial_params, args=(y0, N, t, observed_data), method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
     beta_opt, sigma_opt, gamma_opt = result.x
     return beta_opt, sigma_opt, gamma_opt
-
-
-# print(f'Estimated beta: {beta_opt}')
-# print(f'Estimated sigma: {sigma_opt}')
-# print(f'Estimated gamma: {gamma_opt}')
-
-# # run model using optimised parameters for validation purposes
-# ret = odeint(deriv, y0, t, args=(N, beta_opt, sigma_opt, gamma_opt))
-# S, E, I, R = ret.T
-
-# # Compute daily new infections and cumulative infections
-# new_infections = np.diff(I, prepend=0)
-# cumulative_infections = np.cumsum(new_infections)
-
-# # Plot observed data and model predictions
-# plt.figure(figsize=(10, 6))
-# plt.plot(daily_cases['date'], daily_cases['cumulative_cases'], label='Observed Cumulative Cases')
-# plt.plot(daily_cases['date'], cumulative_infections, label='Model Predicted Cumulative Infections')
-# plt.xlabel('Date')
-# plt.ylabel('Number of Infected Individuals')
-# plt.title('SEIR Model Validation')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-
-# # Calculate RMSE and MAE for cumulative infections
-# rmse = np.sqrt(mean_squared_error(daily_cases['cumulative_cases'], cumulative_infections))
-# mae = mean_absolute_error(daily_cases['cumulative_cases'], cumulative_infections)
-# print(f'RMSE: {rmse}')
-# print(f'MAE: {mae}')
