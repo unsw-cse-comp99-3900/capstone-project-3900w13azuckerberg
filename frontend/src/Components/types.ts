@@ -4,6 +4,8 @@ export interface Point {
     intensity: number;
 }
 
+export type PointArray = [number, number, number];
+
 export interface MapData {
 	[date: string]: PointArray[];
 }
@@ -38,4 +40,12 @@ export interface LineItem {
     data: DataPoint[];
 }
 
-export type PointArray = [number, number, number];
+export interface Policy {
+    startDate: string;
+    endDate: string;
+    policy: string;
+}
+
+export interface PolicyData {
+    [state: string]: Policy;
+  }

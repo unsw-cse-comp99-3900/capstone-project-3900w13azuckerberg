@@ -4,7 +4,7 @@ import CustomTooltip from './customTooltip';
 import Calendar from "react-calendar"; // Import Calendar component
 import "react-calendar/dist/Calendar.css"; // Import Calendar CSS
 import "./calendar.css";
-import "./button.css";
+import "./filters.css";
 import "./slider.css";
 
 interface TimelineSliderProps {
@@ -21,11 +21,11 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   let startDate: Date;
   let endDate: Date;
   if (predict) {
-    startDate = new Date("2024-01-01");
-    endDate = new Date("2025-04-30");
+    startDate = new Date("2024-05-30");
+    endDate = new Date("2025-05-30");
   } else {
     startDate = new Date("2020-01-01");
-    endDate = new Date("2023-12-31");
+    endDate = new Date("2024-05-29");
   }
 
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
@@ -42,8 +42,13 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   };
 
   const handleCalendar = (newDate: Date) => {
-    onDateChange(newDate);
     setPlayback(false);
+    setPlaybackIcon("play_arrow");
+    const adjustedDate = new Date(newDate);
+    adjustedDate.setDate(newDate.getDate() + 1);
+    const dateString = adjustedDate.toISOString().slice(0, 10);
+    console.log("selected date", dateString);
+    onDateChange(new Date(dateString));
     // Close calendar after selecting date
     setShowCalendar(false); 
   };
@@ -83,7 +88,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     };
   
     if (playback) {
-      timer = setTimeout(updateDay, 1000 / speed);
+      timer = setTimeout(updateDay, 250 / speed);
     }
   
     return () => clearTimeout(timer);
@@ -260,7 +265,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
         {showCalendar && (
           <Calendar
             className="react-calendar"
-            value={date}
+            // value={date}
             onClickDay={handleCalendar}
           />
         )}

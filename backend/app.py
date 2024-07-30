@@ -5,8 +5,8 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-from data_loader import load_into_db
-from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
+from data_loader import load_into_db, load_policy
+from db_manager import get_all_case_by_coordinate, get_all_case_by_date, get_all_time_case_pie_chart, get_case_by_coordinate, init_db
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
@@ -25,8 +25,6 @@ app.config.from_object(Config)
 init_db(app)
 
 migrate = Migrate(app, db)
-
-data_loaded = False
 
 selected_strains = {
     "left": {
@@ -66,13 +64,6 @@ selected_strains = {
     }
 }
 
-@app.before_request
-def before_request():
-    global data_loaded
-    if not data_loaded:
-        load_data()
-        data_loaded = True
-
 # Route for the home page
 @app.route('/')
 def home():
@@ -83,28 +74,20 @@ def mytest():
     print("Starting my test...")
     start_time = time.time()
 
-
-    start_date_str = '2020-01-01'
-    end_date_str = '2023-12-31'
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    results = get_all_case_by_coordinate(start_date, end_date, labels=[])
-
+    results = get_all_case_by_date()
 
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time} seconds")
     return jsonify(results)
 
-@app.route('/test1', methods=['GET'])
-def mytest1():
-    print("testing heatmap db function\n")
-    date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-    case_counts = get_case_by_coordinate(date, ["Omicron"])
-    return jsonify(case_counts)
-
 @app.route('/load_data', methods=['GET'])
 def load_data():
+    """This function should ONLY be called to manually load data into DB
+
+    Returns:
+        redirect: redirect to home
+    """
     global data_loaded
     data_loaded = True
     load_into_db(app)
@@ -119,7 +102,7 @@ def heat_map():
     containerId = request.args.get('containerId')
     print("/map containerId", containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
-    end_date = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
+    end_date = datetime.strptime('2024-4-29', '%Y-%m-%d').date()
 
     global selected_strains
 
@@ -292,9 +275,9 @@ def variant_pie_chart():
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
 
-
-
-
+@app.route('/policy', methods=['GET'])
+def get_policy():
+    return jsonify(load_policy())
 
 # # TBD once we find a source of vaccination data - graph showing vaccinations
 # @app.route('/vaccination', methods=['GET'])
@@ -314,14 +297,10 @@ def run_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    # # Start the Flask server in a separate thread
-    # server_thread = threading.Thread(target=run_server)
-    # server_thread.start()
+    # Start the Flask server in a separate thread
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
 
-    # # Now call load_data() without blocking the main thread
-    # load_data()
-
-
-    # ONLY IF RUNNING BACKEND IN TERMINAL
-    with app.app_context():
-        app.run(debug=True, host='0.0.0.0', port=8964)
+    # # ONLY IF RUNNING BACKEND IN TERMINAL
+    # with app.app_context():
+    #     app.run(debug=True)
