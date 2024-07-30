@@ -1,5 +1,6 @@
 # db_manager.py
 from datetime import datetime, timedelta
+import pandas as pd
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from model import db, VirusData, LabLocation, StrainLabel
@@ -125,9 +126,12 @@ def get_all_case_by_coordinate(start_date, end_date, labels=[]):
         VirusData.date.between(start_date, end_date)
     )
 
-    if labels:
-        query = query.filter(StrainLabel.label.in_(labels))
+    print("in labels")
+    # if labels:
+    print(f"Applying strain label filter: {labels}")
+    query = query.filter(StrainLabel.label.in_(labels))
 
+    print(f"Executing query: {query}")
     query = query.group_by(
         VirusData.originating_lab,
         LabLocation.longitude,
@@ -144,7 +148,6 @@ def get_all_case_by_coordinate(start_date, end_date, labels=[]):
 
 def calculate_14_day_sums(data):
     from collections import defaultdict
-    import pandas as pd
 
     # Convert data to a DataFrame for easier manipulation
     df = pd.DataFrame(data, columns=[
@@ -177,7 +180,9 @@ def calculate_14_day_sums(data):
     return result_dict
 
 def get_case_by_coordinate_and_strain(date, strains=[]):
-    """Get case number for each lab location given a date
+    # deprecated function
+    """--deprecated function--
+    Get case number for each lab location given a date
 
     Args:
         date (datetime)
@@ -228,7 +233,7 @@ def get_case_by_coordinate_and_strain(date, strains=[]):
     return result_dict
 
 def get_all_time_case_pie_chart():
-        # Fetch all the data
+    # Fetch all the data
     results = db.session.query(
         VirusData.date,
         VirusData.division_exposure,
@@ -274,6 +279,43 @@ def get_all_time_case_pie_chart():
                     if division_exposure in temp_result_dict[prev_date_str] and label in temp_result_dict[prev_date_str][division_exposure]:
                         cumulative_sum += temp_result_dict[prev_date_str][division_exposure][label]
                 result_dict[date_str][division_exposure][label] = cumulative_sum
+
+    return result_dict
+
+def get_all_case_by_date():
+    """Retrieve and calculate the 14-day cumulative sum of virus cases by date.
+
+    Returns:
+        dict: A dictionary with dates as keys and 14-day cumulative sums of
+              virus cases as values.
+
+    Example:
+        {'2023-01-01': 15, '2023-01-02': 20, ..., '2023-01-15': 150, ...}
+    """
+    results = db.session.query(
+        VirusData.date,
+        func.count(VirusData.id).label('case_count')
+    ).group_by(
+        VirusData.date
+    ).order_by(
+        VirusData.date
+    ).all()
+
+    data = []
+    for date, count in results:
+        data.append({'date': date, 'case_count': count})
+    df = pd.DataFrame(data)
+
+    # Ensure the DataFrame is sorted by date and fill missing dates
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.set_index('date').asfreq('D', fill_value=0).reset_index()
+
+    # Calculate the 14-day cumulative sum
+    df['cumulative_sum'] = df['case_count'].rolling(window=14, min_periods=1).sum()
+
+    # Convert the result back to a dictionary
+    result_dict = df.set_index('date')['cumulative_sum'].to_dict()
+    result_dict = {date.strftime("%Y-%m-%d"): sum for date, sum in result_dict.items()}
 
     return result_dict
 
