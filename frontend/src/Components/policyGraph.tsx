@@ -2,6 +2,7 @@ import React from 'react';
 import { PolicyData } from './types';
 import './policy.css'
 import axios from 'axios';
+import CustomTooltip from './customTooltip';
 
 interface PolicySummaryProps {
   policies: PolicyData;
@@ -39,9 +40,11 @@ const PolicySummary: React.FC<PolicySummaryProps> = ({ policies, setPolicies, to
       {Object.entries(policies).map(([state, policy]) => (
         <div key={state} className="policy-item">
           <h3>{state}
-            <i className="material-icons cross" onClick={() => handleRemovePolicy(state)}>
-                close
-            </i>
+          <CustomTooltip label="Remove Policy">
+              <i className="material-icons cross" onClick={() => handleRemovePolicy(state)}>
+                  close
+              </i>
+            </CustomTooltip>
           </h3>
           <p>{`${policy.policy}: ${policy.startDate} - ${policy.endDate}`}</p>
         </div>
