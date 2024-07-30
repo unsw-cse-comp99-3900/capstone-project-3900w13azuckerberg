@@ -40,6 +40,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [location, setLocation] = useState("Australia");
 	const [mapData, setMapData] = useState<[number, number, number][]>([]);
 	const [graphData, setGraphData] = useState<GraphData>({});
+	const [pGraphData, setPGraphData] = useState<SeirsData>({})
 	const [pieData, setPieData] = useState<PieItem[]>([]);
 	const [lineData, setLineData] = useState<LineItem[]>([]);
 	const [barData, setBarData] = useState<BarItem>(defaultBarData);
@@ -95,13 +96,24 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			console.log("getting graph data");
 			try {
 				let response: AxiosResponse;
-				response = await axios.get("http://127.0.0.1:5001/graphdata", {
-				params: {
-					containerId, // <- this will be either "M", "left", "right"
-					}
-				});
-				const rawData: GraphData = response.data;
-				setGraphData(rawData);
+				if (!predict) {
+					response = await axios.get("http://127.0.0.1:5001/graphdata", {
+						params: {
+							containerId, // <- this will be either "M", "left", "right"
+						}
+					});
+					const rawData: GraphData = response.data;
+					setGraphData(rawData);
+				}
+				else {
+					response = await axios.get("http://127.0.0.1:5001/predictive_graphdata", {
+						params: {
+							containerId, // <- this will be either "M", "left", "right"
+						}
+					});	
+					const seirData: SeirsData = response.data;
+					setPGraphData(seirData);
+				}
 				console.log("Graph data updated.");
 
 			} catch (error) {
@@ -120,7 +132,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
     }, [date, allMapData]);
 
 	useEffect(() => {
-		if (graphData != null && Object.keys(graphData).length > 0) {
+		if (graphData != null && Object.keys(graphData).length > 0 && predict === false) {
 			const dateString = date.toISOString().split('T')[0];
 			const currLocation = (location === "all") ? "Australia" : location;
 			let p: PieItem[] = [];
@@ -171,7 +183,27 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setLineData(l);
 		}
 
-	}, [date, graphData])
+	}, [date, graphData]);
+
+	useEffect(() => {
+		if (predict) {
+			const dateString = date.toISOString().split('T')[0];
+			const sorted = Object.keys(pGraphData)
+								 .filter(d => d < dateString)
+								 .sort((date1, date2) => date1.localeCompare(date2));	
+			let l:LineItem[] = [{
+				id: 'Total Predicted Cases',
+				color: '#483D8B', 
+				data: [],
+			}];
+			const data = {};
+			sorted.forEach((d) => l[0].data.push({x: d, y: pGraphData[d]['Australia']['numI']}))
+			setLineData(l);
+
+			setAllBarData(pGraphData);
+
+		}
+	}, [date, pGraphData]);
 
 	useEffect(() => {
 		const fetchBarData = async () => {
@@ -193,11 +225,12 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	useEffect(() => {
 		const dateString = date.toISOString().split('T')[0];
 		if (allBarData[dateString]) {
+			const curr = allBarData[dateString]['Australia'];
 			setBarData({
 				statement: "Status:",
-				Infected: allBarData[dateString].numI,
-				Recovered: allBarData[dateString].numR,
-				Exposed: allBarData[dateString].numE,
+				Infected: curr.numI,
+				Recovered: curr.numR,
+				Exposed: curr.numE,
 			});
 		} else {
 			setBarData(defaultBarData);

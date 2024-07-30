@@ -46,14 +46,19 @@ export interface Policy {
     policy: string;
 }
 
+interface StateSeirData {
+    numE: number;
+    numI: number;
+    numR: number;
+    numS: number;
+  }
+  
 export interface SeirsData {
-	[date: string]: {
-		numE: number;
-		numI: number;
-		numR: number;
-		numS: number;
-	};
-}
+    [date: string]: {
+      [region: string]: StateSeirData;
+    };
+  }
+  
 
 export interface BarItem {
 	statement: string;
