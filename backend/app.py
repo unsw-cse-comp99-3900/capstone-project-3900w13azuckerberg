@@ -263,7 +263,8 @@ def variant_pie_chart():
 
     global selected_strains
 
-    selected_strains_dict = selected_strains['m']
+    containerId = request.args.get('containerId')
+    selected_strains_dict = selected_strains[containerId]
     selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
 
     for date, states_info in graph_data.items():
