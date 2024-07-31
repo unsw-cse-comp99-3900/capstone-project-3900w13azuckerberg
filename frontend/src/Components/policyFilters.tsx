@@ -151,7 +151,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
           <option value="Tasmania">Tasmania </option>
           <option value="South Australia">South Australia </option>
           <option value="Western Australia">Western Australia </option>
-          <option value="Northern Northern Territory">Northern Territory </option>
+          <option value="Northern Territory">Northern Territory </option>
           <option value="Australian National Territory">Australian National Territory </option>
         </select>
       </CustomTooltip>
