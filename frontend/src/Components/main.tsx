@@ -186,26 +186,26 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			setLineData(l);
 		}
 
-	}, [date, graphData]);
+	}, [date, graphData, location]);
 
 	useEffect(() => {
-		if (predict) {
-			const dateString = date.toISOString().split('T')[0];
-			const sorted = Object.keys(pGraphData)
-								 .filter(d => d < dateString)
-								 .sort((date1, date2) => date1.localeCompare(date2));	
-			let l:LineItem[] = [{
-				id: 'Total Predicted Cases',
-				color: '#483D8B', 
-				data: [],
-			}];
-			const data = {};
-			sorted.forEach((d) => l[0].data.push({x: d, y: pGraphData[d]['Australia']['numI']}))
-			setLineData(l);
+		// if (predict) {
+		// 	const dateString = date.toISOString().split('T')[0];
+		// 	const sorted = Object.keys(pGraphData)
+		// 						 .filter(d => d < dateString)
+		// 						 .sort((date1, date2) => date1.localeCompare(date2));	
+		// 	let l:LineItem[] = [{
+		// 		id: 'Total Predicted Cases',
+		// 		color: '#483D8B', 
+		// 		data: [],
+		// 	}];
+		// 	const data = {};
+		// 	sorted.forEach((d) => l[0].data.push({x: d, y: pGraphData[d]['Australia']['numI']}))
+		// 	setLineData(l);
 
-			setAllBarData(pGraphData);
+		// 	setAllBarData(pGraphData);
 
-		}
+		// }
 	}, [date, pGraphData]);
 
 	useEffect(() => {
@@ -228,12 +228,19 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	useEffect(() => {
 		const dateString = date.toISOString().split('T')[0];
 		if (allBarData[dateString]) {
-			const curr = allBarData[dateString]['Australia'];
+			// if (predict) {
+			// 	setBarData({
+			// 		statement: "Status:",
+			// 		Infected: allBarData[dateString]['Australia'].numI,
+			// 		Recovered: allBarData[dateString]['Australia'].numR,
+			// 		Exposed: allBarData[dateString]['Australia'].numE,
+			// 	});
+			// }
 			setBarData({
 				statement: "Status:",
-				Infected: curr.numI,
-				Recovered: curr.numR,
-				Exposed: curr.numE,
+				Infected: allBarData[dateString].numI,
+				Recovered: allBarData[dateString].numR,
+				Exposed: allBarData[dateString].numE,
 			});
 		} else {
 			setBarData(defaultBarData);

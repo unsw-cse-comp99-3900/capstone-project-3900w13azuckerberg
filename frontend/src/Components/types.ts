@@ -51,13 +51,16 @@ interface StateSeirData {
     numI: number;
     numR: number;
     numS: number;
-  }
+ }
   
 export interface SeirsData {
-    [date: string]: {
-      [region: string]: StateSeirData;
-    };
-  }
+	[date: string]: {
+		numE: number;
+		numI: number;
+		numR: number;
+		numS: number;
+	};
+}
   
 
 export interface BarItem {
