@@ -12,14 +12,22 @@ interface HeatMapProps {
   containerId: string;
   showCompare: boolean;
   updateState: (state: string) => void;
-  currentState: string;
   graphData: DateData;
   radius: number;
   predict: boolean;
-  predictData: 
+  // predictData: 
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius, graphData, predict, predictData }) => {
+const HeatMap: React.FC<HeatMapProps> = ({ 
+    mapData, 
+    containerId, 
+    showCompare, 
+    updateState, 
+    radius, 
+    graphData, 
+    predict, 
+    // predictData 
+  }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
 
@@ -103,10 +111,11 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
                     result += count;
                   }
                 }
-              } else {
-                let cases:
-                
-              }
+              } 
+              // else {
+              //   let cases:
+
+              // }
                 
               const content = `${state} - ${result} total covid cases`;
               tooltip = L.tooltip({

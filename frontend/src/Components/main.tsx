@@ -167,7 +167,6 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 							});
 					})
 			);
-			// console.log(l);
 			setLineData(l);
 		}
 
@@ -188,9 +187,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			containerId={containerId} 
 			mapData={mapData} 
 			updateState={setLocation} 
-			currentState={location}
 			graphData={graphData[date.toISOString().split('T')[0]]}
 			radius={radius}
+			predict={predict}
 		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}
