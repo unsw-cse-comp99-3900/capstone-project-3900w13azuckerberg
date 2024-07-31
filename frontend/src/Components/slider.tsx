@@ -226,7 +226,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
                     transform: 'translateX(-50%)',
                   }}
                 >
-                  <CustomTooltip label={mark.description}>
+                  <PolicyTooltip label={mark.description}>
                     <div style={{
                       width: 0,
                       height: 0,
@@ -235,7 +235,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
                       borderTop: '10px solid white',
                       borderRadius: '3px',
                     }} />
-                  </CustomTooltip>
+                  </PolicyTooltip>
                 </div>
               );
             })}

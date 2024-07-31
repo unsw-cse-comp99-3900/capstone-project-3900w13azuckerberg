@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
-from data_loader import load_into_db
+from data_loader import load_into_db, load_policy
 from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, get_case_by_coordinate, init_db, get_all_case_by_date
 from model import db
 from datetime import datetime, timedelta
