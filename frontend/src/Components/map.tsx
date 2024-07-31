@@ -12,12 +12,22 @@ interface HeatMapProps {
   containerId: string;
   showCompare: boolean;
   updateState: (state: string) => void;
-  currentState: string;
   graphData: DateData;
   radius: number;
+  predict: boolean;
+  // predictData: 
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius, graphData }) => {
+const HeatMap: React.FC<HeatMapProps> = ({ 
+    mapData, 
+    containerId, 
+    showCompare, 
+    updateState, 
+    radius, 
+    graphData, 
+    predict, 
+    // predictData 
+  }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
 
@@ -40,32 +50,24 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
       "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
       {
         maxZoom: 18,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution:`
+        &copy; <a href="https://gisaid.org/">GISAID</a>
+        &copy; <a href="https://www.aph.gov.au/Parliamentary_Business/Committees/Joint/Public_Accounts_and_Audit/DFATcrisismanagement/Report_494_Inquiry_into_the_Department_of_Foreign_Affairs_and_Trades_crisis_management_arrangem/C_Timeline_of_key_events">Australian Parliament House</a> 
+        &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>
+        &copy; <a href="https://carto.com/attributions">CARTO</a> 
+        `,
       },
     ).addTo(map);
 
     L.control.zoom({ position: "bottomleft" }).addTo(map);
 
-
-    const checkAndUpdateState = () => {
-      updateState("Australia");
-    };
-
-    map.on('dragend', checkAndUpdateState);
-
     mapRef.current = map;
 
     return () => {
-      map.off('dragend', checkAndUpdateState);
       mapRef.current?.remove();
       mapRef.current = null;
     };
   }
-
-  useEffect(() => {
-    console.log("Updated currentState:", currentState);
-  }, [currentState]);
 
   useEffect(() => {
     if (!mapRef.current && containerId === "m") {
@@ -100,15 +102,21 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
               });
               layer.bringToFront();
 
-              let cases: RegionData;
               let result = 0;
-              if (graphData && graphData[state]) {
-                cases = graphData[state];
-                for (const [strain, count] of Object.entries(cases)) {
+              if (!predict) {
+                let cases: RegionData;
+                if (graphData && graphData[state]) {
+                  cases = graphData[state];
+                  for (const [strain, count] of Object.entries(cases)) {
                     result += count;
+                  }
                 }
-              }
+              } 
+              // else {
+              //   let cases:
 
+              // }
+                
               const content = `${state} - ${result} total covid cases`;
               tooltip = L.tooltip({
                 direction: 'top',
@@ -120,6 +128,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
               .setContent(content)
               .setLatLng(e.latlng)
               .openOn(map);
+              
             },
             mousemove: (e) => {
               tooltip.setLatLng(e.latlng);
@@ -131,6 +140,7 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
             click: (e) => {
               map.fitBounds(e.target.getBounds(), { padding: [20, 10], animate: true});
               updateState(state);
+              L.DomEvent.stopPropagation(e);
             }
           });
         },
@@ -141,6 +151,10 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
           fillOpacity: 0
         }
       }).addTo(map);
+
+      map.on('click', () => {
+        updateState('Australia');
+      });
     }
   })
 

@@ -7,7 +7,6 @@ import Filters from "./filters";
 import "./main.css"
 import { MapData, GraphData, Point, PieItem, LineItem, PolicyData, SeirsData, BarItem } from "./types"
 import RadiusSlider from "./radiusSlider";
-
 interface MainProps {
 	setIsLoading: (token: boolean) => void;
 	date: Date;
@@ -17,6 +16,8 @@ interface MainProps {
 	predict: boolean;
 	setPredict: (predict: boolean) => void;
 }
+
+
 
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
@@ -37,7 +38,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
-	const [location, setLocation] = useState("Australia");
+	const [location, setLocation] = useState("all");
 	const [mapData, setMapData] = useState<[number, number, number][]>([]);
 	const [graphData, setGraphData] = useState<GraphData>({});
 	const [pGraphData, setPGraphData] = useState<SeirsData>({})
@@ -47,8 +48,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [allBarData, setAllBarData] = useState<SeirsData>({});
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
-
-	// Map useeffect when filters change
+	// Map use effect
     useEffect(() => {
       // Function to fetch heat map data from the backend
 		const fetchData = async () => {
@@ -63,7 +63,11 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						}
 					});
 				} else {
-					response = await axios.get("http://127.0.0.1:5001/predictive_map", {})
+					response = await axios.get("http://127.0.0.1:5001/predictive_map", {
+					params: {
+						containerId, // <- this will be either "M", "left", "right"
+						}
+					})
 				}
 				const rawData: { [date: string]: Point[] } = response.data;
 				const formattedData: MapData = {};
@@ -75,7 +79,6 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						point.intensity
 					]);
 				}
-
 			setAllMapData(formattedData);
 	
 			console.log("Heatmap data updated.");
@@ -94,6 +97,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
 			console.log("getting graph data");
+			// setIsLoading(true);
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
@@ -119,15 +123,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
+			//   setIsLoading(false);
 		  };
 		  fetchGraphData();
 	}, [refetch, predict]);
 
-	// map useeffect when date changes
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
-
 	  
     }, [date, allMapData]);
 
@@ -246,14 +249,17 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			policies={policies}
 			predict={predict}
 			setPolicies={setPolicies}
+			token={refetch}
+			onFilterChange={triggerRefetch}
+			containerId={containerId}
 		/>
 		<HeatMap showCompare={showCompare} 
 			containerId={containerId} 
 			mapData={mapData} 
 			updateState={setLocation} 
-			currentState={location}
 			graphData={graphData[date.toISOString().split('T')[0]]}
 			radius={radius}
+			predict={predict}
 		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}

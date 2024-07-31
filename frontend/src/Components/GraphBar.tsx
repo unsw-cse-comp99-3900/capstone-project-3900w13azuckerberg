@@ -13,10 +13,13 @@ interface GraphProps {
   barData: BarItem, 
   predict: boolean,
   setPolicies: (policies: PolicyData) => void;
+  token: boolean;
+  onFilterChange: (token: boolean) => void;
+  containerId: string;
 }
 
 
-const GraphBar: React.FC<GraphProps> = ({ barData, pieData, lineData, policies, predict, setPolicies}) => {
+const GraphBar: React.FC<GraphProps> = ({ barData, pieData, lineData, policies, predict, setPolicies, token, onFilterChange, containerId}) => {
 
   const [showGraph, setShowGraph] = useState(false);
 
@@ -32,7 +35,13 @@ const GraphBar: React.FC<GraphProps> = ({ barData, pieData, lineData, policies, 
       <div className={`wrapper ${showGraph ? "open" : ""}`}>
         <div className="graphBox">
           {predict ? (
-            <PolicyGraph policies={policies} setPolicies={setPolicies}/>
+            <PolicyGraph 
+              policies={policies} 
+              setPolicies={setPolicies} 
+              token={token}
+              onFilterChange={onFilterChange}
+              containerId={containerId}
+            />
           ) : (
             <PieChart pieData={pieData}/>
           )}
