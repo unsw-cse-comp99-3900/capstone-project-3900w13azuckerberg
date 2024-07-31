@@ -15,9 +15,11 @@ interface HeatMapProps {
   currentState: string;
   graphData: DateData;
   radius: number;
+  predict: boolean;
+  predictData: 
 }
 
-const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius, graphData }) => {
+const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, currentState, updateState, radius, graphData, predict, predictData }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
 
@@ -59,10 +61,6 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
     };
   }
 
-  // useEffect(() => {
-  //   console.log("Updated currentState:", currentState);
-  // }, [currentState]);
-
   useEffect(() => {
     if (!mapRef.current && containerId === "m") {
         return createMap();
@@ -96,15 +94,20 @@ const HeatMap: React.FC<HeatMapProps> = ({ mapData, containerId, showCompare, cu
               });
               layer.bringToFront();
 
-              let cases: RegionData;
               let result = 0;
-              if (graphData && graphData[state]) {
-                cases = graphData[state];
-                for (const [strain, count] of Object.entries(cases)) {
+              if (!predict) {
+                let cases: RegionData;
+                if (graphData && graphData[state]) {
+                  cases = graphData[state];
+                  for (const [strain, count] of Object.entries(cases)) {
                     result += count;
+                  }
                 }
+              } else {
+                let cases:
+                
               }
-
+                
               const content = `${state} - ${result} total covid cases`;
               tooltip = L.tooltip({
                 direction: 'top',
