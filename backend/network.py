@@ -31,11 +31,4 @@ def create_graph(center_lat, center_lon):
                 if distance < threshold_distance:
                     G_normal.add_edge(node1, node2)
 
-    # # Draw the graph
-    # pos = nx.get_node_attributes(G_normal, 'pos')  # Get positions
-    # plt.figure(figsize=(10, 8))
-    # nx.draw(G_normal, pos, node_size=50, with_labels=False, node_color='blue', edge_color='gray', alpha=0.7)
-    # plt.title('Geographic Network')
-    # plt.show()
-    
     return G_normal

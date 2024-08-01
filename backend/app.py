@@ -172,7 +172,7 @@ def predictive_map():
 
     # for each location in the db
     # set beta, sigma, gamma
-    default_population = 10000
+    default_population = 100000
     social_distancing_beta = 0.08
     lockdown_beta = 0.00
 
@@ -188,7 +188,7 @@ def predictive_map():
 
     print(selected_strains_arr)
 
-    current_date = datetime.strptime('2024-5-29', '%Y-%m-%d').date()
+    current_date = datetime.strptime('2024-06-01', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
 
     for key, data in loc_data.items():
@@ -213,6 +213,10 @@ def predictive_map():
 
         G_normal = create_graph(center_lat, center_lon)
 
+        # model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
+        #                 theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+        #                 initI=data["intensity"], initE=5, initR=2)
+
         if bool(selected_policies[containerId][data["state"]]):
             print(f"policy in {data["state"]}")
             if (selected_policies[containerId][data["state"]]["policy"] == 'Social Distancing'):
@@ -222,7 +226,7 @@ def predictive_map():
             
             model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
                         theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-                        initI=data["intensity"]/2, initE=5, initR=2)
+                        initI=data["intensity"], initE=5, initR=2)
 
             policy_start = selected_policies[containerId][data["state"]]["start_date"]
             policy_end = policy_start = selected_policies[containerId][data["state"]]["end_date"]
@@ -231,7 +235,7 @@ def predictive_map():
                 't':       [policy_start, policy_end], 
                 # 'beta':    [selected_beta, beta_opt], 
                 # 'sigma':   [1/50, 1/5.2],
-                'p':       [0.5*0.2, 0.2],
+                # 'p':       [0.5*0.1, 0.6],
                 'theta_E': [0.02, 1], 
                 'theta_I': [0.01, 1]
             }
@@ -242,7 +246,7 @@ def predictive_map():
         else: 
             model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
                         theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-                        initI=data["intensity"], initE=5, initR=2)
+                        initI=data["intensity"], initE=13, initR=8)
             model.run(T = predictive_period, verbose=False)
 
         # model.run(T = predictive_period, verbose=False)
@@ -259,6 +263,7 @@ def predictive_map():
             numI = model.numI[i] if i < len(model.numI) else 0
             numS = model.numS[i] if i < len(model.numS) else 0
             numE = model.numE[i] if i < len(model.numE) else 0
+            # numR = model.numR[i-1]
             numR = model.numR[i] if i < len(model.numR) else 0
             # print(f"for time step {i}, numI is {numI}, numS is {numS}, numE is {numE}, numR is {numR}")
 
@@ -271,7 +276,7 @@ def predictive_map():
                 "numE": round(numE),
                 "numR": round(numR)
             })
-            # print(predictive_map_data[date_key])
+            print(predictive_map_data[date_key])
 
     global predictive_data
     predictive_data[containerId] = predictive_map_data
