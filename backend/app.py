@@ -229,8 +229,9 @@ def predictive_map():
 
             checkpoints = {
                 't':       [policy_start, policy_end], 
-                'beta':    [selected_beta, beta_opt], 
+                # 'beta':    [selected_beta, beta_opt], 
                 # 'sigma':   [1/50, 1/5.2],
+                'p':       [0.5*0.2, 0.2],
                 'theta_E': [0.02, 1], 
                 'theta_I': [0.01, 1]
             }
@@ -423,11 +424,13 @@ def SEIRS_data():
 
         model.run(T = 2, verbose=False)
 
-        SEIRS_output[day] = {
-            "numS": round(model.numS[10]),
-            "numE": round(model.numE[10]),
-            "numI": round(model.numI[10]),
-            "numR": round(model.numR[10]),
+        SEIRS_output[day] = { 
+            "Australia": {
+                "numS": round(model.numS[10]),
+                "numE": round(model.numE[10]),
+                "numI": infections,
+                "numR": round(model.numR[10])
+            }
         }
 
     return jsonify(SEIRS_output)
@@ -436,19 +439,6 @@ def SEIRS_data():
 @app.route('/policy', methods=['GET'])
 def get_policy():
     return jsonify(load_policy())
-
-# # TBD once we find a source of vaccination data - graph showing vaccinations
-# @app.route('/vaccination', methods=['GET'])
-# def vaccinations():
-#     date = request.args.get('date')
-#     strain = request.args.get('strain')
-#     vaccination_records = get_vaccinations(VaccinationData)
-#     results = [
-#         {
-#             ""
-#         }
-
-#     ]
 
 
 @app.route('/predictive_graphdata', methods=['GET'])
