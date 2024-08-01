@@ -35,6 +35,8 @@ EXPOSE 5000
 # Set environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=development
+ENV DATABASE_URL=postgresql://user1:password@db/covid
+ENV SECRET_KEY=1LAKeDYR83stxYv
 
 # Define a script to run additional setups after database init
 CMD ["bash", "/app/entrypoint.sh"]

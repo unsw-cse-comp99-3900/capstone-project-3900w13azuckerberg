@@ -3,9 +3,9 @@ services:
     build: ./db
     restart: always
     environment:
-      POSTGRES_USER: user1
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: covid
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -26,6 +26,11 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      SECRET_KEY: ${SECRET_KEY}
   frontend:
     build: ./frontend
     volumes:
