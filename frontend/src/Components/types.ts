@@ -46,7 +46,7 @@ export interface Policy {
     policy: string;
 }
 
-interface StateSeirData {
+interface RData {
     numE: number;
     numI: number;
     numR: number;
@@ -55,11 +55,8 @@ interface StateSeirData {
   
 export interface SeirsData {
 	[date: string]: {
-		numE: number;
-		numI: number;
-		numR: number;
-		numS: number;
-	};
+        [stateName: string]: RData;
+    }
 }
   
 

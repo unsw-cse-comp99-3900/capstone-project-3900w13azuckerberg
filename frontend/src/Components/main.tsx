@@ -35,6 +35,18 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		Recovered: 0,
 		Exposed: 0,
 	}
+
+	const defaultGraphData = {
+		"Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"New South Wales": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"Queensland": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"Tasmania": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"South Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+		"Australian Capital Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
+	};
 	
 	const [refetch, triggerRefetch] = useState(false);
 	const [allMapData, setAllMapData] = useState<MapData>({});
@@ -97,7 +109,6 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
 			console.log("getting graph data");
-			// setIsLoading(true);
 			try {
 				let response: AxiosResponse;
 				if (!predict) {
@@ -117,13 +128,13 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 					});	
 					const seirData: SeirsData = response.data;
 					setPGraphData(seirData);
+					console.log(seirData)
 				}
 				console.log("Graph data updated.");
 
 			} catch (error) {
 			console.error("Error fetching Graph map data:", error);
 			}
-			//   setIsLoading(false);
 		  };
 		  fetchGraphData();
 	}, [refetch, predict]);
@@ -134,23 +145,15 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	  
     }, [date, allMapData]);
 
+
+	// Pie and Line Data Processing
 	useEffect(() => {
 		if (graphData != null && Object.keys(graphData).length > 0 && predict === false) {
 			const dateString = date.toISOString().split('T')[0];
 			const currLocation = (location === "all") ? "Australia" : location;
 			let p: PieItem[] = [];
 			if (!graphData[dateString]) {
-				graphData[dateString] = {
-					"Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"New South Wales": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"Queensland": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"Victoria": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"Northern Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"Western Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"Tasmania": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"South Australia": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-					"Australian Capital Territory": { Alpha: 0, Beta: 0, Delta: 0, Gamma: 0, Omicron: 0},
-				};
+				graphData[dateString] = defaultGraphData;
 			}
 	
 			const currData = graphData[dateString][currLocation];
@@ -188,24 +191,26 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 
 	}, [date, graphData, location]);
 
+
+	
 	useEffect(() => {
-		// if (predict) {
-		// 	const dateString = date.toISOString().split('T')[0];
-		// 	const sorted = Object.keys(pGraphData)
-		// 						 .filter(d => d < dateString)
-		// 						 .sort((date1, date2) => date1.localeCompare(date2));	
-		// 	let l:LineItem[] = [{
-		// 		id: 'Total Predicted Cases',
-		// 		color: '#483D8B', 
-		// 		data: [],
-		// 	}];
-		// 	const data = {};
-		// 	sorted.forEach((d) => l[0].data.push({x: d, y: pGraphData[d]['Australia']['numI']}))
-		// 	setLineData(l);
+		if (pGraphData != null && Object.keys(pGraphData).length > 0 && predict === true) {
+			const dateString = date.toISOString().split('T')[0];
+			const sorted = Object.keys(pGraphData)
+								 .filter(d => d < dateString)
+								 .sort((date1, date2) => date1.localeCompare(date2));	
+			let l:LineItem[] = [{
+				id: 'Total Predicted Cases',
+				color: '#483D8B', 
+				data: [],
+			}];
+			const data = {};
+			sorted.forEach((d) => l[0].data.push({x: d, y: pGraphData[d]['Australia']['numI']}))
+			setLineData(l);
 
-		// 	setAllBarData(pGraphData);
+			setAllBarData(pGraphData);
 
-		// }
+		}
 	}, [date, pGraphData]);
 
 	useEffect(() => {
@@ -217,6 +222,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				const rawData: SeirsData = response.data;
 				setAllBarData(rawData);
 				console.log("SEIRS data updated.");
+				console.log(rawData)
 
 			} catch (error) {
 			console.error("Error fetching Bar data:", error);
@@ -228,19 +234,12 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	useEffect(() => {
 		const dateString = date.toISOString().split('T')[0];
 		if (allBarData[dateString]) {
-			// if (predict) {
-			// 	setBarData({
-			// 		statement: "Status:",
-			// 		Infected: allBarData[dateString]['Australia'].numI,
-			// 		Recovered: allBarData[dateString]['Australia'].numR,
-			// 		Exposed: allBarData[dateString]['Australia'].numE,
-			// 	});
-			// }
+			const curr = allBarData[dateString]['Australia'];
 			setBarData({
 				statement: "Status:",
-				Infected: allBarData[dateString].numI,
-				Recovered: allBarData[dateString].numR,
-				Exposed: allBarData[dateString].numE,
+				Infected: curr.numI,
+				Recovered: curr.numR,
+				Exposed: curr.numE,
 			});
 		} else {
 			setBarData(defaultBarData);
