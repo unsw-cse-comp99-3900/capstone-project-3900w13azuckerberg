@@ -192,7 +192,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	}, [date, graphData, location]);
 
 
-	
+	// predictive graph data processing
 	useEffect(() => {
 		if (pGraphData != null && Object.keys(pGraphData).length > 0 && predict === true) {
 			const dateString = date.toISOString().split('T')[0];
@@ -229,7 +229,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			}
 		};
 		fetchBarData();
-	}, []);
+	}, [refetch]);
 	
 	useEffect(() => {
 		const dateString = date.toISOString().split('T')[0];
