@@ -183,6 +183,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
             <Icon
               icon="fast_rewind"
               onClick={handleDecreaseSpeed}
+              aria-label={"Decrease Speed"}
             />
           </div>
         </CustomTooltip>
@@ -192,6 +193,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
             <Icon
               icon="fast_forward"
               onClick={handleIncreaseSpeed}
+              aria-label={"Increase Speed"}
             />
           </div>
         </CustomTooltip>
@@ -200,6 +202,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
             <Icon
               icon={playbackIcon}
               onClick={handlePlayback}
+              aria-label={playback ? "Pause" : "Play"}
             />
           </div>
         </CustomTooltip>
