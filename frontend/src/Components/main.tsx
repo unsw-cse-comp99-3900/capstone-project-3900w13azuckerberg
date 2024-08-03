@@ -137,7 +137,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			}
 		  };
 		  fetchGraphData();
-	}, [refetch, predict]);
+	}, [allMapData]);
 
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
@@ -207,12 +207,11 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			const data = {};
 			sorted.forEach((d) => l[0].data.push({x: d, y: pGraphData[d]['Australia']['numI']}))
 			setLineData(l);
-
 			setAllBarData(pGraphData);
-
 		}
 	}, [date, pGraphData]);
 
+	// Historical Bar Method
 	useEffect(() => {
 		const fetchBarData = async () => {
 			console.log("getting bar data");
@@ -229,8 +228,9 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			}
 		};
 		fetchBarData();
-	}, [refetch]);
+	}, [refetch, predict]);
 	
+	// Predictive bar processing
 	useEffect(() => {
 		const dateString = date.toISOString().split('T')[0];
 		if (allBarData[dateString]) {
