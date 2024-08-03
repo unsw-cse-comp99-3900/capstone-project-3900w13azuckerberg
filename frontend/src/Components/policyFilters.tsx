@@ -119,7 +119,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
       return;
     }
 
-    if (policies[state] && policies[state].policy === policy) {
+    if (policies[state]) {
       setHoverMessage(`${state} already has ${policy}`);
       setApply(false);
       return;

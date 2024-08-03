@@ -1,31 +1,21 @@
 import { ResponsiveMarimekko } from "@nivo/marimekko";
-// import Legend from "./legend";
+import { BarItem } from "./types"
 
-const BarChart = ({}) => (
+
+interface BarChartProps {
+    barData: BarItem;
+  }
+  
+const BarChart: React.FC<BarChartProps> = ({ barData }) => (
     <ResponsiveMarimekko
-        data={
-            [
-
-                {
-                  "statement": "Status:",
-                  "Infected": 7,
-                  "Susceptible": 14,
-                  "Recovered": 3,
-                  "Exposed": 6
-                },
-            ]
-        }
+        data={[barData]}
         id="statement"
         value="participation"
         dimensions={[
             {
                 id: 'Infected',
                 value: 'Infected'
-            },
-            {
-                id: 'Susceptible',
-                value: 'Susceptible'
-            },
+            }, 
             {
                 id: 'Recovered',
                 value: 'Recovered'

@@ -13,7 +13,7 @@ from seirsplus.models import *
 import threading
 from seirsplus.networks import custom_exponential_graph
 import networkx as nx
-from network import create_graph
+from network import create_graph, create_lockdown_graph, create_social_distancing_graph
 from parameters import get_parameters, minimise
 
 # Load environment variables from .env file
@@ -172,7 +172,7 @@ def predictive_map():
 
     # for each location in the db
     # set beta, sigma, gamma
-    default_population = 10000
+    default_population = 100000
     social_distancing_beta = 0.08
     lockdown_beta = 0.00
 
@@ -188,7 +188,7 @@ def predictive_map():
 
     print(selected_strains_arr)
 
-    current_date = datetime.strptime('2024-5-29', '%Y-%m-%d').date()
+    current_date = datetime.strptime('2024-06-01', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
 
     for key, data in loc_data.items():
@@ -204,47 +204,51 @@ def predictive_map():
         state = data["state"]
 
         # getting optimised parameters
-
-        y0, N, t, observed_data = get_parameters(state)
         beta_opt, sigma_opt, gamma_opt = minimise(state)
         
         center_lat = data["latitude"]
         center_lon = data["longitude"]
 
         G_normal = create_graph(center_lat, center_lon)
+        G_lockdown = create_lockdown_graph(center_lat, center_lon)
+        G_social_distancing = create_social_distancing_graph(center_lat, center_lon)
 
         if bool(selected_policies[containerId][data["state"]]):
             print(f"policy in {data["state"]}")
-            if (selected_policies[containerId][data["state"]]["policy"] == 'Social Distancing'):
-                selected_beta = social_distancing_beta
-            else:
-                selected_beta = lockdown_beta
-            
-            model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
-                        theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-                        initI=data["intensity"]/2, initE=5, initR=2)
 
             policy_start = selected_policies[containerId][data["state"]]["start_date"]
-            policy_end = policy_start = selected_policies[containerId][data["state"]]["end_date"]
+            policy_end = selected_policies[containerId][data["state"]]["end_date"]
+            print(f"policy start {policy_start}, policy end {policy_end}")
 
-            checkpoints = {
-                't':       [policy_start, policy_end], 
-                'beta':    [selected_beta, beta_opt], 
-                # 'sigma':   [1/50, 1/5.2],
-                'theta_E': [0.02, 1], 
-                'theta_I': [0.01, 1]
-            }
+            if (selected_policies[containerId][data["state"]]["policy"] == 'Social Distancing'):
+                checkpoints = {
+                    't':       [policy_start, policy_end], 
+                    'initI':   [data["intensity"], data["intensity"]*2],
+                    'G':       [G_social_distancing, G_normal],
+                    'theta_E': [0.02, 1], 
+                    'theta_I': [0.01, 1]
+                }
 
-            print("lockdown")
+            else: #lockdown
+                checkpoints = {
+                    't':       [policy_start, policy_end], 
+                    'initI':   [data["intensity"]/2, data["intensity"]*2],
+                    'G':       [G_lockdown, G_normal],
+                    'theta_E': [0.02, 1], 
+                    'theta_I': [0.01, 1]
+                }
 
-            model.run(T = predictive_period, checkpoints=checkpoints, verbose=False)
+            model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
+                theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+                initI=data["intensity"], initE=5, initR=2)
+
+            model.run(T = predictive_period, checkpoints=checkpoints, verbose=True)
         else: 
             model = SEIRSNetworkModel(G=G_normal, beta=beta_opt, sigma=sigma_opt, gamma=gamma_opt, mu_I=0.0004, p=0.5,
-                        theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
-                        initI=data["intensity"], initE=5, initR=2)
-            model.run(T = predictive_period, verbose=False)
+                theta_E=0.02, theta_I=0.02, phi_E=0.2, phi_I=0.2, psi_E=1.0, psi_I=1.0, q=0.5,
+                initI=data["intensity"]*2, initE=5, initR=2)
 
-        # model.run(T = predictive_period, verbose=False)
+            model.run(T = predictive_period, verbose=False)
 
         for i in range(1, predictive_period):
 
@@ -258,8 +262,7 @@ def predictive_map():
             numI = model.numI[i] if i < len(model.numI) else 0
             numS = model.numS[i] if i < len(model.numS) else 0
             numE = model.numE[i] if i < len(model.numE) else 0
-            numR = model.numR[i] if i < len(model.numR) else 0
-            # print(f"for time step {i}, numI is {numI}, numS is {numS}, numE is {numE}, numR is {numR}")
+            numR = model.numQ_E[i] if i < len(model.numQ_E) else 0
 
             predictive_map_data[date_key].append({
                 "latitude": data["latitude"],
@@ -270,7 +273,6 @@ def predictive_map():
                 "numE": round(numE),
                 "numR": round(numR)
             })
-            # print(predictive_map_data[date_key])
 
     global predictive_data
     predictive_data[containerId] = predictive_map_data
@@ -397,22 +399,47 @@ def variant_pie_chart():
     print(f"Execution time: {execution_time} seconds")
     return jsonify(result_graph_data)
 
+@app.route('/SEIRS_data', methods=['GET'])
+def SEIRS_data():
+
+    infected_per_day = get_all_case_by_date()
+
+    default_population = 100000000
+    default_sigma = 1/5.2
+    default_gamma = 1/10
+    default_beta = 0.25
+
+    SEIRS_output = {}
+
+    for day, infections in infected_per_day.items():
+
+        model = SEIRSModel(
+            initN   = default_population,
+            beta    = default_beta,
+            sigma   = default_sigma,
+            gamma   = default_gamma,
+            psi_E   = 1,
+            psi_I   = 1,
+            initI = infections
+        )
+
+        model.run(T = 2, verbose=False)
+
+        SEIRS_output[day] = { 
+            "Australia": {
+                "numS": round(model.numS[10]),
+                "numE": round(model.numE[10]),
+                "numI": infections,
+                "numR": round(model.numR[10])
+            }
+        }
+
+    return jsonify(SEIRS_output)
+
+
 @app.route('/policy', methods=['GET'])
 def get_policy():
     return jsonify(load_policy())
-
-# # TBD once we find a source of vaccination data - graph showing vaccinations
-# @app.route('/vaccination', methods=['GET'])
-# def vaccinations():
-#     date = request.args.get('date')
-#     strain = request.args.get('strain')
-#     vaccination_records = get_vaccinations(VaccinationData)
-#     results = [
-#         {
-#             ""
-#         }
-
-#     ]
 
 
 @app.route('/predictive_graphdata', methods=['GET'])
