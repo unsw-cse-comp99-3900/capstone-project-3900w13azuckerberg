@@ -1,11 +1,12 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import PolicyFilters from '../policyFilters';
+import mRender from './testhelper';
 
 describe('PolicyFilters Initial State', () => {
-  it('renders with default initial states', () => {
-    render(<PolicyFilters token={false} onFilterChange={jest.fn()} containerId="container1" policies={{}} setPolicies={jest.fn()} />);
+  it('mRenders with default initial states', () => {
+    mRender(<PolicyFilters token={false} onFilterChange={jest.fn()} containerId="container1" policies={{}} setPolicies={jest.fn()} />);
     // check all elements are there
     expect(screen.getByText("Start Date")).toBeInTheDocument();
     expect(screen.getByText("End Date")).toBeInTheDocument();
@@ -17,7 +18,7 @@ describe('PolicyFilters Initial State', () => {
 
 describe('Date Selection Functionality', () => {
   it('updates the start date and closes the calendar', () => {
-    const { getByText, queryByText } = render(<PolicyFilters token={false} onFilterChange={jest.fn()} containerId="container1" policies={{}} setPolicies={jest.fn()} />);
+    const { getByText, queryByText } = mRender(<PolicyFilters token={false} onFilterChange={jest.fn()} containerId="container1" policies={{}} setPolicies={jest.fn()} />);
     // Open calendar
     fireEvent.click(getByText('Start Date'));
     // Click on date 15 of the current displayed month 
@@ -36,7 +37,7 @@ describe('API Interaction', () => {
     mock.onGet("http://127.0.0.1:5001/policies").reply(200, responseData);
 
     const setPolicies = jest.fn();
-    const { getByText, getByRole } = render(<PolicyFilters token={false} onFilterChange={jest.fn()} containerId="container1" policies={{}} setPolicies={jest.fn()} />);
+    const { getByText, getByRole } = mRender(<PolicyFilters token={false} onFilterChange={jest.fn()} containerId="container1" policies={{}} setPolicies={jest.fn()} />);
     fireEvent.click(getByText('Start Date')); 
     fireEvent.click(getByText('15'));
     fireEvent.click(getByText('End Date'));

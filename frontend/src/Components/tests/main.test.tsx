@@ -2,6 +2,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import Main from '../main';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+import mRender from './testhelper';
 
 describe('Main Component', () => {
     let mock: MockAdapter;
@@ -24,7 +25,7 @@ describe('Main Component', () => {
 
     it('handles state changes for predictions', async () => {
         const setPredict = jest.fn();
-        const { getByText } = render(<Main setIsLoading={() => {}} date={new Date('2021-01-01')} showCompare={false} setShowCompare={() => {}} containerId="M" predict={false} setPredict={setPredict} />);
+        const { getByText } = mRender(<Main setIsLoading={() => {}} date={new Date('2021-01-01')} showCompare={false} setShowCompare={() => {}} containerId="M" predict={false} setPredict={setPredict} />);
 
         // Simulate user action that triggers prediction change
         fireEvent.click(getByText('Toggle Predictions'));

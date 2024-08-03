@@ -1,7 +1,7 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { screen, cleanup } from '@testing-library/react';
 import HeatMap from '../map';
 import L from "leaflet";
-
+import mRender from './testhelper';
 // Mock Leaflet's map and heat layer
 jest.mock("leaflet", () => ({
   map: jest.fn().mockReturnThis(),
@@ -24,19 +24,19 @@ describe('HeatMap Component', () => {
     jest.clearAllMocks();
   });
 
-  it('renders without crashing', () => {
-    render(<HeatMap mapData={[]} containerId="m" showCompare={false} updateState={() => {}} graphData={{}} radius={20} predict={false} />);
+  it('mRenders without crashing', () => {
+    mRender(<HeatMap mapData={[]} containerId="m" showCompare={false} updateState={() => {}} graphData={{}} radius={20} predict={false} />);
     expect(screen.getByTestId('m')).toBeInTheDocument();
   });
 
-  it('initializes a Leaflet map on first render', () => {
+  it('initializes a Leaflet map on first mRender', () => {
     const containerId = 'm';
-    render(<HeatMap mapData={[]} containerId={containerId} showCompare={false} updateState={() => {}} graphData={{}} radius={20} predict={false} />);
+    mRender(<HeatMap mapData={[]} containerId={containerId} showCompare={false} updateState={() => {}} graphData={{}} radius={20} predict={false} />);
     expect(L.map).toHaveBeenCalledWith(containerId, expect.anything());
   });
 
   it('updates heat map layer when mapData changes', () => {
-    const { rerender } = render(<HeatMap mapData={[[34.05, -118.25, 5]]} containerId="m" showCompare={false} updateState={() => {}} graphData={{}} radius={20} predict={false} />);
+    const { rerender } = mRender(<HeatMap mapData={[[34.05, -118.25, 5]]} containerId="m" showCompare={false} updateState={() => {}} graphData={{}} radius={20} predict={false} />);
     expect(L.heatLayer).toHaveBeenCalledWith([[34.05, -118.25, 5]], expect.anything());
 
     // Update mapData
