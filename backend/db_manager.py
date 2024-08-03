@@ -126,12 +126,8 @@ def get_all_case_by_coordinate(start_date, end_date, labels=[]):
         VirusData.date.between(start_date, end_date)
     )
 
-    print("in labels")
-    # if labels:
-    print(f"Applying strain label filter: {labels}")
     query = query.filter(StrainLabel.label.in_(labels))
 
-    print(f"Executing query: {query}")
     query = query.group_by(
         VirusData.originating_lab,
         LabLocation.longitude,
