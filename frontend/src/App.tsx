@@ -8,7 +8,7 @@ import "./Components/cover.css"
 import Legend from "./Components/legend";
 
 function App() {
-  const [date, setDate] = useState(new Date("2020-12-31"));
+  const [date, setDate] = useState(new Date("2022-10-11"));
   const [isLoading, setIsLoading] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [predict, setPredict] = useState(false);
@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
 		if (predict) {
-      setDate(new Date("2025-01-01"))
+      setDate(new Date("2024-06-06"))
     } else {
       setDate(new Date("2022-10-11"))
     }
