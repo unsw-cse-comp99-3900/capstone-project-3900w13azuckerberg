@@ -2,7 +2,7 @@ import json
 import unittest
 from flask import Flask
 from datetime import datetime
-from db_manager import get_all_case_by_coordinate, init_db, get_case_by_coordinate
+from db_manager import get_all_case_by_coordinate, get_all_case_by_date, init_db, get_case_by_coordinate
 from model import db, VirusData, LabLocation, StrainLabel
 
 class DBManagerTestCase1(unittest.TestCase):
@@ -121,6 +121,15 @@ class DBManagerTestCase1(unittest.TestCase):
             end_date = datetime.strptime('2024-06-01', '%Y-%m-%d').date()
             results = get_all_case_by_coordinate(start_date, end_date, ['Alpha'])
             with open('tests/data/data1.json', 'r') as file:
+                expected = json.load(file)
+            self.assertEqual(results, expected)
+
+    def test_get_all_case_by_date(self):
+        """Test for all case count.
+        """
+        with self.app.app_context():
+            results = get_all_case_by_date()
+            with open('tests/data/data2.json', 'r') as file:
                 expected = json.load(file)
             self.assertEqual(results, expected)
 
