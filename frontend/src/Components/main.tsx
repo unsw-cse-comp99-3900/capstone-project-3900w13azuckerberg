@@ -59,7 +59,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
 	// Use effect to update the infection data when filters change or predict mode is entered
-    useEffect(() => {
+  useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
 			console.log("Trying to get map");
@@ -88,17 +88,16 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						point.intensity
 					]);
 				}
-			setAllMapData(formattedData);
-	
-			console.log("Heatmap data updated.");
+        setAllMapData(formattedData);
+    
+        console.log("Heatmap data updated.");
 
-		} catch (error) {
-			console.error("Error fetching heat map data:", error);
-		}
-		setIsLoading(false);
-	};
-		
-	fetchData();
+      } catch (error) {
+        console.error("Error fetching heat map data:", error);
+      }
+		  setIsLoading(false);
+	  };
+	  fetchData();
 	}, [refetch, predict]);
 		
 
