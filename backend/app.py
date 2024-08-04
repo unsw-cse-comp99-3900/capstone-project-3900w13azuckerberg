@@ -26,6 +26,7 @@ init_db(app)
 
 migrate = Migrate(app, db)
 
+# store selected strains
 selected_strains = {
     "left": {
         "Alpha": 'true',
@@ -167,12 +168,6 @@ def predictive_map():
     # Initialise dictionary to store intial model parameters into
     init_data = {}
 
-    # for each location in the db
-    # set beta, sigma, gamma
-    # default_population = 100000
-    # social_distancing_beta = 0.08
-    # lockdown_beta = 0.00
-
     predictive_period = 365 # one year of prediction
 
     global selected_strains
@@ -208,12 +203,14 @@ def predictive_map():
         G_lockdown = create_lockdown_graph(center_lat, center_lon)
         G_social_distancing = create_social_distancing_graph(center_lat, center_lon)
 
+        # if a policy is selected in the state
         if bool(selected_policies[containerId][data["state"]]):
 
             policy_start = selected_policies[containerId][data["state"]]["start_date"]
             policy_end = selected_policies[containerId][data["state"]]["end_date"]
             print(f"policy start {policy_start}, policy end {policy_end}")
 
+            # if social distancing
             if (selected_policies[containerId][data["state"]]["policy"] == 'Social Distancing'):
                 checkpoints = {
                     't':       [policy_start, policy_end], 
@@ -273,6 +270,7 @@ def predictive_map():
     
     return jsonify(predictive_map_data)
 
+# update selected strains
 def update_selected_strains(container_id, label, selected):
     global selected_strains
     if label == 'all' or label == 'none':
@@ -464,9 +462,6 @@ def predictive_graph():
 
 def run_server():
     app.run(debug=True)
-
-# if __name__ == '__main__':
-#     run_server()
 
 # data_loaded = False
 
