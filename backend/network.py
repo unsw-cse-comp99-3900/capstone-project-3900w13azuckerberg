@@ -8,7 +8,7 @@ def create_graph(center_lat, center_lon):
     seconds_range = 100
     degree_range = seconds_range / 3600.0
 
-    # 4x4 graph
+    # 8x8 graph
     latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=8)  
     longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=8) 
 
@@ -37,7 +37,7 @@ def create_lockdown_graph(center_lat, center_lon):
     seconds_range = 100*2
     degree_range = seconds_range / 3600.0
 
-    # 4x4 graph
+    # 8x8 graph
     latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=8)  
     longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=8) 
 
@@ -67,7 +67,7 @@ def create_social_distancing_graph(center_lat, center_lon):
     seconds_range = 100*1.5
     degree_range = seconds_range / 3600.0
 
-    # 4x4 graph
+    # 8x8 graph
     latitudes = np.linspace(center_lat - degree_range / 2, center_lat + degree_range / 2, num=8)  
     longitudes = np.linspace(center_lon - degree_range / 2, center_lon + degree_range / 2, num=8) 
 
