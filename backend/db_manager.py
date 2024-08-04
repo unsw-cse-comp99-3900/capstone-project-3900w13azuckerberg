@@ -139,11 +139,11 @@ def get_all_case_by_coordinate(start_date, end_date, labels=[]):
 
     single_day_data = query.all()
 
-    results = calculate_14_day_sums(single_day_data, start_date, end_date)
+    results = calculate_14_day_sums(single_day_data)
 
     return results
 
-def calculate_14_day_sums(data, start_date, end_date):
+def calculate_14_day_sums(data):
     # Convert data to a DataFrame for easier manipulation
     df = pd.DataFrame(data, columns=[
         'originating_lab', 'longitude', 'latitude', 'date', 'division_exposure', 'case_count'
