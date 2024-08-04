@@ -132,12 +132,12 @@ const Filters: React.FC<FiltersProps> = ({
             </button>
           </CustomTooltip>
           <CustomTooltip label={showCompare ? "Return to Single View" : "Compare Cases"}>
-            <button className={`button ${!showCompare ? "" : "selected"}`} onClick={handleCompare}>
+            <button className={`button ${!showCompare ? "" : "selected"}`} data-testid="compare-button"  onClick={handleCompare}>
               Compare
             </button>
           </CustomTooltip>
           <CustomTooltip label={predict ? "Return to Historic Data" : "Model Future Cases"}>
-            <button className={`button ${!predict ? "" : "selected"}`} onClick={handlePredict}>
+            <button className={`button ${!predict ? "" : "selected"}`} data-testid="predict-button" onClick={handlePredict}>
               Predict
             </button>
           </CustomTooltip>

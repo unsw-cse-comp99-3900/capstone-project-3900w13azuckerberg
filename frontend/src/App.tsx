@@ -30,7 +30,7 @@ function App() {
     <MantineProvider>
       <div className="App">
         {isLoading && (
-          <div className="loading-overlay">
+          <div className="loading-overlay" data-testid="loading-overlay">
             <div className="spinner"></div>
           </div>
         )}
@@ -51,7 +51,8 @@ function App() {
                 predict={predict}
                 setPredict={setPredict}
                 showCompare={showCompare}
-                setShowCompare={setShowCompare}/>
+                setShowCompare={setShowCompare}
+                data-testid="main-left"/>
             </div>
             <div className="right">
               <Main
@@ -61,7 +62,8 @@ function App() {
                 predict={predict}
                 setPredict={setPredict}
                 showCompare={showCompare}
-                setShowCompare={setShowCompare}/>
+                setShowCompare={setShowCompare}
+                data-testid="main-right"/>
             </div>
           </div>
           ) : (
@@ -73,7 +75,8 @@ function App() {
               predict={predict}
               setPredict={setPredict}
               showCompare={showCompare}
-              setShowCompare={setShowCompare}/>
+              setShowCompare={setShowCompare}
+              data-testid="main-m"/>
           </div>
         )}
       </div> 

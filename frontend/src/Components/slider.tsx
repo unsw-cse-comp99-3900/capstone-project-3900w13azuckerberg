@@ -251,6 +251,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
               (date.getTime() - startDate.getTime()) / (1000 * 3600 * 24),
             )}
             onChange={handleChange}
+            data-testid="date-slider"
           />
           
         </div>

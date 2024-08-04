@@ -30,9 +30,9 @@ const GraphBar: React.FC<GraphProps> = ({ barData, pieData, lineData, policies, 
   return (
     <div className={`outer ${showGraph ? "open" : ""}`}>
       <div id="buttonBar">
-        <GraphButton onClick={handleButtonClick} />
+        <GraphButton data-testid="graph-toggle" onClick={handleButtonClick} />
       </div>
-      <div className={`wrapper ${showGraph ? "open" : ""}`}>
+      <div data-testid="wrapper" className={`wrapper ${showGraph ? "open" : ""}`}>
         <div className="graphBox">
           {predict ? (
             <PolicyGraph 
@@ -41,16 +41,17 @@ const GraphBar: React.FC<GraphProps> = ({ barData, pieData, lineData, policies, 
               token={token}
               onFilterChange={onFilterChange}
               containerId={containerId}
+              data-testid="policy-graph"
             />
           ) : (
-            <PieChart pieData={pieData}/>
+            <PieChart data-testid="pie-chart" pieData={pieData}/>
           )}
         </div>
         <div className="graphBox">
-          <LineChart lineData={lineData}/>
+          <LineChart data-testid="line-chart" lineData={lineData}/>
         </div>
         <div className="graphBox">
-          <BarChart barData={barData} />
+          <BarChart data-testid="bar-chart" barData={barData} />
         </div>
       </div>
     </div>
