@@ -177,6 +177,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
           <Calendar
             className="react-calendar"
             onClickDay={handleStartDate}
+            value={startDate === none ? new Date() : new Date(startDate)}
           />
         )}
       </div>
@@ -185,6 +186,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
           <Calendar
             className="react-calendar"
             onClickDay={handleEndDate}
+            value={endDate === none ? new Date() : new Date(startDate)}
           />
         )}
       </div>

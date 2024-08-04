@@ -1,4 +1,5 @@
 # db_manager.py
+from collections import defaultdict
 from datetime import datetime, timedelta
 import pandas as pd
 from sqlalchemy import func
@@ -126,12 +127,8 @@ def get_all_case_by_coordinate(start_date, end_date, labels=[]):
         VirusData.date.between(start_date, end_date)
     )
 
-    print("in labels")
-    # if labels:
-    print(f"Applying strain label filter: {labels}")
     query = query.filter(StrainLabel.label.in_(labels))
 
-    print(f"Executing query: {query}")
     query = query.group_by(
         VirusData.originating_lab,
         LabLocation.longitude,
@@ -147,8 +144,6 @@ def get_all_case_by_coordinate(start_date, end_date, labels=[]):
     return results
 
 def calculate_14_day_sums(data):
-    from collections import defaultdict
-
     # Convert data to a DataFrame for easier manipulation
     df = pd.DataFrame(data, columns=[
         'originating_lab', 'longitude', 'latitude', 'date', 'division_exposure', 'case_count'
@@ -179,58 +174,6 @@ def calculate_14_day_sums(data):
 
     return result_dict
 
-def get_case_by_coordinate_and_strain(date, strains=[]):
-    # deprecated function
-    """--deprecated function--
-    Get case number for each lab location given a date
-
-    Args:
-        date (datetime)
-
-    Returns:
-        A dict of following format
-        originating_lab: {
-            'longitude',
-            'latitude',
-            'case_count',
-            'state'
-        }
-    """
-    start_date = date - timedelta(days=14)
-
-    results = db.session.query(
-        VirusData.originating_lab,
-        LabLocation.longitude,
-        LabLocation.latitude,
-        StrainLabel.label,
-        func.count(VirusData.id).label('case_count'),
-        VirusData.division_exposure
-    ).join(
-        LabLocation, VirusData.originating_lab == LabLocation.id
-    ).join(
-        StrainLabel, VirusData.lineage == StrainLabel.lineage
-    ).filter(
-        VirusData.date.between(start_date, date)
-    ).group_by(
-        VirusData.originating_lab,
-        LabLocation.longitude,
-        LabLocation.latitude,
-        StrainLabel.label,
-        VirusData.division_exposure
-    ).all()
-
-    result_dict = {}
-    for originating_lab, longitude, latitude, label, case_count, division_exposure in results:
-        if originating_lab not in result_dict:
-            result_dict[originating_lab] = {
-                'longitude': longitude,
-                'latitude': latitude,
-                'case_count': case_count,
-                'state': division_exposure
-            }
-        # result_dict[originating_lab]['case_count'][label] = case_count
-
-    return result_dict
 
 def get_all_time_case_pie_chart():
     # Fetch all the data

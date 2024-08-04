@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import "./map.css";
 import { FeatureCollection } from 'geojson';
 import stateMapping from "./states.json";
-import { DateData, RegionData } from "./types";
+import { DateData, DateSeirsData, RData, RegionData } from "./types";
 
 interface HeatMapProps {
   mapData: [number, number, number][];
@@ -15,6 +15,7 @@ interface HeatMapProps {
   graphData: DateData;
   radius: number;
   predict: boolean;
+  predictData: DateSeirsData; 
 }
 
 const HeatMap: React.FC<HeatMapProps> = ({ 
@@ -25,6 +26,7 @@ const HeatMap: React.FC<HeatMapProps> = ({
     radius, 
     graphData, 
     predict, 
+    predictData
   }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
@@ -114,10 +116,11 @@ const HeatMap: React.FC<HeatMapProps> = ({
                   }
                 }
               } 
-              // else {
-              //   let cases:
-
-              // }
+              else {
+                if (predictData && predictData[state]) {
+                    result = predictData[state].numI;
+                }
+              }
                 
               const content = `${state} - ${result} total covid cases`;
               tooltip = L.tooltip({
@@ -181,7 +184,7 @@ const HeatMap: React.FC<HeatMapProps> = ({
 
       heatLayerRef.current = heatLayer;
     }
-  }, [mapData, radius]);
+  }, [mapData, predict, radius]);
 
   return <div id={containerId} style={{ height: "100vh", width: "100%", zIndex: 0 }}></div>;
 };

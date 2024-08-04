@@ -1,6 +1,6 @@
 from datetime import datetime
 import time
-from flask import Flask, redirect, request, jsonify, url_for
+from flask import Flask, request, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -10,11 +10,8 @@ from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, 
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
-import threading
-from seirsplus.networks import custom_exponential_graph
-import networkx as nx
 from network import create_graph, create_lockdown_graph, create_social_distancing_graph
-from parameters import get_parameters, minimise
+from parameters import minimise
 
 # Load environment variables from .env file
 load_dotenv()
@@ -124,17 +121,17 @@ def mytest():
     print(f"Execution time: {execution_time} seconds")
     return jsonify(results)
 
-@app.route('/load_data', methods=['GET'])
-def load_data():
-    """This function should ONLY be called to manually load data into DB
+# @app.route('/load_data', methods=['GET'])
+# def load_data():
+#     """This function should ONLY be called to manually load data into DB
 
-    Returns:
-        redirect: redirect to home
-    """
-    global data_loaded
-    data_loaded = True
-    load_into_db(app)
-    return redirect(url_for('home'))
+#     Returns:
+#         redirect: redirect to home
+#     """
+#     global data_loaded
+#     data_loaded = True
+#     load_into_db(app)
+#     return redirect(url_for('home'))
 
 # frontend uses the midpoint of the state that's returned for below routes
 
@@ -145,7 +142,7 @@ def heat_map():
     containerId = request.args.get('containerId')
     print("/map containerId", containerId)
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d').date()
-    end_date = datetime.strptime('2024-4-29', '%Y-%m-%d').date()
+    end_date = datetime.strptime('2024-06-02', '%Y-%m-%d').date()
 
     global selected_strains
 
@@ -172,9 +169,9 @@ def predictive_map():
 
     # for each location in the db
     # set beta, sigma, gamma
-    default_population = 100000
-    social_distancing_beta = 0.08
-    lockdown_beta = 0.00
+    # default_population = 100000
+    # social_distancing_beta = 0.08
+    # lockdown_beta = 0.00
 
     predictive_period = 365 # one year of prediction
 
@@ -185,8 +182,6 @@ def predictive_map():
 
     # selected_strains_dict = selected_strains['all']
     selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
-
-    print(selected_strains_arr)
 
     current_date = datetime.strptime('2024-06-01', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
@@ -214,7 +209,6 @@ def predictive_map():
         G_social_distancing = create_social_distancing_graph(center_lat, center_lon)
 
         if bool(selected_policies[containerId][data["state"]]):
-            print(f"policy in {data["state"]}")
 
             policy_start = selected_policies[containerId][data["state"]]["start_date"]
             policy_end = selected_policies[containerId][data["state"]]["end_date"]
@@ -304,10 +298,6 @@ def filter_variant():
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
-
-    print("label:", label)
-    print("selected:", selected)
-    print("containerId:", containerId)
 
     update_selected_strains(containerId, label, selected)
 
@@ -478,14 +468,14 @@ def run_server():
 # if __name__ == '__main__':
 #     run_server()
 
-data_loaded = False
+# data_loaded = False
 
-@app.before_request
-def before_request():
-    global data_loaded
-    if not data_loaded:
-        load_data()
-        data_loaded = True
+# @app.before_request
+# def before_request():
+#     global data_loaded
+#     if not data_loaded:
+#         load_data()
+#         data_loaded = True
 
 if __name__ == '__main__':
 #     # Start the Flask server in a separate thread

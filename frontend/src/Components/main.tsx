@@ -17,8 +17,6 @@ interface MainProps {
 	setPredict: (predict: boolean) => void;
 }
 
-
-
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 	// colours for grahs
 	const colors: { [strain: string]: string } = {
@@ -60,38 +58,38 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [allBarData, setAllBarData] = useState<SeirsData>({});
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
-	
-	// fetches infection points by location for the heatmap, for ALL dates
-	const fetchMapData = async () => {
-		setIsLoading(true);
-		console.log("Trying to get map");
-		try {
-			let response: AxiosResponse;
-			if (!predict) {
-				response = await axios.get("http://127.0.0.1:5001/map", {
-				params: {
-					containerId, // <- this will be either "M", "left", "right"
-					}
-				});
-			} else {
-				response = await axios.get("http://127.0.0.1:5001/predictive_map", {
-				params: {
-					containerId, // <- this will be either "M", "left", "right"
-					}
-				})
-			}
-			const rawData: { [date: string]: Point[] } = response.data;
-			const formattedData: MapData = {};
-			
-			for (const [key, value] of Object.entries(rawData)) {
-				formattedData[key] = value.map(point => [
-					point.latitude,
-					point.longitude,
-					point.intensity
-				]);
-			}
+	// Use effect to update the infection data when filters change or predict mode is entered
+    useEffect(() => {
+		const fetchData = async () => {
+			setIsLoading(true);
+			console.log("Trying to get map");
+			try {
+				let response: AxiosResponse;
+				if (!predict) {
+					response = await axios.get("http://127.0.0.1:5001/map", {
+					params: {
+						containerId, // <- this will be either "M", "left", "right"
+						}
+					});
+				} else {
+					response = await axios.get("http://127.0.0.1:5001/predictive_map", {
+					params: {
+						containerId, // <- this will be either "M", "left", "right"
+						}
+					})
+				}
+				const rawData: { [date: string]: Point[] } = response.data;
+				const formattedData: MapData = {};
+				
+				for (const [key, value] of Object.entries(rawData)) {
+					formattedData[key] = value.filter(point => point.intensity >= 1).map(point => [
+						point.latitude,
+						point.longitude,
+						point.intensity
+					]);
+				}
 			setAllMapData(formattedData);
-
+	
 			console.log("Heatmap data updated.");
 
 		} catch (error) {
@@ -99,13 +97,10 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		}
 		setIsLoading(false);
 	};
-	
-	// Use effect to update the infection data when filters change or predict mode is entered
-    useEffect(() => {
-      // Function to fetch heat map data from the backend
-        fetchMapData();
-    }, [refetch, predict]);
-	
+		
+	fetchData();
+	}, [refetch, predict]);
+		
 
 	// Use effect to update graph when needed
 	useEffect(() => {
@@ -268,6 +263,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			mapData={mapData} 
 			updateState={setLocation} 
 			graphData={graphData[date.toISOString().split('T')[0]]}
+			predictData={pGraphData[date.toISOString().split('T')[0]]}
 			radius={radius}
 			predict={predict}
 			data-testid="heat-map"
