@@ -143,7 +143,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
         </button>
       </CustomTooltip>
       <CustomTooltip label={state === none ? none : "State"}>
-        <select className={`dropdown button ${state === none ? "" : "selected"}`} value={state} onChange={handleStateChange}>
+        <select aria-label="state" className={`dropdown button ${state === none ? "" : "selected"}`} value={state} onChange={handleStateChange}>
           {state === none && <option value="">State</option>}
           <option value="New South Wales">New South Wales </option>
           <option value="Queensland">Queensland </option>
@@ -156,7 +156,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
         </select>
       </CustomTooltip>
       <CustomTooltip label={policy === none ? none : "Policy"}>
-        <select className={`dropdown button ${policy === none ? "" : "selected"}`} value={policy} onChange={handlePolicyChange}>
+        <select aria-label="policy" className={`dropdown button ${policy === none ? "" : "selected"}`} value={policy} onChange={handlePolicyChange}>
           {policy === none && <option value="">Policy</option>}
           <option value="Lockdown">Lockdown </option>
           <option value="Social Distancing">Social Distancing </option>
