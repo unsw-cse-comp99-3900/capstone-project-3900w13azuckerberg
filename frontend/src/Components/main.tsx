@@ -85,15 +85,15 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 				const formattedData: MapData = {};
 				
 				for (const [key, value] of Object.entries(rawData)) {
-					formattedData[key] = value.map(point => [
+					formattedData[key] = value.filter(point => point.intensity >= 1).map(point => [
 						point.latitude,
 						point.longitude,
 						point.intensity
 					]);
 				}
-			setAllMapData(formattedData);
+				setAllMapData(formattedData);
 	
-			console.log("Heatmap data updated.");
+				console.log("Heatmap data updated.", formattedData);
 
 			} catch (error) {
 			console.error("Error fetching heat map data:", error);
@@ -264,6 +264,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			mapData={mapData} 
 			updateState={setLocation} 
 			graphData={graphData[date.toISOString().split('T')[0]]}
+			predictData={pGraphData[date.toISOString().split('T')[0]]}
 			radius={radius}
 			predict={predict}
 		/>

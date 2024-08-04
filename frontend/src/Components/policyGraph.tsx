@@ -40,10 +40,12 @@ const PolicySummary: React.FC<PolicySummaryProps> = ({ policies, setPolicies, to
       {Object.entries(policies).map(([state, policy]) => (
         <div key={state} className="policy-item">
           <h3>{state}
-          <CustomTooltip label="Remove Policy">
-              <i className="material-icons cross" onClick={() => handleRemovePolicy(state)}>
-                  close
-              </i>
+            <CustomTooltip label="Remove Policy">
+              <div>
+                <i className="material-icons cross" onClick={() => handleRemovePolicy(state)}>
+                    close
+                </i>
+              </div>
             </CustomTooltip>
           </h3>
           <p>{`${policy.policy}: ${policy.startDate} - ${policy.endDate}`}</p>
