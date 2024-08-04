@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import App from '../App';
-
+import main from './main'
 // Mock child components
 jest.mock('./Components/main', () => ({ containerId }: { containerId: string }) => <div data-testid={`main-${containerId}`}>Main Component</div>);
 jest.mock('./Components/slider', () => ({ date, onDateChange }: { date: Date, onDateChange: (date: Date) => void }) => (

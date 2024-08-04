@@ -55,7 +55,7 @@ describe('Main Component', () => {
 
   it('fetches map data on mount and updates state', async () => {
     const mockMapData = {
-      '2024-01-01': [[1, 2, 3], [4, 5, 6]],
+      '2020-01-01': [[1, 2, 3], [4, 5, 6]],
     };
     mockedAxios.get.mockResolvedValueOnce({ data: mockMapData });
 
@@ -67,7 +67,7 @@ describe('Main Component', () => {
       expect(mockedAxios.get).toHaveBeenCalledWith('http://127.0.0.1:5001/map', {
         params: { containerId: 'test-container' },
       });
-      expect(screen.getByTestId('heat-map')).toHaveTextContent(JSON.stringify([[1, 2, 3], [4, 5, 6]]));
+      expect(screen.getByTestId('heat-map').textContent).toBe((JSON.stringify([[1, 2, 3], [4, 5, 6]]))); ;
     });
   });
 

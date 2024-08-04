@@ -22,12 +22,13 @@ interface MainProps {
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
 
 	const colors: { [strain: string]: string } = {
-		Alpha: "#4B0082",     // Indigo
-		Beta: "#6A0DAD",      // Royal Purple
-		Gamma: "#483D8B",     // Dark Slate Blue
-		Delta: "#7B68EE",     // Medium Slate Blue
-		Omicron: "#8A2BE2"    // Blue Violet
+		Alpha: "#FF5733",     // Red-Orange
+		Beta: "white",      // Lime Green
+		Gamma: "#3357FF",     // Bright Blue
+		Delta: "#454B1B",     // Hot Pink
+		Omicron: "#F5FF33",   // Yellow
 	};
+	
 
 	const defaultBarData = {
 		statement: "Status",
@@ -203,7 +204,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 								 .sort((date1, date2) => date1.localeCompare(date2));	
 			let l:LineItem[] = [{
 				id: 'Total Predicted Cases',
-				color: '#483D8B', 
+				color: 'white', 
 				data: [],
 			}];
 			const data = {};
@@ -268,6 +269,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			graphData={graphData[date.toISOString().split('T')[0]]}
 			radius={radius}
 			predict={predict}
+			data-testid="heat-map"
+
 		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}

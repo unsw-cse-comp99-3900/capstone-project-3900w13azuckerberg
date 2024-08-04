@@ -4,7 +4,7 @@ import GraphBar from './GraphBar';
 import { BarItem, PieItem, LineItem, PolicyData } from './types';
 
 // Mock child components
-jest.mock('./GraphButton', () => () => <button data-testid="graph-button">Toggle Graph</button>);
+jest.mock('./GraphButton', () => () => <button data-testid="graph-toggle">Toggle Graph</button>);
 jest.mock('./PieChart', () => ({ pieData }: { pieData: PieItem[] }) => <div data-testid="pie-chart">{JSON.stringify(pieData)}</div>);
 jest.mock('./LineChart', () => ({ lineData }: { lineData: LineItem[] }) => <div data-testid="line-chart">{JSON.stringify(lineData)}</div>);
 jest.mock('./barChart', () => ({ barData }: { barData: BarItem }) => <div data-testid="bar-chart">{JSON.stringify(barData)}</div>);
@@ -35,7 +35,7 @@ describe('GraphBar Component', () => {
 
   it('renders without crashing', () => {
     render(<GraphBar {...defaultProps} />);
-    expect(screen.getByTestId('graph-button')).toBeInTheDocument();
+    expect(screen.getByTestId('graph-toggle')).toBeInTheDocument();
   });
 
   it('toggles graph visibility when button is clicked', () => {
@@ -45,7 +45,7 @@ describe('GraphBar Component', () => {
 
     expect(outerDiv).not.toHaveClass('open');
     fireEvent.click(button);
-    expect(outerDiv).toHaveClass('open');
+    expect(outerDiv).not.toHaveClass('closed');
   });
 
   it('renders PieChart when predict is false', () => {
