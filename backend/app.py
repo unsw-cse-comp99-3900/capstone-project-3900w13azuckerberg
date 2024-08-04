@@ -1,6 +1,6 @@
 from datetime import datetime
 import time
-from flask import Flask, redirect, request, jsonify, url_for
+from flask import Flask, request, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -10,11 +10,8 @@ from db_manager import get_all_case_by_coordinate, get_all_time_case_pie_chart, 
 from model import db
 from datetime import datetime, timedelta
 from seirsplus.models import *
-import threading
-from seirsplus.networks import custom_exponential_graph
-import networkx as nx
 from network import create_graph, create_lockdown_graph, create_social_distancing_graph
-# from parameters import get_parameters, minimise
+from parameters import minimise
 
 # Load environment variables from .env file
 load_dotenv()
@@ -172,9 +169,9 @@ def predictive_map():
 
     # for each location in the db
     # set beta, sigma, gamma
-    default_population = 100000
-    social_distancing_beta = 0.08
-    lockdown_beta = 0.00
+    # default_population = 100000
+    # social_distancing_beta = 0.08
+    # lockdown_beta = 0.00
 
     predictive_period = 365 # one year of prediction
 
@@ -185,8 +182,6 @@ def predictive_map():
 
     # selected_strains_dict = selected_strains['all']
     selected_strains_arr = [strain for strain, selected in selected_strains_dict.items() if selected == 'true']
-
-    print(selected_strains_arr)
 
     current_date = datetime.strptime('2024-06-01', '%Y-%m-%d').date()
     loc_data = get_case_by_coordinate(current_date, selected_strains_arr)
@@ -303,10 +298,6 @@ def filter_variant():
     label = request.args.get('label')
     selected = request.args.get('selected')
     containerId = request.args.get('containerId')
-
-    print("label:", label)
-    print("selected:", selected)
-    print("containerId:", containerId)
 
     update_selected_strains(containerId, label, selected)
 
