@@ -23,11 +23,11 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
   let startDate: Date;
   let endDate: Date;
   if (predict) {
-    startDate = new Date("2024-05-30");
-    endDate = new Date("2025-05-30");
+    startDate = new Date("2024-06-02");
+    endDate = new Date("2025-06-01");
   } else {
     startDate = new Date("2020-01-01");
-    endDate = new Date("2024-05-29");
+    endDate = new Date("2024-06-02");
   }
 
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
@@ -82,15 +82,16 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
       if (newDay <= new Date(endDate)) {
         onDateChange(newDay);
         if (playback) {
-          timer = setTimeout(updateDay, 250 / speed);
+          timer = setTimeout(updateDay, 500 / speed);
         }
       } else {
-        onDateChange(startDate);
+        setPlayback(false);
+        setPlaybackIcon("play_arrow");
       }
     };
   
     if (playback) {
-      timer = setTimeout(updateDay, 250 / speed);
+      timer = setTimeout(updateDay, 500 / speed);
     }
   
     return () => clearTimeout(timer);
@@ -259,7 +260,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
         {showCalendar && (
           <Calendar
             className="react-calendar"
-            // value={date}
+            value={date}
             onClickDay={handleCalendar}
           />
         )}
