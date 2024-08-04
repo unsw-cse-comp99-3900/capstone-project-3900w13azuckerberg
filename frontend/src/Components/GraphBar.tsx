@@ -23,6 +23,7 @@ const GraphBar: React.FC<GraphProps> = ({ barData, pieData, lineData, policies, 
 
   const [showGraph, setShowGraph] = useState(false);
 
+  // toggles the graphs open or closed
   const handleButtonClick = () => {
     setShowGraph(!showGraph);
   };

@@ -9,6 +9,7 @@ interface ButtonProps {
   containerId: string;
 }
 
+// button to query to backend using a icon
 const Icon: React.FC<ButtonProps> = ({ icon, data, endpoint, onClick, containerId }) => {
   const handleClick = async () => {
     try {

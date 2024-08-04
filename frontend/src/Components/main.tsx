@@ -20,7 +20,7 @@ interface MainProps {
 
 
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
-
+	// colours for grahs
 	const colors: { [strain: string]: string } = {
 		Alpha: "#FF5733",     // Red-Orange
 		Beta: "white",      // Lime Green
@@ -29,7 +29,6 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		Omicron: "#F5FF33",   // Yellow
 	};
 	
-
 	const defaultBarData = {
 		statement: "Status",
 		Infected: 0,	
@@ -62,6 +61,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
 	
+	// fetches infection points by location for the heatmap, for ALL dates
 	const fetchMapData = async () => {
 		setIsLoading(true);
 		console.log("Trying to get map");
@@ -100,14 +100,14 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		setIsLoading(false);
 	};
 	
-	// Map use effect
+	// Use effect to update the infection data when filters change or predict mode is entered
     useEffect(() => {
       // Function to fetch heat map data from the backend
         fetchMapData();
     }, [refetch, predict]);
 	
 
-	// Graph use effect
+	// Use effect to update graph when needed
 	useEffect(() => {
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
@@ -142,6 +142,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		  fetchGraphData();
 	}, [allMapData]);
 
+	// updates the map data when the date changes, only displaying that day
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);

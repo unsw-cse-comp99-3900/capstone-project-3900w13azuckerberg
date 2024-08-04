@@ -1,6 +1,6 @@
 import { MapData } from "./types"
 
-
+// converts infection datapoints into a csv format
 export const arrayToCSV = (data: MapData): string => {
     const csvRows: string[] = [];
     const headers = 'Date,Latitude,Longitude,Intensity';
@@ -16,6 +16,7 @@ export const arrayToCSV = (data: MapData): string => {
     return csvRows.join('\n');
 };
 
+// triggers the download of a csv
 export const downloadFile = (content: string, fileName: string, contentType: string): void => {
     const a = document.createElement('a');
     const file = new Blob([content], { type: contentType });
