@@ -14,7 +14,7 @@ import threading
 from seirsplus.networks import custom_exponential_graph
 import networkx as nx
 from network import create_graph, create_lockdown_graph, create_social_distancing_graph
-from parameters import get_parameters, minimise
+# from parameters import get_parameters, minimise
 
 # Load environment variables from .env file
 load_dotenv()
@@ -124,17 +124,17 @@ def mytest():
     print(f"Execution time: {execution_time} seconds")
     return jsonify(results)
 
-@app.route('/load_data', methods=['GET'])
-def load_data():
-    """This function should ONLY be called to manually load data into DB
+# @app.route('/load_data', methods=['GET'])
+# def load_data():
+#     """This function should ONLY be called to manually load data into DB
 
-    Returns:
-        redirect: redirect to home
-    """
-    global data_loaded
-    data_loaded = True
-    load_into_db(app)
-    return redirect(url_for('home'))
+#     Returns:
+#         redirect: redirect to home
+#     """
+#     global data_loaded
+#     data_loaded = True
+#     load_into_db(app)
+#     return redirect(url_for('home'))
 
 # frontend uses the midpoint of the state that's returned for below routes
 
@@ -477,14 +477,14 @@ def run_server():
 # if __name__ == '__main__':
 #     run_server()
 
-data_loaded = False
+# data_loaded = False
 
-@app.before_request
-def before_request():
-    global data_loaded
-    if not data_loaded:
-        load_data()
-        data_loaded = True
+# @app.before_request
+# def before_request():
+#     global data_loaded
+#     if not data_loaded:
+#         load_data()
+#         data_loaded = True
 
 if __name__ == '__main__':
 #     # Start the Flask server in a separate thread

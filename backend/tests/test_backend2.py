@@ -1,32 +1,35 @@
 import unittest
-from flask import Flask
-from datetime import datetime
 import sys
 import os
+from flask import Flask
+from flask.testing import FlaskClient
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from db_manager import init_db, get_case_by_coordinate
+from db_manager import init_db,get_case_by_coordinate
+from app import app
 from model import db, VirusData, LabLocation, StrainLabel
 
-class DBManagerTestCase1(unittest.TestCase):
+class FlaskAppTests(unittest.TestCase):
     def setUp(self):
-        # Create a Flask application configured for testing
-        self.app = Flask(__name__)
+        """Set up the test environment before each test."""
+        self.app = app
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['TESTING'] = True
-        init_db(self.app)
-        
-        # Create the database and tables
+        # init_db(self.app)
+
+        # Initialize the database for testing
         with self.app.app_context():
             db.create_all()
 
-            # Insert test data
             self.insert_test_data()
 
+        self.client = app.test_client()
+    
     def tearDown(self):
-        # Drop the database
+        """Clean up after each test."""
         with self.app.app_context():
             db.session.remove()
             db.drop_all()
@@ -77,6 +80,22 @@ class DBManagerTestCase1(unittest.TestCase):
             }
             self.assertEqual(results, expected)
 
+
+    def test_home(self):
+        """Test the home route."""
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Welcome to COVID Compass!', response.data)
+
+    
+    def test_heat_map(self):
+        """Test the heat_map route."""
+        response = self.client.get('/map?containerId=m')
+        self.assertEqual(response.status_code, 200)
+        data = response.json
+        print(data)
+        self.assertIsInstance(data, dict)
+    
 
 if __name__ == '__main__':
     unittest.main()
