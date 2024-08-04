@@ -1,10 +1,9 @@
-import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import App from '../App';
+import App from '../../App';
 
 // Mock child components
-jest.mock('./Components/main', () => ({ containerId }: { containerId: string }) => <div data-testid={`main-${containerId}`}>Main Component</div>);
-jest.mock('./Components/slider', () => ({ date, onDateChange }: { date: Date, onDateChange: (date: Date) => void }) => (
+jest.mock('../main', () => ({ containerId }) => <div data-testid={`main-${containerId}`}>Main Component</div>);
+jest.mock('../slider', () => ({ date, onDateChange }) => (
   <input 
     type="date" 
     data-testid="date-slider" 
@@ -12,7 +11,7 @@ jest.mock('./Components/slider', () => ({ date, onDateChange }: { date: Date, on
     onChange={(e) => onDateChange(new Date(e.target.value))}
   />
 ));
-jest.mock('./Components/legend', () => () => <div data-testid="legend">Legend</div>);
+jest.mock('../legend', () => () => <div data-testid="legend">Legend</div>);
 
 describe('App Component', () => {
   it('renders without crashing', () => {
@@ -32,18 +31,18 @@ describe('App Component', () => {
 
   it('shows loading overlay when isLoading is true', async () => {
     render(<App />);
-    const mainComponent = screen.getByTestId('main-m');
+    const mainComponent = screen.getByTestId('compare-button');
     await act(async () => {
-      fireEvent.click(mainComponent); // Assuming this triggers setIsLoading(true)
+      fireEvent.click(mainComponent); 
     });
     expect(screen.getByTestId('loading-overlay')).toBeInTheDocument();
   });
 
   it('toggles compare view', async () => {
     render(<App />);
-    const mainComponent = screen.getByTestId('main-m');
+    const mainComponent = screen.getByTestId('compare-button');
     await act(async () => {
-      fireEvent.click(mainComponent); // Assuming this triggers setShowCompare(true)
+      fireEvent.click(mainComponent); 
     });
     expect(screen.getByTestId('main-left')).toBeInTheDocument();
     expect(screen.getByTestId('main-right')).toBeInTheDocument();
@@ -52,9 +51,9 @@ describe('App Component', () => {
   it('updates date when predict changes', async () => {
     jest.useFakeTimers();
     render(<App />);
-    const mainComponent = screen.getByTestId('main-m');
+    const mainComponent = screen.getByTestId('predict-button');
     await act(async () => {
-      fireEvent.click(mainComponent); // Assuming this triggers setPredict(true)
+      fireEvent.click(mainComponent); 
     });
     jest.runAllTimers();
     expect(screen.getByTestId('date-slider')).toHaveValue('2025-01-01');

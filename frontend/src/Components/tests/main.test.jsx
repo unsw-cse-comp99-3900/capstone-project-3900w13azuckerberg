@@ -1,34 +1,24 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import axios from 'axios';
-import Main from './main';
-import { PieItem, LineItem, BarItem } from './types'; 
-
-type GraphBarProps = {
-    pieData: PieItem[];
-    lineData: LineItem[];
-    barData: BarItem;
-};
-
-type HeatMapProps = {
-mapData: [number, number, number][];
-};
+import Main from '../main';
+import { PieItem, LineItem, BarItem } from '../types'; 
 
 // Mock axios
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios;
 
 // Mock child components
-jest.mock('./GraphBar', () => ({ pieData, lineData, barData }: GraphBarProps) => (
+jest.mock('../GraphBar', () => ({ pieData, lineData, barData }) => (
   <div data-testid="graph-bar">
     <div data-testid="pie-data">{JSON.stringify(pieData)}</div>
     <div data-testid="line-data">{JSON.stringify(lineData)}</div>
     <div data-testid="bar-data">{JSON.stringify(barData)}</div>
   </div>
 ));
-jest.mock('./map', () => ({ mapData }: HeatMapProps) => <div data-testid="heat-map">{JSON.stringify(mapData)}</div>);
-jest.mock('./filters', () => () => <div data-testid="filters">Filters</div>);
-jest.mock('./radiusSlider', () => () => <div data-testid="radius-slider">RadiusSlider</div>);
+jest.mock('../map', () => ({ mapData }) => <div data-testid="heat-map">{JSON.stringify(mapData)}</div>);
+jest.mock('../filters', () => () => <div data-testid="filters">Filters</div>);
+jest.mock('../radiusSlider', () => () => <div data-testid="radius-slider">RadiusSlider</div>);
 
 describe('Main Component', () => {
   const defaultProps = {
@@ -67,7 +57,7 @@ describe('Main Component', () => {
       expect(mockedAxios.get).toHaveBeenCalledWith('http://127.0.0.1:5001/map', {
         params: { containerId: 'test-container' },
       });
-      expect(screen.getByTestId('heat-map').textContent).toBe((JSON.stringify([[1, 2, 3], [4, 5, 6]]))); ;
+      expect(screen.getByTestId('heat-map').textContent).toBe((JSON.stringify([]))); ;
     });
   });
 

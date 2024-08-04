@@ -5,11 +5,11 @@ import PolicyFilters from '../policyFilters';
 
 jest.mock('../customTooltip', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children }) => <div>{children}</div>,
 }));
 
 jest.mock('react-calendar', () => {
-  return function DummyCalendar(props: any) {
+  return function DummyCalendar(props) {
     return (
       <div data-testid="mock-calendar">
        <button onClick={() => props.onClickDay(new Date(2023, 0, 15))}>start</button>
@@ -20,7 +20,7 @@ jest.mock('react-calendar', () => {
 });
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios;
 
 describe('PolicyFilters', () => {
   const policyProps = {

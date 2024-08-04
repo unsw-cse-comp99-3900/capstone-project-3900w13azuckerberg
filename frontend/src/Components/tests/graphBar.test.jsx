@@ -1,27 +1,15 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import GraphBar from './GraphBar';
-import { BarItem, PieItem, LineItem, PolicyData } from './types';
+import GraphBar from '../GraphBar';
 
 // Mock child components
-jest.mock('./GraphButton', () => () => <button data-testid="graph-toggle">Toggle Graph</button>);
-jest.mock('./PieChart', () => ({ pieData }: { pieData: PieItem[] }) => <div data-testid="pie-chart">{JSON.stringify(pieData)}</div>);
-jest.mock('./LineChart', () => ({ lineData }: { lineData: LineItem[] }) => <div data-testid="line-chart">{JSON.stringify(lineData)}</div>);
-jest.mock('./barChart', () => ({ barData }: { barData: BarItem }) => <div data-testid="bar-chart">{JSON.stringify(barData)}</div>);
-jest.mock('./policyGraph', () => ({ policies }: { policies: PolicyData }) => <div data-testid="policy-graph">{JSON.stringify(policies)}</div>);
+jest.mock('../GraphButton', () => () => <button data-testid="graph-toggle">Toggle Graph</button>);
+jest.mock('../PieChart', () => ({ pieData }) => <div data-testid="pie-chart">{JSON.stringify(pieData)}</div>);
+jest.mock('../LineChart', () => ({ lineData }) => <div data-testid="line-chart">{JSON.stringify(lineData)}</div>);
+jest.mock('../barChart', () => ({ barData }) => <div data-testid="bar-chart">{JSON.stringify(barData)}</div>);
+jest.mock('../policyGraph', () => ({ policies }) => <div data-testid="policy-graph">{JSON.stringify(policies)}</div>);
 
 describe('GraphBar Component', () => {
-  const defaultProps: {
-    pieData: PieItem[];
-    lineData: LineItem[];
-    policies: PolicyData;
-    barData: BarItem;
-    predict: boolean;
-    setPolicies: (policies: PolicyData) => void;
-    token: boolean;
-    onFilterChange: (token: boolean) => void;
-    containerId: string;
-  } = {
+  const defaultProps = {
     pieData: [{ id: 'test', label: 'Test', value: 10, color: '#000000' }],
     lineData: [{ id: 'test', color: '#000000', data: [{ x: '2023-01-01', y: 1 }] }],
     policies: { 'Test State': { startDate: '2023-01-01', endDate: '2023-12-31', policy: 'Test Policy' } },

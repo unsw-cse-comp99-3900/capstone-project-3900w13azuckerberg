@@ -1,16 +1,14 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
 import axios from 'axios';
-import Main from '../main';
 import Slider from '../slider';
 
 // Mock axios
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios;
 
 // Mock react-calendar
 jest.mock('react-calendar', () => {
-  return function DummyCalendar(props: any) {
+  return function DummyCalendar(props) {
     return (
       <div data-testid="mock-calendar">
         <button onClick={() => props.onClickDay(new Date(2023, 0, 15))}>Jan 15</button>
@@ -21,8 +19,8 @@ jest.mock('react-calendar', () => {
 });
 
 // Mock CustomTooltip and PolicyTooltip
-jest.mock('../customTooltip', () => ({ children }: { children: React.ReactNode }) => <div>{children}</div>);
-jest.mock('../policyToolTip', () => ({ children }: { children: React.ReactNode }) => <div>{children}</div>);
+jest.mock('../customTooltip', () => ({ children }) => <div>{children}</div>);
+jest.mock('../policyToolTip', () => ({ children }) => <div>{children}</div>);
 
 describe('Slider Component', () => {
   const mockOnDateChange = jest.fn();

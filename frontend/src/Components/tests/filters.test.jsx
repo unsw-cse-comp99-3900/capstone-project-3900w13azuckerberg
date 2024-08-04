@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Filters from '../filters';
 
 // Mock the CustomTooltip component
-jest.mock('../customTooltip', () => ({ children }: { children: React.ReactNode }) => <div>{children}</div>);
+jest.mock('../customTooltip', () => ({ children }) => <div>{children}</div>);
 
 // Mock the PolicyFilters component
 jest.mock('../policyFilters', () => () => <div data-testid="policy-filters">Policy Filters</div>);
