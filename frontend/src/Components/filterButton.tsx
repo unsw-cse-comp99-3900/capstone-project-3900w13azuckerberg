@@ -17,6 +17,8 @@ const Button: React.FC<ButtonProps> = ({
   onSelect,
   containerId,
 }) => {
+
+  // queries to backend when a filter is toggled
   const handleClick = async () => {
     try {
       onSelect();

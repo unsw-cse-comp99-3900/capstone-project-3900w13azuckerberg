@@ -17,18 +17,16 @@ interface MainProps {
 	setPredict: (predict: boolean) => void;
 }
 
-
-
 const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCompare, containerId, predict, setPredict }) => {
-
+	// colours for grahs
 	const colors: { [strain: string]: string } = {
-		Alpha: "#4B0082",     // Indigo
-		Beta: "#6A0DAD",      // Royal Purple
-		Gamma: "#483D8B",     // Dark Slate Blue
-		Delta: "#7B68EE",     // Medium Slate Blue
-		Omicron: "#8A2BE2"    // Blue Violet
+		Alpha: "#FF5733",     // Red-Orange
+		Beta: "white",      // Lime Green
+		Gamma: "#3357FF",     // Bright Blue
+		Delta: "#454B1B",     // Hot Pink
+		Omicron: "#F5FF33",   // Yellow
 	};
-
+	
 	const defaultBarData = {
 		statement: "Status",
 		Infected: 0,	
@@ -60,9 +58,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [allBarData, setAllBarData] = useState<SeirsData>({});
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
-	// Map use effect
-    useEffect(() => {
-      // Function to fetch heat map data from the backend
+	// Use effect to update the infection data when filters change or predict mode is entered
+  useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
 			console.log("Trying to get map");
@@ -91,20 +88,20 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 						point.intensity
 					]);
 				}
-				setAllMapData(formattedData);
-	
-				console.log("Heatmap data updated.", formattedData);
+        setAllMapData(formattedData);
+    
+        console.log("Heatmap data updated.");
 
-			} catch (error) {
-			console.error("Error fetching heat map data:", error);
-			}
-			setIsLoading(false);
-		};
-        fetchData();
-    }, [refetch, predict]);
-	
+      } catch (error) {
+        console.error("Error fetching heat map data:", error);
+      }
+		  setIsLoading(false);
+	  };
+	  fetchData();
+	}, [refetch, predict]);
+		
 
-	// Graph use effect
+	// Use effect to update graph when needed
 	useEffect(() => {
 		// Function to fetch heat map data from the backend
 		const fetchGraphData = async () => {
@@ -139,6 +136,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 		  fetchGraphData();
 	}, [allMapData]);
 
+	// updates the map data when the date changes, only displaying that day
     useEffect(() => {
       const dateString = date.toISOString().split('T')[0];
       setMapData(allMapData[dateString] || []);
@@ -201,7 +199,7 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 								 .sort((date1, date2) => date1.localeCompare(date2));	
 			let l:LineItem[] = [{
 				id: 'Total Predicted Cases',
-				color: '#483D8B', 
+				color: 'white', 
 				data: [],
 			}];
 			const data = {};
@@ -267,6 +265,8 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 			predictData={pGraphData[date.toISOString().split('T')[0]]}
 			radius={radius}
 			predict={predict}
+			data-testid="heat-map"
+
 		/>
 		<Filters token={refetch} 
 			onFilterChange={triggerRefetch}

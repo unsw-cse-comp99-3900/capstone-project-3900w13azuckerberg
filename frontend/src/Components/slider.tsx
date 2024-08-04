@@ -43,6 +43,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     onDateChange(newDate);
   };
 
+  // change date using calendar pop up
   const handleCalendar = (newDate: Date) => {
     setPlayback(false);
     setPlaybackIcon("play_arrow");
@@ -55,6 +56,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     setShowCalendar(false); 
   };
 
+  // close the calendar if click outside of calendar popup
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -72,6 +74,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     };
   });
 
+  // toggle playback and increment date to simulate autoplay
   useEffect(() => {
     let timer: NodeJS.Timeout;
   
@@ -97,6 +100,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     return () => clearTimeout(timer);
   }, [playback, speed, date, onDateChange]);
 
+  // update play/pause icon on button click
   const handlePlayback = (): void => {
     setPlayback(current => {
       setPlaybackIcon(current ? "play_arrow" : "pause");
@@ -109,19 +113,21 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
     (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24),
   );
 
+  // decrease playback speed
   const handleDecreaseSpeed = () => {
     if (speed > 0.25) {
         setSpeed(speed - 0.25);
     }
   };
 
+  // increase playback speed
   const handleIncreaseSpeed = () => {
     if (speed < 8) {
         setSpeed(speed + 0.25);
     }
   };
 
-  
+  // pull historical policy data
   useEffect(() => {
     if (!predict) {
       getPolicy().then(data => {
@@ -141,7 +147,6 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
       console.error("Error fetching heat map data:", error);
     }
   };
-
 
   // Parse dates and descriptions from dict_result
   const marks: Mark[] = useMemo(() => {
@@ -252,6 +257,7 @@ const Slider: React.FC<TimelineSliderProps> = ({ date, onDateChange, predict }) 
               (date.getTime() - startDate.getTime()) / (1000 * 3600 * 24),
             )}
             onChange={handleChange}
+            data-testid="date-slider"
           />
           
         </div>

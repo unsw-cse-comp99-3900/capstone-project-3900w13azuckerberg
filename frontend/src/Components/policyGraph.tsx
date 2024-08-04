@@ -13,8 +13,11 @@ interface PolicySummaryProps {
 }
 
 const PolicySummary: React.FC<PolicySummaryProps> = ({ policies, setPolicies, token, onFilterChange, containerId }) => {
+  
+  // query to remove policy from the prediction model
   const handleRemovePolicy = async (state: string) => {
     try {
+      // forces map and graph to update
       onFilterChange(!token);
       const response = await axios.get("http://127.0.0.1:5001/delete_policy", {
         params: {
@@ -22,6 +25,8 @@ const PolicySummary: React.FC<PolicySummaryProps> = ({ policies, setPolicies, to
           containerId, // M left or right
         }
       });
+
+      // update summary
       const newPolicies = { ...policies };
       delete newPolicies[state];
       setPolicies(newPolicies);

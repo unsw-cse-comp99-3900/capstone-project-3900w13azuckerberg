@@ -45,7 +45,7 @@ const Filters: React.FC<FiltersProps> = ({
   const [filterIcon, setFilterIcon] = useState<string>("filter_list");
   const [policyFilters, setPolicyFilters] = useState(false);
 
-
+  // sets all filters to a certain state
   const setAll = (newState: boolean) => {
     setAllFilters(
       allFilters.map((filter) => ({ ...filter, selected: newState })),
@@ -53,6 +53,7 @@ const Filters: React.FC<FiltersProps> = ({
     onFilterChange(!token);
   };
 
+  // opens the correct menu option depending on historical or predict
   const toggleFilters = () => {
     if (!predict) {
       setShowFilters((prev) => !prev);
@@ -61,10 +62,12 @@ const Filters: React.FC<FiltersProps> = ({
     }
   };
 
+  // opens/closes the menu on click
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
   };
 
+  // updates only 1 of the selected filters
   const handleSetSelected = (label: string, newState: boolean) => {
     const updatedFilters = allFilters.map((filter) =>
       filter.label === label ? { ...filter, selected: newState } : filter,
@@ -74,11 +77,13 @@ const Filters: React.FC<FiltersProps> = ({
     onFilterChange(!token);
   };
   
+  // toggles compare mode
   const handleCompare = () => {
     setShowCompare(!showCompare);
     // setPredict(false);
   }
 
+  // toggles compare mode
   const handlePredict = () => {
     setFilterIcon(predict ? "filter_list" : "add");
     setPredict(!predict);
@@ -89,6 +94,7 @@ const Filters: React.FC<FiltersProps> = ({
     onFilterChange(!token);
   }
 
+  // handles exporting of data and calculates meaningful file name
   const handleExport = () => {
     const data = arrayToCSV(allMapData);
 
@@ -132,12 +138,12 @@ const Filters: React.FC<FiltersProps> = ({
             </button>
           </CustomTooltip>
           <CustomTooltip label={showCompare ? "Return to Single View" : "Compare Cases"}>
-            <button className={`button ${!showCompare ? "" : "selected"}`} onClick={handleCompare}>
+            <button className={`button ${!showCompare ? "" : "selected"}`} data-testid="compare-button"  onClick={handleCompare}>
               Compare
             </button>
           </CustomTooltip>
           <CustomTooltip label={predict ? "Return to Historic Data" : "Model Future Cases"}>
-            <button className={`button ${!predict ? "" : "selected"}`} onClick={handlePredict}>
+            <button className={`button ${!predict ? "" : "selected"}`} data-testid="predict-button" onClick={handlePredict}>
               Predict
             </button>
           </CustomTooltip>

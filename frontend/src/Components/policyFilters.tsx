@@ -29,6 +29,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
   const [hoverMessage, setHoverMessage] = useState('Complete all fields');
   const [apply, setApply] = useState(false);
 
+  // set start date from pop up calendar
   const handleStartDate = (newDate: Date) => {
     const adjustedDate = new Date(newDate);
     adjustedDate.setDate(newDate.getDate() + 1);
@@ -39,6 +40,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
     setShowStartDateCalendar(false); 
   };
 
+  // set end date from popup calendar
   const handleEndDate = (newDate: Date) => {
     const adjustedDate = new Date(newDate);
     adjustedDate.setDate(newDate.getDate() + 1);
@@ -48,6 +50,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
     setShowEndDateCalendar(false); 
   };
   
+  // close calendar if clicked away
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (startCalendarRef.current && !startCalendarRef.current.contains(event.target as Node)) {
@@ -65,6 +68,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
     };
   });
 
+  // add a policy to the prediction model.
   const handleApply = async () => {
     try {
       onFilterChange(!token);
@@ -102,6 +106,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
     setPolicy(event.target.value);
   };
 
+  // error checks to ensure the policy makes sense to apply, otherwise denies applying policy
   useEffect(() => {
     const fields = [startDate, endDate, state, policy];
     if (fields.some(field => field === 'None Selected')) {
@@ -143,7 +148,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
         </button>
       </CustomTooltip>
       <CustomTooltip label={state === none ? none : "State"}>
-        <select className={`dropdown button ${state === none ? "" : "selected"}`} value={state} onChange={handleStateChange}>
+        <select aria-label="state" className={`dropdown button ${state === none ? "" : "selected"}`} value={state} onChange={handleStateChange}>
           {state === none && <option value="">State</option>}
           <option value="New South Wales">New South Wales </option>
           <option value="Queensland">Queensland </option>
@@ -156,7 +161,7 @@ const PolicyFilters: React.FC<PolicyFiltersProps> = ({token, onFilterChange, con
         </select>
       </CustomTooltip>
       <CustomTooltip label={policy === none ? none : "Policy"}>
-        <select className={`dropdown button ${policy === none ? "" : "selected"}`} value={policy} onChange={handlePolicyChange}>
+        <select aria-label="policy" className={`dropdown button ${policy === none ? "" : "selected"}`} value={policy} onChange={handlePolicyChange}>
           {policy === none && <option value="">Policy</option>}
           <option value="Lockdown">Lockdown </option>
           <option value="Social Distancing">Social Distancing </option>

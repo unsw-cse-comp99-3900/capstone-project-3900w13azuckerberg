@@ -26,11 +26,12 @@ const HeatMap: React.FC<HeatMapProps> = ({
     radius, 
     graphData, 
     predict, 
-    predictData 
+    predictData
   }) => {
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
 
+  // creates heat map with colour style on app start
   const createMap = () => {
     const australiaBounds = L.latLngBounds(
       L.latLng(-45.2, 80),
@@ -69,18 +70,21 @@ const HeatMap: React.FC<HeatMapProps> = ({
     };
   }
 
+  // creates initial map
   useEffect(() => {
     if (!mapRef.current && containerId === "m") {
         return createMap();
     }
   }, [containerId]);
 
+  // creates maps when in compare mode, only after compare is clicked to reduce lag
   useEffect(() => {
     if (!mapRef.current && showCompare) {
         return createMap();
     }
   }, [showCompare]);
 
+  // updates the tool tips on map hover when data changes
   useEffect(() => {
     const map = mapRef.current;
     if (map) {
@@ -159,6 +163,7 @@ const HeatMap: React.FC<HeatMapProps> = ({
     }
   })
 
+  // updates heatmap points when the data changes
   useEffect(() => {
     const map = mapRef.current;
     if (map) {
