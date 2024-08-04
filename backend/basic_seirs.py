@@ -19,7 +19,7 @@ def get_predictive_data():
     curr_date = datetime.strptime('2024-6-30', '%Y-%m-%d').date()
     init_param = get_init_model_param()
 
-    print(init_param)
+    # print(init_param)
 
 
     for location, data in init_param.items():

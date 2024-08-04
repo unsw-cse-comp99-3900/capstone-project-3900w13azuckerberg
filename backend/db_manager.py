@@ -156,19 +156,9 @@ def calculate_14_day_sums(data, start_date, end_date):
     # Create a dictionary to hold the results
     result_dict = defaultdict(list)
 
-    # Create a date range to ensure all dates are included
-    all_dates = pd.date_range(start=start_date, end=end_date)
-
     # Iterate over each lab location
     for lab in df['originating_lab'].unique():
         lab_data = df[df['originating_lab'] == lab].sort_values(by='date')
-        lab_data = lab_data.set_index('date').reindex(all_dates, fill_value=0).reset_index()
-        lab_data = lab_data.rename(columns={'index': 'date'})
-
-        with pd.option_context("future.no_silent_downcasting", True):
-            lab_data['longitude'] = lab_data['longitude'].replace(0, pd.NA).ffill().bfill().infer_objects(copy=False)
-            lab_data['latitude'] = lab_data['latitude'].replace(0, pd.NA).ffill().bfill().infer_objects(copy=False)
-            lab_data['division_exposure'] = lab_data['division_exposure'].replace(0, pd.NA).ffill().bfill().infer_objects(copy=False)
 
         # Use rolling sum to calculate 14-day cumulative cases
         lab_data['14_day_sum'] = lab_data['case_count'].rolling(window=14, min_periods=1).sum()
@@ -182,8 +172,6 @@ def calculate_14_day_sums(data, start_date, end_date):
                 'state': row['division_exposure']
             })
 
-    # Remove dates where all locations have zero intensity
-    result_dict = {date: entries for date, entries in result_dict.items() if any(entry['intensity'] != 0 for entry in entries)}
     return result_dict
 
 

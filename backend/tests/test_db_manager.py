@@ -121,6 +121,7 @@ class DBManagerTestCase1(unittest.TestCase):
             end_date = datetime.strptime('2024-06-01', '%Y-%m-%d').date()
             results = get_all_case_by_coordinate(start_date, end_date, ['Alpha'])
             with open('tests/data/data1.json', 'r') as file:
+                # json.dump(results, file, indent=4)
                 expected = json.load(file)
             self.assertEqual(results, expected)
 

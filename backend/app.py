@@ -214,7 +214,6 @@ def predictive_map():
         G_social_distancing = create_social_distancing_graph(center_lat, center_lon)
 
         if bool(selected_policies[containerId][data["state"]]):
-            print(f"policy in {data["state"]}")
 
             policy_start = selected_policies[containerId][data["state"]]["start_date"]
             policy_end = selected_policies[containerId][data["state"]]["end_date"]
