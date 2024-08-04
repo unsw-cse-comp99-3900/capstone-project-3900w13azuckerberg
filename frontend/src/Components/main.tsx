@@ -60,47 +60,49 @@ const Main: React.FC<MainProps> = ({ setIsLoading, date, showCompare, setShowCom
 	const [allBarData, setAllBarData] = useState<SeirsData>({});
 	const [policies, setPolicies] = useState<PolicyData>({});
 	const [radius, setRadius] = useState(20);
+	
+	const fetchMapData = async () => {
+		setIsLoading(true);
+		console.log("Trying to get map");
+		try {
+			let response: AxiosResponse;
+			if (!predict) {
+				response = await axios.get("http://127.0.0.1:5001/map", {
+				params: {
+					containerId, // <- this will be either "M", "left", "right"
+					}
+				});
+			} else {
+				response = await axios.get("http://127.0.0.1:5001/predictive_map", {
+				params: {
+					containerId, // <- this will be either "M", "left", "right"
+					}
+				})
+			}
+			const rawData: { [date: string]: Point[] } = response.data;
+			const formattedData: MapData = {};
+			
+			for (const [key, value] of Object.entries(rawData)) {
+				formattedData[key] = value.map(point => [
+					point.latitude,
+					point.longitude,
+					point.intensity
+				]);
+			}
+			setAllMapData(formattedData);
+
+			console.log("Heatmap data updated.");
+
+		} catch (error) {
+			console.error("Error fetching heat map data:", error);
+		}
+		setIsLoading(false);
+	};
+	
 	// Map use effect
     useEffect(() => {
       // Function to fetch heat map data from the backend
-		const fetchData = async () => {
-			setIsLoading(true);
-			console.log("Trying to get map");
-			try {
-				let response: AxiosResponse;
-				if (!predict) {
-					response = await axios.get("http://127.0.0.1:5001/map", {
-					params: {
-						containerId, // <- this will be either "M", "left", "right"
-						}
-					});
-				} else {
-					response = await axios.get("http://127.0.0.1:5001/predictive_map", {
-					params: {
-						containerId, // <- this will be either "M", "left", "right"
-						}
-					})
-				}
-				const rawData: { [date: string]: Point[] } = response.data;
-				const formattedData: MapData = {};
-				
-				for (const [key, value] of Object.entries(rawData)) {
-					formattedData[key] = value.map(point => [
-						point.latitude,
-						point.longitude,
-						point.intensity
-					]);
-				}
-			setAllMapData(formattedData);
-	
-			console.log("Heatmap data updated.");
-
-			} catch (error) {
-			console.error("Error fetching heat map data:", error);
-			}
-			setIsLoading(false);
-		};
-        fetchData();
+        fetchMapData();
     }, [refetch, predict]);
 	
 
